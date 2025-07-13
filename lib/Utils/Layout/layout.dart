@@ -1,30 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:orioattendanceapp/Screens/home_screen.dart';
+import 'package:orioattendanceapp/screens/leave_history_page_screen.dart';
 import '../Colors/color_resoursec.dart';
+import '../Constant/images_constant.dart';
 
 class Layout extends StatelessWidget {
   final Widget body;
   final int currentTab;
   final bool isExtend;
+  final bool showAppBar;
+  final bool showLogo;
+  final List<Widget> actionButtons;
+  final double? appBarHeight;
+  final bool showBackButton;
+
   const Layout({
     super.key,
     required this.body,
     this.currentTab = 0,
     this.isExtend = false,
+    this.showAppBar = true,
+    this.showLogo = true,
+    this.actionButtons = const [],
+    this.appBarHeight,
+    this.showBackButton = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     bool keyboardIsOpened = mediaQuery.viewInsets.bottom != 0.0;
+    double defaultAppBarHeight = mediaQuery.size.height * 0.07;
+
     return Scaffold(
       extendBodyBehindAppBar: isExtend,
       resizeToAvoidBottomInset: false,
       backgroundColor: ColorResources.secondryColor,
+      appBar: showAppBar
+          ? PreferredSize(
+              preferredSize: Size.fromHeight(
+                appBarHeight ?? defaultAppBarHeight,
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  gradient: ColorResources.appBarGradient,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 6,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (showBackButton)
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: ColorResources.whiteColor,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      if (showLogo)
+                        Image.asset(
+                          ImagesConstant.splashImages,
+                          width: mediaQuery.size.width * 0.2,
+                          height: mediaQuery.size.width * 0.2,
+                          fit: BoxFit.contain,
+                        ),
+                      if (actionButtons.isNotEmpty)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: actionButtons,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          : null,
       body: body,
-      floatingActionButton: keyboardIsOpened ? null : const LayoutFAB(),
+      floatingActionButton: keyboardIsOpened
+          ? null
+          : const LayoutFAB(), // Floating Button
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: LayoutBottomBar(currentTab: currentTab),
     );
@@ -44,7 +110,9 @@ class LayoutFAB extends StatelessWidget {
         heroTag: null,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        onPressed: () {},
+        onPressed: () {
+          Get.offNamed(HomeScreen.routeName);
+        },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         child: Ink(
           decoration: BoxDecoration(
@@ -101,7 +169,9 @@ class _LayoutBottomBarState extends State<LayoutBottomBar> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     NavigationButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(LeaveHistoryPageScreen.routeName);
+                      },
                       icon: Iconsax.activity,
                       text: 'Leave',
                       tab: 1,

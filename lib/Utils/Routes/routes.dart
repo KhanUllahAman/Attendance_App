@@ -7,6 +7,7 @@ import 'package:orioattendanceapp/screens/home_screen.dart';
 import 'package:orioattendanceapp/screens/otp_screen.dart';
 
 import '../../Screens/splash_screen.dart';
+import '../../screens/leave_history_page_screen.dart';
 
 final List<GetPage<dynamic>> routes = [
   GetPage(name: SplashScreen.routeName, page: () => const SplashScreen()),
@@ -21,6 +22,10 @@ final List<GetPage<dynamic>> routes = [
     name: ApplyLeaveScreen.routeName,
     page: () => const ApplyLeaveScreen(),
   ),
+  GetPage(
+    name: LeaveHistoryPageScreen.routeName,
+    page: () => const LeaveHistoryPageScreen(),
+  ),
 ];
 
 class Routes {
@@ -31,5 +36,6 @@ class Routes {
     OtpScreen.routeName: (context) => const OtpScreen(),
     HomeScreen.routeName: (context) => const HomeScreen(),
     ApplyLeaveScreen.routeName: (context) => const ApplyLeaveScreen(),
+    LeaveHistoryPageScreen.routeName: (context) => const LeaveHistoryPageScreen(),
   };
 }

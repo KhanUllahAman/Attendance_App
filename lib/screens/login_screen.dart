@@ -4,10 +4,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:orioattendanceapp/Screens/home_screen.dart';
 import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
-import 'package:orioattendanceapp/Utils/Constant/images_constant.dart';
 import 'package:orioattendanceapp/screens/forgot_password_screen.dart';
 
 import '../Utils/Colors/color_resoursec.dart';
+import '../Utils/Constant/images_constant.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/loginScreen';
