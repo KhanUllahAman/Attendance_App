@@ -58,6 +58,8 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
   Widget build(BuildContext context) {
     final mq = widget.mediaQuery;
 
+    final isReadOnly = widget.readOnly ?? false;
+
     return TextFormField(
       controller: widget.controller,
       keyboardType:
@@ -69,10 +71,10 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
         color: ColorResources.whiteColor,
         fontSize: mq.size.width * 0.038,
       ),
-      cursorColor: widget.readOnly == true
+      cursorColor: isReadOnly
           ? Colors.transparent
           : ColorResources.appMainColor,
-      readOnly: widget.readOnly ?? false,
+      readOnly: isReadOnly,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(
           horizontal: mq.size.width * 0.04,
@@ -84,26 +86,29 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
           fontSize: mq.size.width * 0.030,
         ),
         filled: true,
-        fillColor: ColorResources.whiteColor.withOpacity(0.05),
+        fillColor: isReadOnly
+            ? ColorResources.whiteColor.withOpacity(0.025)
+            : ColorResources.whiteColor.withOpacity(0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: const BorderSide(color: Colors.white10),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: const BorderSide(color: Colors.white10),
+          borderSide: BorderSide(color: Colors.white10),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: const BorderSide(
-            color: ColorResources.appMainColor,
-            width: 2.0,
-          ),
-        ),
-        errorStyle: GoogleFonts.sora(
-          fontSize: mq.size.width * 0.03,
-          color: ColorResources.appMainColor,
-        ),
+        focusedBorder: isReadOnly
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+                borderSide: BorderSide(color: Colors.transparent),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+                borderSide: BorderSide(
+                  color: ColorResources.appMainColor,
+                  width: 2,
+                ),
+              ),
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
@@ -258,6 +263,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       height: MediaQuery.of(context).size.height * 0.5,
@@ -292,25 +298,40 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
             ],
           ),
           const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
+          TextField(
+            onChanged: _filterItems,
+            style: GoogleFonts.sora(
+              color: ColorResources.whiteColor,
+              fontSize: mq.size.width * 0.038, // 👈 responsive font
             ),
-            child: TextField(
-              onChanged: _filterItems,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                hintText: "Search",
-                hintStyle: GoogleFonts.sora(color: Colors.grey[600]),
-                border: InputBorder.none,
-                suffixIcon: const Icon(
-                  Icons.search,
-                  color: ColorResources.blackColor,
-                ),
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: mq.size.width * 0.04,
+                vertical: mq.size.height * 0.015,
+              ),
+              hintText: "Search",
+              hintStyle: GoogleFonts.sora(
+                color: Colors.white70,
+                fontSize: mq.size.width * 0.030, // 👈 responsive font
+              ),
+              filled: true,
+              fillColor: ColorResources.whiteColor.withOpacity(0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+                borderSide: const BorderSide(color: Colors.white10),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+                borderSide: const BorderSide(color: Colors.white10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+                borderSide: BorderSide(color: ColorResources.appMainColor),
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.white70,
+                size: mq.size.width * 0.055, // 👈 responsive icon size
               ),
             ),
           ),
@@ -561,7 +582,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 style: GoogleFonts.sora(
                   fontSize: screenWidth * 0.032,
                   fontWeight: FontWeight.w500,
-                  color: ColorResources.textBlueColor,
+                  color: ColorResources.whiteColor,
                 ),
               ),
             SizedBox(height: screenHeight * 0.02),
@@ -629,6 +650,60 @@ class CustomSearchField extends StatelessWidget {
           Icons.search,
           color: Colors.white70,
           size: mq.size.width * 0.055, // 👈 responsive icon size
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTimePickerField extends StatelessWidget {
+  final String label;
+  final TimeOfDay? selectedTime;
+  final VoidCallback onTap;
+
+  const CustomTimePickerField({
+    super.key,
+    required this.label,
+    required this.selectedTime,
+    required this.onTap,
+  });
+
+  String _formatTime(TimeOfDay? time) {
+    if (time == null) return "--:--";
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: mq.size.width * 0.04,
+          vertical: mq.size.height * 0.02,
+        ),
+        decoration: BoxDecoration(
+          color: ColorResources.whiteColor.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.access_time, color: ColorResources.whiteColor),
+            SizedBox(width: mq.size.width * 0.04),
+            Expanded(
+              child: Text(
+                "$label: ${_formatTime(selectedTime)}",
+                style: GoogleFonts.sora(
+                  color: ColorResources.whiteColor,
+                  fontSize: mq.size.width * 0.030,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

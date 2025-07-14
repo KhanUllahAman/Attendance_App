@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
 import 'package:orioattendanceapp/Utils/Colors/color_resoursec.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
+import 'package:orioattendanceapp/screens/notification_screen.dart';
 
 import '../Controllers/apply_leave_controller.dart';
 
@@ -27,19 +29,29 @@ class ApplyLeaveScreen extends StatelessWidget {
         actionButtons: [
           IconButton(
             icon: Icon(Iconsax.notification, color: ColorResources.whiteColor),
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(NotificationScreen.routeName);
+            },
           ),
         ],
         body: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: mq.size.width * 0.03,
-            vertical: mq.size.width * 0.02,
+            vertical: mq.size.width * 0.04,
           ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Quota Summary Boxes
+                Text(
+                  "Apply Leave",
+                  style: GoogleFonts.sora(
+                    fontSize: mq.size.width * 0.040,
+                    fontWeight: FontWeight.w600,
+                    color: ColorResources.whiteColor,
+                  ),
+                ),
+                SizedBox(height: mq.size.height * 0.02),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -61,8 +73,6 @@ class ApplyLeaveScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: mq.size.height * 0.02),
-
-                // Leave Type Dropdown
                 SearchableDropdown(
                   hintText: "Select Leave Type",
                   items: controller.leaveTypes,
@@ -84,7 +94,7 @@ class ApplyLeaveScreen extends StatelessWidget {
                       controller.selectedDateRangeText.value.isEmpty
                           ? 'Select Date Range'
                           : controller.selectedDateRangeText.value,
-                      style: TextStyle(color: ColorResources.whiteColor),
+                      style: GoogleFonts.sora(color: ColorResources.whiteColor),
                     ),
                   ),
                 ),
@@ -109,9 +119,9 @@ class ApplyLeaveScreen extends StatelessWidget {
                           : await controller.submitLeaveApplication();
                     },
                     isLoading: controller.isLoading.value,
-                    child: const Text(
+                    child: Text(
                       "Submit",
-                      style: TextStyle(color: Colors.white),
+                      style: GoogleFonts.sora(color: Colors.white),
                     ),
                   ),
                 ),

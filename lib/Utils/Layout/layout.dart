@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Screens/home_screen.dart';
 import 'package:orioattendanceapp/screens/leave_history_page_screen.dart';
+import 'package:orioattendanceapp/screens/notification_screen.dart';
+import 'package:orioattendanceapp/screens/profile_view_screen.dart';
+import '../../screens/menu_screen.dart';
 import '../Colors/color_resoursec.dart';
 import '../Constant/images_constant.dart';
 
@@ -61,6 +64,7 @@ class Layout extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // Left Side: Back button + Logo
                       if (showBackButton)
                         IconButton(
                           icon: Icon(
@@ -75,11 +79,6 @@ class Layout extends StatelessWidget {
                           width: mediaQuery.size.width * 0.2,
                           height: mediaQuery.size.width * 0.2,
                           fit: BoxFit.contain,
-                        ),
-                      if (actionButtons.isNotEmpty)
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: actionButtons,
                         ),
                     ],
                   ),
@@ -120,7 +119,7 @@ class LayoutFAB extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: Center(
-            child: Icon(Iconsax.add_circle, color: ColorResources.whiteColor),
+            child: Icon(Iconsax.clock, color: ColorResources.whiteColor),
           ),
         ),
       ),
@@ -178,7 +177,9 @@ class _LayoutBottomBarState extends State<LayoutBottomBar> {
                       currentTab: widget.currentTab,
                     ),
                     NavigationButton(
-                      onPressed: null,
+                      onPressed: () {
+                        Get.toNamed(NotificationScreen.routeName);
+                      },
                       icon: Iconsax.notification,
                       text: 'Notification',
                       tab: 2,
@@ -192,14 +193,18 @@ class _LayoutBottomBarState extends State<LayoutBottomBar> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     NavigationButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(ProfileViewScreen.routeName);
+                      },
                       icon: Iconsax.user,
                       text: 'Profile',
                       tab: 3,
                       currentTab: widget.currentTab,
                     ),
                     NavigationButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.toNamed(MenuScreen.routeName);
+                      },
                       icon: Iconsax.more,
                       text: 'More',
                       tab: 4,

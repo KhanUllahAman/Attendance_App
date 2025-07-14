@@ -1,11 +1,14 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Colors/color_resoursec.dart';
 import 'package:orioattendanceapp/Utils/Constant/images_constant.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
+import 'package:orioattendanceapp/screens/daily_attendance_record_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/homeScreen';
@@ -287,7 +290,9 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.toNamed(DailyAttendanceRecordScreen.routeName);
+                          },
                           icon: Icon(
                             Iconsax.calendar_edit,
                             color: ColorResources.whiteColor,
