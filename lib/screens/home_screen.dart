@@ -10,6 +10,8 @@ import 'package:orioattendanceapp/Utils/Constant/images_constant.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/daily_attendance_record_screen.dart';
 
+import '../AuthServices/auth_service.dart';
+
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/homeScreen';
   const HomeScreen({super.key});
@@ -28,6 +30,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final AuthService authService = AuthService();
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
       child: Layout(
@@ -82,13 +85,43 @@ class HomeScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                      'Aman Khan',
-                                      style: GoogleFonts.sora(
-                                        fontSize: mediaQuery.size.width * 0.040,
-                                        fontWeight: FontWeight.w500,
-                                        color: ColorResources.whiteColor,
-                                      ),
+                                FutureBuilder<String?>(
+                                      future: authService.getUsername(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text(
+                                            'Loading...',
+                                            style: GoogleFonts.sora(
+                                              fontSize:
+                                                  mediaQuery.size.width * 0.040,
+                                              fontWeight: FontWeight.w500,
+                                              color: ColorResources.whiteColor,
+                                            ),
+                                          );
+                                        } else if (snapshot.hasError ||
+                                            !snapshot.hasData ||
+                                            snapshot.data == null) {
+                                          return Text(
+                                            'User',
+                                            style: GoogleFonts.sora(
+                                              fontSize:
+                                                  mediaQuery.size.width * 0.040,
+                                              fontWeight: FontWeight.w500,
+                                              color: ColorResources.whiteColor,
+                                            ),
+                                          );
+                                        }
+                                        return Text(
+                                          snapshot.data!,
+                                          style: GoogleFonts.sora(
+                                            fontSize:
+                                                mediaQuery.size.width * 0.040,
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorResources.whiteColor,
+                                          ),
+                                        );
+                                      },
                                     )
                                     .animate()
                                     .fadeIn(duration: 600.ms)

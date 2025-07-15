@@ -9,6 +9,7 @@ import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/my_correction_request_list.dart';
 import 'package:orioattendanceapp/screens/office_wifi_screen.dart';
 
+import '../AuthServices/auth_service.dart';
 import '../Utils/Colors/color_resoursec.dart';
 import 'asset_complain_request_screen_list.dart';
 import 'change_password_screen.dart';
@@ -207,6 +208,7 @@ class MenuScreen extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context, MediaQueryData mq) {
+    final AuthService authService = AuthService();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -239,9 +241,8 @@ class MenuScreen extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Add logout logic here
+            onPressed: () async {
+              await authService.clearAuthData();
             },
             child: Text(
               "Yes",
