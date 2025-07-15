@@ -26,7 +26,7 @@ class ColorResources {
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: appMainColor,
+      systemNavigationBarColor: Colors.transparent,
       statusBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
     );
@@ -37,7 +37,7 @@ class ColorResources {
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light, // Explicitly set
       statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: Colors.white,
+      systemNavigationBarColor: secondryColor,
       systemNavigationBarDividerColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     );
