@@ -1,18 +1,27 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:orioattendanceapp/Utils/Snack%20Bar/custom_snack_bar.dart';
 import 'dart:developer' as developer;
 import '../AuthServices/auth_service.dart';
 import '../Network/Network Manager/network_manager.dart';
 import '../Network/network.dart';
+import '../Utils/Colors/color_resoursec.dart';
 import '../Utils/Constant/api_url_constant.dart';
 import '../models/home_model.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomeScreenController extends NetworkManager {
+  
   final AuthService authService = AuthService();
+  
+  // State variables
   final RxBool isLoading = true.obs;
   final RxBool isLocationMatched = false.obs;
   final Rx<HomeScreenResponse> homeScreenData = HomeScreenResponse().obs;
@@ -23,19 +32,25 @@ class HomeScreenController extends NetworkManager {
   final RxString currentTime = ''.obs;
   final RxString currentDate = ''.obs;
   Timer? timer;
+  
+  // New state variables for button handling
+  final RxBool isProcessingCheckIn = false.obs;
+  final RxBool isProcessingCheckOut = false.obs;
+  final RxString currentButtonState = 'check_in'.obs; // 'check_in', 'check_out', 'completed'
 
- @override
+  @override
   void onInit() async {
     super.onInit();
     await Future.wait([fetchUserName(), fetchHomeData()]);
     updateGreeting();
     startTimeUpdates();
+    updateButtonState();
     developer.log('HomeScreenController initialized');
   }
 
   void startTimeUpdates() {
     updateTimeAndDate();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       updateTimeAndDate();
     });
     developer.log('Started time update timer');
@@ -43,21 +58,14 @@ class HomeScreenController extends NetworkManager {
 
   void updateTimeAndDate() {
     currentTime.value = DateFormat('hh:mm a').format(DateTime.now());
-    currentDate.value = DateFormat(
-      'MMMM dd, yyyy - EEEE',
-    ).format(DateTime.now());
-    developer.log(
-      'Updated time: ${currentTime.value}, date: ${currentDate.value}',
-    );
+    currentDate.value = DateFormat('MMMM dd, yyyy - EEEE').format(DateTime.now());
   }
 
   Future<void> fetchUserName() async {
     final username = await authService.getUsername();
     userName.value = username ?? 'User';
-    developer.log('Username fetched: ${userName.value}');
   }
 
-  // Update greeting based on time of day
   void updateGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
@@ -67,39 +75,42 @@ class HomeScreenController extends NetworkManager {
     } else {
       greeting.value = 'Good Evening';
     }
-    developer.log('Greeting updated: ${greeting.value}');
+  }
+
+  void updateButtonState() {
+    if (homeScreenData.value.singleAttendance?.isNotEmpty == true) {
+      final attendance = homeScreenData.value.singleAttendance![0];
+      if (attendance.checkOutTime != null && attendance.date == getCurrentDate()) {
+        currentButtonState.value = 'completed';
+      } else if (attendance.checkInTime != null) {
+        currentButtonState.value = 'check_out';
+      } else {
+        currentButtonState.value = 'check_in';
+      }
+    } else {
+      currentButtonState.value = 'check_in';
+    }
   }
 
   Future<String?> _getToken() async {
-    final token = await authService.getToken();
-    developer.log(
-      'Token fetched: ${token != null ? "Token exists" : "No token"}',
-    );
-    return token;
+    return await authService.getToken();
   }
 
   Future<int?> _getEmployeeId() async {
-    final employeeId = await authService.getEmployeeId();
-    developer.log('Employee ID fetched: $employeeId');
-    return employeeId;
+    return await authService.getEmployeeId();
   }
 
-  String _getCurrentDate() {
-    final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    developer.log('Current date: $date');
-    return date;
+  String getCurrentDate() {
+    return DateFormat('yyyy-MM-dd').format(DateTime.now());
   }
 
   String _getCurrentTime() {
-    final time = DateFormat('HH:mm:ss').format(DateTime.now());
-    developer.log('Current time: $time');
-    return time;
+    return DateFormat('HH:mm:ss').format(DateTime.now());
   }
 
   Future<int?> _getMatchedOfficeId(List<OfficeLocation> officeLocations) async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      developer.log('Location service enabled: $serviceEnabled');
       if (!serviceEnabled) {
         customSnackBar(
           'Error',
@@ -110,10 +121,8 @@ class HomeScreenController extends NetworkManager {
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
-      developer.log('Location permission status: $permission');
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        developer.log('Requested location permission: $permission');
         if (permission == LocationPermission.denied) {
           customSnackBar(
             'Error',
@@ -136,9 +145,6 @@ class HomeScreenController extends NetworkManager {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      developer.log(
-        'User location: Latitude=${position.latitude}, Longitude=${position.longitude}',
-      );
 
       for (var office in officeLocations) {
         double distance = Geolocator.distanceBetween(
@@ -147,16 +153,11 @@ class HomeScreenController extends NetworkManager {
           position.latitude,
           position.longitude,
         );
-        developer.log(
-          'Distance to ${office.name} (ID: ${office.id}): $distance meters (Radius: ${office.radiusMeters})',
-        );
         if (distance <= office.radiusMeters) {
-          developer.log('Matched office: ${office.name} (ID: ${office.id})');
           return office.id;
         }
       }
 
-      developer.log('No office location matched');
       customSnackBar(
         'Error',
         'You are not within any office location range.',
@@ -175,170 +176,136 @@ class HomeScreenController extends NetworkManager {
   }
 
   Future<void> fetchHomeData() async {
-    isLoading.value = true;
-    isLocationMatched.value = false;
-    try {
-      final token = await _getToken();
-      if (token == null) {
-        errorMessage.value = 'No token found. Please log in again.';
-        customSnackBar(
-          'Error',
-          'No token found. Please log in again.',
-          snackBarType: SnackBarType.error,
-        );
-        await authService.clearAuthData();
-        developer.log('No token found, clearing auth data');
-        isLoading.value = false;
-        return;
-      }
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-      developer.log('Fetching office locations with headers: $headers');
-      final officeResponse = await Network.getApi(
-        getOfficeLocations,
-        headers: headers,
-      );
-      developer.log('Office locations response: $officeResponse');
-
-      if (officeResponse['status'] == 1) {
-        final officeLocations = (officeResponse['payload'] as List)
-            .map((e) => OfficeLocation.fromJson(e))
-            .toList();
-        homeScreenData.value = HomeScreenResponse(
-          officeLocations: officeLocations,
-        );
-        developer.log(
-          'Office locations stored: ${officeLocations.length} locations',
-        );
-
-        // Find matched office ID
-        final officeId = await _getMatchedOfficeId(officeLocations);
-        if (officeId != null) {
-          matchedOfficeId.value = officeId;
-          isLocationMatched.value = true;
-          developer.log('Matched office ID: $officeId');
-        } else {
-          isLoading.value = false;
-          developer.log('No matched office ID, stopping fetchHomeData');
-          return;
-        }
-      } else {
-        errorMessage.value = officeResponse['message'];
-        customSnackBar(
-          'Error',
-          officeResponse['message'],
-          snackBarType: SnackBarType.error,
-        );
-        isLoading.value = false;
-        developer.log(
-          'Office locations API failed: ${officeResponse['message']}',
-        );
-        return;
-      }
-
-      // API 2: Get Single Attendance
-      final employeeId = await _getEmployeeId();
-      if (employeeId == null) {
-        errorMessage.value = 'Employee ID not found.';
-        customSnackBar(
-          'Error',
-          'Employee ID not found.',
-          snackBarType: SnackBarType.error,
-        );
-        isLoading.value = false;
-        developer.log('Employee ID not found');
-        return;
-      }
-
-      final attendanceBody = {
-        'employee_id': employeeId,
-        // 'attendance_date': _getCurrentDate(),
-        'attendance_date': "2025-01-05",
-      };
-      final attendanceHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-      developer.log(
-        'Fetching single attendance with body: $attendanceBody, headers: $attendanceHeaders',
-      );
-      final attendanceResponse = await Network.postApi(
-        token,
-        getSingleAttendanceUrl,
-        attendanceBody,
-        attendanceHeaders,
-      );
-      developer.log('Single attendance response: $attendanceResponse');
-
-      if (attendanceResponse['status'] == 1) {
-        homeScreenData.value = HomeScreenResponse(
-          officeLocations: homeScreenData.value.officeLocations,
-          singleAttendance: (attendanceResponse['payload'] as List)
-              .map((e) => Attendance.fromJson(e))
-              .toList(),
-        );
-        developer.log(
-          'Single attendance stored: ${homeScreenData.value.singleAttendance?.length ?? 0} records',
-        );
-      } else {
-        errorMessage.value = attendanceResponse['message'];
-        // customSnackBar(
-        //   'Errorrrrrtrrr',
-        //   attendanceResponse['message'],
-        //   snackBarType: SnackBarType.error,
-        // );
-        developer.log(
-          'Single attendance API failed: ${attendanceResponse['message']}',
-        );
-      }
-
+  isLoading.value = true;
+  isLocationMatched.value = false;
+  
+  try {
+    // Check connectivity status
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      errorMessage.value = 'No internet connection available';
       isLoading.value = false;
-    } catch (e) {
-      errorMessage.value = 'An error occurred. Please try again.';
+      return;
+    }
+
+    final token = await _getToken();
+    if (token == null) {
+      errorMessage.value = 'No token found. Please log in again.';
       customSnackBar(
         'Error',
-        'An error occurred while fetching data.',
+        'No token found. Please log in again.',
         snackBarType: SnackBarType.error,
       );
-      developer.log('Home Data Error: $e');
+      await authService.clearAuthData();
       isLoading.value = false;
+      return;
     }
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    // Fetch office locations
+    final officeResponse = await Network.getApi(
+      getOfficeLocations,
+      headers: headers,
+    ).timeout(const Duration(seconds: 15));
+
+    if (officeResponse['status'] != 1) {
+      errorMessage.value = officeResponse['message'] ?? 'Failed to fetch office locations';
+      isLoading.value = false;
+      return;
+    }
+
+    final officeLocations = (officeResponse['payload'] as List)
+        .map((e) => OfficeLocation.fromJson(e))
+        .toList();
+    
+    homeScreenData.value = HomeScreenResponse(
+      officeLocations: officeLocations,
+    );
+
+    // Find matched office ID
+    final officeId = await _getMatchedOfficeId(officeLocations);
+    if (officeId == null) {
+      isLoading.value = false;
+      return;
+    }
+
+    matchedOfficeId.value = officeId;
+    isLocationMatched.value = true;
+
+    // Fetch single attendance
+    final employeeId = await _getEmployeeId();
+    if (employeeId == null) {
+      errorMessage.value = 'Employee ID not found.';
+      customSnackBar(
+        'Error',
+        'Employee ID not found.',
+        snackBarType: SnackBarType.error,
+      );
+      isLoading.value = false;
+      return;
+    }
+
+    final attendanceBody = {
+      'employee_id': employeeId,
+      'attendance_date': getCurrentDate(),
+    };
+
+    final attendanceResponse = await Network.postApi(
+      token,
+      getSingleAttendanceUrl,
+      attendanceBody,
+      headers,
+    ).timeout(const Duration(seconds: 15));
+
+    if (attendanceResponse['status'] == 1) {
+      homeScreenData.value = HomeScreenResponse(
+        officeLocations: homeScreenData.value.officeLocations,
+        singleAttendance: (attendanceResponse['payload'] as List)
+            .map((e) => Attendance.fromJson(e))
+            .toList(),
+      );
+    } else {
+      errorMessage.value = attendanceResponse['message'] ?? 'Failed to fetch attendance data';
+    }
+
+  } on TimeoutException catch (_) {
+    errorMessage.value = 'Request timed out. Please try again.';
+  } on SocketException catch (_) {
+    errorMessage.value = 'No internet connection';
+  } catch (e) {
+    errorMessage.value = 'Failed to load data: ${e.toString()}';
+  } finally {
+    updateButtonState();
+    isLoading.value = false;
   }
+}
 
   Future<void> checkIn() async {
-    if (connectionType == 0) {
-      customSnackBar(
-        'No Connection',
-        'No internet connection available.',
-        snackBarType: SnackBarType.error,
-      );
-      developer.log('No internet connection for check-in');
-      return;
-    }
-
-    if (matchedOfficeId.value == 0 || !isLocationMatched.value) {
+    if (connectionType.value == 0 || !isLocationMatched.value) {
       customSnackBar(
         'Error',
-        'You are not within any office location range.',
+        connectionType.value == 0 
+          ? 'No internet connection available.' 
+          : 'You are not within any office location range.',
         snackBarType: SnackBarType.error,
       );
-      developer.log('Check-in blocked: No matched office location');
       return;
     }
 
-    if (homeScreenData.value.singleAttendance?.isNotEmpty == true &&
-        homeScreenData.value.singleAttendance![0].checkInTime != null) {
+    if (currentButtonState.value != 'check_in') {
       customSnackBar(
         'Info',
-        'You have already checked in today.',
+        'You cannot check in at this time.',
         snackBarType: SnackBarType.info,
       );
-      developer.log('Check-in blocked: Already checked in today');
       return;
     }
 
+    isProcessingCheckIn.value = true;
     try {
       final token = await _getToken();
       final employeeId = await _getEmployeeId();
@@ -350,47 +317,34 @@ class HomeScreenController extends NetworkManager {
           snackBarType: SnackBarType.error,
         );
         await authService.clearAuthData();
-        developer.log('Check-in failed: No token or employee ID');
         return;
       }
 
       final checkInBody = {
         'employee_id': employeeId,
-        // 'attendance_date': _getCurrentDate(),
-        "attendance_date": "2025-01-05",
+        'attendance_date': getCurrentDate(),
         'check_in_time': _getCurrentTime(),
         'check_in_office_location': matchedOfficeId.value,
       };
-      final checkInHeaders = {
+
+      final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
-      developer.log(
-        'Checking in with body: $checkInBody, headers: $checkInHeaders',
-      );
+
       final checkInResponse = await Network.postApi(
         token,
         checkInUrl,
         checkInBody,
-        checkInHeaders,
+        headers,
       );
-      developer.log('Check-in response: $checkInResponse');
 
       if (checkInResponse['status'] == 1) {
-        homeScreenData.value = HomeScreenResponse(
-          officeLocations: homeScreenData.value.officeLocations,
-          singleAttendance: homeScreenData.value.singleAttendance,
-          checkInResponse: (checkInResponse['payload'] as List)
-              .map((e) => Attendance.fromJson(e))
-              .toList(),
-        );
         customSnackBar(
           'Success',
           checkInResponse['message'],
           snackBarType: SnackBarType.success,
         );
-        developer.log('Check-in successful: ${checkInResponse['message']}');
-        // Refresh attendance data
         await fetchHomeData();
       } else {
         errorMessage.value = checkInResponse['message'];
@@ -399,7 +353,6 @@ class HomeScreenController extends NetworkManager {
           checkInResponse['message'],
           snackBarType: SnackBarType.error,
         );
-        developer.log('Check-in failed: ${checkInResponse['message']}');
       }
     } catch (e) {
       errorMessage.value = 'Failed to check in. Please try again.';
@@ -409,30 +362,33 @@ class HomeScreenController extends NetworkManager {
         snackBarType: SnackBarType.error,
       );
       developer.log('Check In Error: $e');
+    } finally {
+      isProcessingCheckIn.value = false;
     }
   }
 
   Future<void> checkOut() async {
-    if (connectionType == 0) {
-      customSnackBar(
-        'No Connection',
-        'No internet connection available.',
-        snackBarType: SnackBarType.error,
-      );
-      developer.log('No internet connection for check-out');
-      return;
-    }
-
-    if (matchedOfficeId.value == 0 || !isLocationMatched.value) {
+    if (connectionType.value == 0 || !isLocationMatched.value) {
       customSnackBar(
         'Error',
-        'You are not within any office location range.',
+        connectionType.value == 0 
+          ? 'No internet connection available.' 
+          : 'You are not within any office location range.',
         snackBarType: SnackBarType.error,
       );
-      developer.log('Check-out blocked: No matched office location');
       return;
     }
 
+    if (currentButtonState.value != 'check_out') {
+      customSnackBar(
+        'Info',
+        'You cannot check out at this time.',
+        snackBarType: SnackBarType.info,
+      );
+      return;
+    }
+
+    isProcessingCheckOut.value = true;
     try {
       final token = await _getToken();
       final employeeId = await _getEmployeeId();
@@ -444,49 +400,34 @@ class HomeScreenController extends NetworkManager {
           snackBarType: SnackBarType.error,
         );
         await authService.clearAuthData();
-        developer.log('Check-out failed: No token or employee ID');
         return;
       }
 
       final checkOutBody = {
         'employee_id': employeeId,
-        // 'attendance_date': _getCurrentDate(),
-        "attendance_date": "2025-01-05",
+        'attendance_date': getCurrentDate(),
         'check_out_time': _getCurrentTime(),
         'check_out_office_location': matchedOfficeId.value,
-        // 'check_out_office_location': 1,
       };
-      final checkOutHeaders = {
+
+      final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
-      developer.log(
-        'Checking out with body: $checkOutBody, headers: $checkOutHeaders',
-      );
+
       final checkOutResponse = await Network.postApi(
         token,
         checkOutUrl,
         checkOutBody,
-        checkOutHeaders,
+        headers,
       );
-      developer.log('Check-out response: $checkOutResponse');
 
       if (checkOutResponse['status'] == 1) {
-        homeScreenData.value = HomeScreenResponse(
-          officeLocations: homeScreenData.value.officeLocations,
-          singleAttendance: homeScreenData.value.singleAttendance,
-          checkInResponse: homeScreenData.value.checkInResponse,
-          checkOutResponse: (checkOutResponse['payload'] as List)
-              .map((e) => Attendance.fromJson(e))
-              .toList(),
-        );
         customSnackBar(
           'Success',
           checkOutResponse['message'],
           snackBarType: SnackBarType.success,
         );
-        developer.log('Check-out successful: ${checkOutResponse['message']}');
-        // Refresh attendance data
         await fetchHomeData();
       } else {
         errorMessage.value = checkOutResponse['message'];
@@ -495,7 +436,6 @@ class HomeScreenController extends NetworkManager {
           checkOutResponse['message'],
           snackBarType: SnackBarType.error,
         );
-        developer.log('Check-out failed: ${checkOutResponse['message']}');
       }
     } catch (e) {
       errorMessage.value = 'Failed to check out. Please try again.';
@@ -505,7 +445,48 @@ class HomeScreenController extends NetworkManager {
         snackBarType: SnackBarType.error,
       );
       developer.log('Check Out Error: $e');
+    } finally {
+      isProcessingCheckOut.value = false;
     }
+  }
+
+  // Button state methods
+  Color getButtonColor() {
+    if (!isLocationMatched.value) return Colors.grey;
+    
+    return currentButtonState.value == 'check_in' 
+      ? ColorResources.appMainColor
+      : currentButtonState.value == 'check_out'
+        ? Colors.orange.shade700
+        : Colors.red.shade700;
+  }
+
+  Color getGlowColor() {
+    if (!isLocationMatched.value) return Colors.grey.withOpacity(0.5);
+    
+    return currentButtonState.value == 'check_in' 
+      ? ColorResources.appMainColor.withOpacity(0.5)
+      : currentButtonState.value == 'check_out'
+        ? Colors.orange.shade700.withOpacity(0.5)
+        : Colors.red.shade700.withOpacity(0.5);
+  }
+
+  IconData getButtonIcon() {
+    return currentButtonState.value == 'check_in' 
+      ? Iconsax.login
+      : currentButtonState.value == 'check_out'
+        ? Iconsax.logout
+        : Iconsax.tick_circle;
+  }
+
+  String getButtonText() {
+    if (!isLocationMatched.value) return 'Not in Office';
+    
+    return currentButtonState.value == 'check_in' 
+      ? 'Check In'
+      : currentButtonState.value == 'check_out'
+        ? 'Check Out'
+        : 'Completed';
   }
 
   @override
@@ -516,6 +497,8 @@ class HomeScreenController extends NetworkManager {
     homeScreenData.value = HomeScreenResponse();
     matchedOfficeId.value = 0;
     errorMessage.value = '';
+    isProcessingCheckIn.value = false;
+    isProcessingCheckOut.value = false;
     developer.log('HomeScreenController disposed');
     super.onClose();
   }

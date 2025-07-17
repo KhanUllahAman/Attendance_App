@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 class NetworkManager extends GetxController {
-  int connectionType = 0;
+  final RxInt connectionType = 0.obs;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _streamSubscription;
 
@@ -24,20 +25,20 @@ class NetworkManager extends GetxController {
       _updateState(connectivityResult);
     } on PlatformException catch (e) {
       log('$e');
-      connectionType = 0; 
+      connectionType.value = 0; 
       update();
     }
   }
 
   void _updateState(List<ConnectivityResult> results) {
     if (results.contains(ConnectivityResult.wifi)) {
-      connectionType = 1;
+      connectionType.value = 1;
     } else if (results.contains(ConnectivityResult.mobile)) {
-      connectionType = 2;
+      connectionType.value = 2;
     } else if (results.isEmpty || results.contains(ConnectivityResult.none)) {
-      connectionType = 0;
+      connectionType.value = 0;
     } else {
-      connectionType = 3;
+      connectionType.value = 3;
     }
     update();
   }
