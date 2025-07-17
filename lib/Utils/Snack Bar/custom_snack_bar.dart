@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:orioattendanceapp/Utils/Colors/color_resoursec.dart';
 
 enum SnackBarType { success, error, info }
 
@@ -40,7 +41,7 @@ void customSnackBar(
         iconData = Icons.error_outline;
         break;
       case SnackBarType.info:
-        gradientColors = [Color(0xFFFFC107), Color(0xFFFFA000)];
+        gradientColors = [ColorResources.appMainColor, ColorResources.secondryColor];
         iconData = Icons.info_outline;
         break;
     }

@@ -142,7 +142,7 @@ class LoginController extends NetworkManager {
   final RxString errorMessage = ''.obs;
 
   Future<void> login() async {
-    if (connectionType == 0) {
+    if (connectionType.value == 0) {
       customSnackBar(
         'No Connection',
         'No internet connection available.',
