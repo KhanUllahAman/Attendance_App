@@ -4,6 +4,7 @@ import 'package:orioattendanceapp/Controllers/login_controller.dart';
 import 'package:orioattendanceapp/Controllers/otp_controller.dart';
 import 'package:orioattendanceapp/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Controllers/home_screen_controller.dart';
 import '../models/otp_model.dart'; // Assuming OtpPayload is defined here
 
 class AuthService {
@@ -69,6 +70,7 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await Get.delete<LoginController>(force: true);
     await Get.delete<OtpController>(force: true);
+    await Get.delete<HomeScreenController>(force: true);
     await prefs.clear();
     await Get.offAllNamed(LoginScreen.routeName);
   }

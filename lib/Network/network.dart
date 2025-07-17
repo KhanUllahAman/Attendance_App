@@ -56,13 +56,17 @@ class Network {
     Map<String, dynamic>? header,
   ) async {
     try {
+      final headers = {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+        ...?header,
+      };
       response = await _dio.post(
         endUrl,
         options: dio.Options(
-          headers: header ?? {'Content-Type': 'application/json'},
-          // Explicitly allow HTTP by not enforcing SSL validation
+          headers: headers,
           validateStatus: (status) {
-            return status != null && status < 500; // Accept status codes < 500
+            return status != null && status < 500;
           },
         ),
         data: data,
@@ -83,15 +87,21 @@ class Network {
     }
   }
 
-  static Future<dynamic> getApi(String endUrl) async {
+  static Future<dynamic> getApi(
+    String endUrl, {
+    Map<String, dynamic>? headers,
+  }) async {
     try {
+      final authHeaders = {
+        'Content-Type': 'application/json',
+        ...?headers,
+      };
       response = await _dio.get(
         endUrl,
         options: dio.Options(
-          headers: {'Content-Type': 'application/json'},
-          // Explicitly allow HTTP by not enforcing SSL validation
+          headers: authHeaders,
           validateStatus: (status) {
-            return status != null && status < 500; // Accept status codes < 500
+            return status != null && status < 500;
           },
         ),
       );

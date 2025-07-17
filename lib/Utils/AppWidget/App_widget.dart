@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../Controllers/dropdown_controller.dart';
 import '../../Network/Network Manager/network_manager.dart';
 import '../Colors/color_resoursec.dart';
@@ -57,7 +58,6 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
   @override
   Widget build(BuildContext context) {
     final mq = widget.mediaQuery;
-
     final isReadOnly = widget.readOnly ?? false;
 
     return TextFormField(
@@ -95,12 +95,12 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: BorderSide(color: Colors.white10),
+          borderSide: const BorderSide(color: Colors.white10),
         ),
         focusedBorder: isReadOnly
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-                borderSide: BorderSide(color: Colors.transparent),
+                borderSide: const BorderSide(color: Colors.transparent),
               )
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
@@ -109,6 +109,18 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
                   width: 2,
                 ),
               ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        errorStyle: GoogleFonts.sora(
+          color: Colors.red,
+          fontSize: mq.size.width * 0.030,
+        ),
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
@@ -705,6 +717,214 @@ class CustomTimePickerField extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ShimmerHomeScreen extends StatelessWidget {
+  final MediaQueryData mediaQuery;
+
+  const ShimmerHomeScreen({required this.mediaQuery, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: mediaQuery.size.height * 0.45,
+      color: ColorResources.secondryColor,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            top: -(mediaQuery.size.height * 0.17 / 2),
+            left: mediaQuery.size.width * 0.05,
+            right: mediaQuery.size.width * 0.05,
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorResources.secondryColor,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.all(mediaQuery.size.width * 0.05),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Time placeholder
+                  SizedBox(height: mediaQuery.size.height * 0.01),
+                  // Date placeholder
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[400]!,
+                    highlightColor: Colors.grey[300]!,
+                    child: Container(
+                      width: mediaQuery.size.width * 0.5,
+                      height: mediaQuery.size.width * 0.035,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: mediaQuery.size.height * 0.03),
+                  // Check-in/check-out button placeholder
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[400]!,
+                    highlightColor: Colors.grey[300]!,
+                    child: Container(
+                      width: mediaQuery.size.width * 0.50,
+                      height: mediaQuery.size.width * 0.50,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: mediaQuery.size.width * 0.17,
+                            height: mediaQuery.size.width * 0.17,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: mediaQuery.size.height * 0.005),
+                          Container(
+                            width: mediaQuery.size.width * 0.15,
+                            height: mediaQuery.size.width * 0.035,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: mediaQuery.size.height * 0.02),
+                  // Location text placeholder
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[400]!,
+                    highlightColor: Colors.grey[300]!,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: mediaQuery.size.width * 0.06,
+                          height: mediaQuery.size.width * 0.06,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(width: mediaQuery.size.width * 0.02),
+                        Container(
+                          width: mediaQuery.size.width * 0.4,
+                          height: mediaQuery.size.width * 0.035,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: mediaQuery.size.height * 0.04),
+                  // Check-in/check-out times placeholders
+                  Shimmer.fromColors(
+                    baseColor: Colors.grey[400]!,
+                    highlightColor: Colors.grey[300]!,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              width: mediaQuery.size.width * 0.07,
+                              height: mediaQuery.size.width * 0.07,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.01),
+                            Container(
+                              width: mediaQuery.size.width * 0.1,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.005),
+                            Container(
+                              width: mediaQuery.size.width * 0.15,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              width: mediaQuery.size.width * 0.07,
+                              height: mediaQuery.size.width * 0.07,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.01),
+                            Container(
+                              width: mediaQuery.size.width * 0.1,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.005),
+                            Container(
+                              width: mediaQuery.size.width * 0.15,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Container(
+                              width: mediaQuery.size.width * 0.07,
+                              height: mediaQuery.size.width * 0.07,
+                              color: Colors.red,
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.01),
+                            Container(
+                              width: mediaQuery.size.width * 0.1,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            SizedBox(height: mediaQuery.size.height * 0.005),
+                            Container(
+                              width: mediaQuery.size.width * 0.15,
+                              height: mediaQuery.size.width * 0.030,
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

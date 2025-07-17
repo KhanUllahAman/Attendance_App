@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
 import 'package:orioattendanceapp/screens/forgot_password_screen.dart';
+import 'package:orioattendanceapp/screens/home_screen.dart';
 
 import '../Controllers/login_controller.dart';
 import '../Utils/Colors/color_resoursec.dart';
@@ -124,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                 ),
                                 SizedBox(height: mediaQuery.size.height * 0.02),
+
                                 Obx(
                                   () => AppButton(
                                     isLoading: controller.isLoading.value,
@@ -143,6 +145,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                 ),
+                                // AppButton(
+                                //   isLoading: controller.isLoading.value,
+                                //   onPressed: () {
+                                //     Get.toNamed(HomeScreen.routeName);
+                                //   },
+                                //   mediaQuery: mediaQuery,
+                                //   child: Text(
+                                //     "Log in",
+                                //     style: GoogleFonts.sora(
+                                //       color: ColorResources.whiteColor,
+                                //       fontSize: mediaQuery.size.width * 0.03,
+                                //       fontWeight: FontWeight.w600,
+                                //     ),
+                                //   ),
+                                // ),
                                 SizedBox(height: mediaQuery.size.height * 0.03),
                                 GestureDetector(
                                   onTap: () {

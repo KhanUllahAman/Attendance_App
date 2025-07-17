@@ -21,17 +21,19 @@ class HomeScreen extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final controller = Get.put(HomeScreenController());
 
-    return 
-    AnnotatedRegion(
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return Scaffold(body: ShimmerHomeScreen(mediaQuery: mediaQuery,));
+      }
+
+      return 
+      AnnotatedRegion(
         value: ColorResources.getSystemUiOverlayAllPages(false),
         child: Layout(
           showAppBar: false,
           showLogo: false,
           currentTab: 0,
-          body: 
-          Obx(
-            ()=> 
-             AbsorbPointer(
+          body: AbsorbPointer(
             absorbing: controller.isLoading.value,
             child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
@@ -131,11 +133,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Obx(
-                    ()=>
-                    controller.isLoading.value ?
-                    ShimmerHomeScreen(mediaQuery: mediaQuery,) :
-                    Container(
+                  Container(
                     height: mediaQuery.size.height * 0.45,
                     color: ColorResources.secondryColor,
                     child: Stack(
@@ -425,7 +423,6 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  ),
                   Padding(
                     padding: EdgeInsets.all(mediaQuery.size.width * 0.04),
                     child: Column(
@@ -513,9 +510,9 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          )
         ),
       );
+    });
   }
 
   Widget _buildTimeInfo(
