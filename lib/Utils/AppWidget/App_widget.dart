@@ -560,6 +560,10 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                   color: ColorResources.appMainColor,
                   fontSize: screenWidth * 0.032,
                 ),
+                weekdayLabelTextStyle: TextStyle(
+                  color: ColorResources.whiteColor,
+                  fontSize: screenWidth * 0.032,
+                ),
                 dayTextStyle: TextStyle(
                   color: ColorResources.whiteColor,
                   fontSize: screenWidth * 0.032,
@@ -570,8 +574,16 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                   fontSize: screenWidth * 0.025,
                 ),
                 disableModePicker: true,
-                lastMonthIcon: const Icon(Icons.chevron_left, size: 15),
-                nextMonthIcon: const Icon(Icons.chevron_right, size: 15),
+                lastMonthIcon: const Icon(
+                  Icons.chevron_left,
+                  size: 15,
+                  color: ColorResources.whiteColor,
+                ),
+                nextMonthIcon: const Icon(
+                  Icons.chevron_right,
+                  size: 15,
+                  color: ColorResources.whiteColor,
+                ),
                 firstDate: DateTime(1900),
                 lastDate: DateTime(2100),
               ),
@@ -928,4 +940,25 @@ class ShimmerHomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildShimmerAttendanceBoxes(MediaQueryData mediaQuery) {
+  return Wrap(
+    spacing: mediaQuery.size.width * 0.04,
+    runSpacing: mediaQuery.size.height * 0.02,
+    children: List.generate(8, (index) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey.shade800,
+        highlightColor: Colors.grey.shade700,
+        child: Container(
+          width: mediaQuery.size.width * 0.26,
+          height: mediaQuery.size.height * 0.12,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      );
+    }),
+  );
 }

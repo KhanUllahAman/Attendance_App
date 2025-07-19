@@ -1,6 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -29,35 +28,45 @@ class HomeScreen extends StatelessWidget {
         body: Obx(() {
           if (controller.isLoading.value &&
               controller.connectionType.value == 0) {
-            return Text("No Internet");
+            return _buildFullScreenOfflineUI(controller, mediaQuery);
           }
 
-          return AbsorbPointer(
-            absorbing: controller.isLoading.value,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  // Header Section
-                  Container(
-                    height: mediaQuery.size.height * 0.3,
-                    decoration: BoxDecoration(
-                      gradient: ColorResources.appBarGradient,
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: mediaQuery.size.height * 0.02,
-                        vertical: mediaQuery.size.width * 0.02,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {},
-                            child: Row(
-                              children: [
-                                CircleAvatar(
+          return RefreshIndicator(
+            onRefresh: () async {
+              await controller.fetchHomeData();
+            },
+            color: ColorResources.appMainColor,
+            backgroundColor: ColorResources.secondryColor,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      // Offline Banner (only visible when offline)
+                      if (controller.connectionType.value == 0)
+                        _buildOfflineBanner(mediaQuery),
+
+                      // Header Section
+                      Container(
+                        height: mediaQuery.size.height * 0.3,
+                        decoration: BoxDecoration(
+                          gradient: ColorResources.appBarGradient,
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mediaQuery.size.height * 0.02,
+                            vertical: mediaQuery.size.width * 0.02,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
                                       radius: mediaQuery.size.width * 0.06,
                                       backgroundImage: const AssetImage(
                                         "assets/images/profile.png",
@@ -74,16 +83,17 @@ class HomeScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                    )
-                                    .animate()
-                                    .fadeIn(duration: 600.ms)
-                                    .slideX(begin: -0.2),
-                                SizedBox(width: mediaQuery.size.width * 0.03),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Obx(
+                                    ),
+                                    SizedBox(
+                                      width: mediaQuery.size.width * 0.03,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Obx(
                                           () => Text(
                                             'Hi, ${controller.userName.value}',
                                             style: GoogleFonts.sora(
@@ -93,14 +103,12 @@ class HomeScreen extends StatelessWidget {
                                               color: ColorResources.whiteColor,
                                             ),
                                           ),
-                                        )
-                                        .animate()
-                                        .fadeIn(duration: 600.ms)
-                                        .slideX(begin: -0.2),
-                                    SizedBox(
-                                      height: mediaQuery.size.height * 0.005,
-                                    ),
-                                    Obx(
+                                        ),
+                                        SizedBox(
+                                          height:
+                                              mediaQuery.size.height * 0.005,
+                                        ),
+                                        Obx(
                                           () => Text(
                                             controller.greeting.value,
                                             style: GoogleFonts.sora(
@@ -111,130 +119,272 @@ class HomeScreen extends StatelessWidget {
                                                   .withOpacity(0.8),
                                             ),
                                           ),
-                                        )
-                                        .animate()
-                                        .fadeIn(duration: 600.ms)
-                                        .slideX(begin: -0.2),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Image.asset(
+                              ),
+                              Image.asset(
                                 ImagesConstant.splashImages,
                                 width: mediaQuery.size.width * 0.2,
                                 height: mediaQuery.size.width * 0.2,
                                 fit: BoxFit.contain,
-                              )
-                              .animate()
-                              .fadeIn(duration: 600.ms)
-                              .slideX(begin: 0.2),
-                        ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
 
-                  // Main Content Section
-                  Obx(() {
-                    if (controller.connectionType.value == 0) {
-                      return _buildNoInternetUI(controller, mediaQuery);
-                    }
+                      // Main Content Section
+                      Obx(() {
+                        if (controller.connectionType.value == 0) {
+                          return _buildDisabledMainContent(
+                            controller,
+                            mediaQuery,
+                          );
+                        }
+                        return controller.isLoading.value
+                            ? ShimmerHomeScreen(mediaQuery: mediaQuery)
+                            : _buildMainContent(controller, mediaQuery);
+                      }),
 
-                    return controller.isLoading.value
-                        ? ShimmerHomeScreen(mediaQuery: mediaQuery)
-                        : _buildMainContent(controller, mediaQuery);
-                  }),
-
-                  // Attendance Summary Section
-                  Padding(
-                    padding: EdgeInsets.all(mediaQuery.size.width * 0.04),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // Attendance Summary Section
+                      Padding(
+                        padding: EdgeInsets.all(mediaQuery.size.width * 0.04),
+                        child: Column(
                           children: [
-                            Text(
-                              'Attendance Summary',
-                              style: GoogleFonts.sora(
-                                fontSize: mediaQuery.size.width * 0.035,
-                                fontWeight: FontWeight.w400,
-                                color: ColorResources.whiteColor.withOpacity(
-                                  0.8,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Attendance Summary',
+                                  style: GoogleFonts.sora(
+                                    fontSize: mediaQuery.size.width * 0.035,
+                                    fontWeight: FontWeight.w400,
+                                    color: ColorResources.whiteColor
+                                        .withOpacity(0.8),
+                                  ),
                                 ),
-                              ),
+                                if (controller.connectionType.value != 0)
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          Get.toNamed(
+                                            DailyAttendanceRecordScreen
+                                                .routeName,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Iconsax.clock,
+                                          color: ColorResources.whiteColor,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          controller.openDateRangePicker(
+                                            context,
+                                          );
+                                        },
+                                        icon: Icon(
+                                          Iconsax.calendar_edit,
+                                          color: ColorResources.whiteColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
                             ),
-                            IconButton(
-                              onPressed: () {
-                                Get.toNamed(
-                                  DailyAttendanceRecordScreen.routeName,
+                            SizedBox(height: mediaQuery.size.height * 0.02),
+                            Obx(() {
+                              if (controller.connectionType.value == 0) {
+                                return _buildDisabledSummarySection(mediaQuery);
+                              }
+                              if (controller.isSummaryLoading.value) {
+                                return buildShimmerAttendanceBoxes(mediaQuery);
+                              }
+                              final summary =
+                                  controller.attendanceSummary.value;
+                              if (summary == null) {
+                                return Text(
+                                  'No attendance data available',
+                                  style: GoogleFonts.sora(color: Colors.white),
                                 );
-                              },
-                              icon: Icon(
-                                Iconsax.calendar_edit,
-                                color: ColorResources.whiteColor,
-                              ),
-                            ),
+                              }
+                              return Wrap(
+                                spacing: mediaQuery.size.width * 0.04,
+                                runSpacing: mediaQuery.size.height * 0.02,
+                                children: [
+                                  _buildAttendanceBox(
+                                    summary.workingDays,
+                                    "Working Days",
+                                    Colors.green,
+                                    Colors.green.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.presentDays,
+                                    "Present",
+                                    Colors.blue.shade700,
+                                    Colors.blue.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.absentDays,
+                                    "Absent",
+                                    Colors.orange.shade700,
+                                    Colors.orange.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.holidayDays,
+                                    "Holiday",
+                                    Colors.teal.shade700,
+                                    Colors.teal.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.halfDayCheckOuts,
+                                    "Half Day",
+                                    Colors.purple.shade700,
+                                    Colors.purple.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.weekendDays,
+                                    "Week Off",
+                                    Colors.indigo.shade700,
+                                    Colors.indigo.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.leaveDays,
+                                    "Leave",
+                                    Colors.red.shade700,
+                                    Colors.red.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.lateCheckIns,
+                                    "Late In",
+                                    Colors.amber.shade700,
+                                    Colors.amber.shade100,
+                                    mediaQuery,
+                                  ),
+                                  _buildAttendanceBox(
+                                    summary.earlyLeaveCheckOuts,
+                                    "Early Out",
+                                    Colors.deepOrange.shade700,
+                                    Colors.deepOrange.shade100,
+                                    mediaQuery,
+                                  ),
+                                ],
+                              );
+                            }),
+                            SizedBox(height: mediaQuery.size.height * 0.05),
                           ],
                         ),
-                        SizedBox(height: mediaQuery.size.height * 0.02),
-                        Wrap(
-                          spacing: mediaQuery.size.width * 0.04,
-                          runSpacing: mediaQuery.size.height * 0.02,
-                          children: [
-                            _buildAttendanceBox(
-                              "13",
-                              "Present",
-                              Colors.blue.shade700,
-                              Colors.blue.shade100,
-                              mediaQuery,
-                            ),
-                            _buildAttendanceBox(
-                              "0",
-                              "Absent",
-                              Colors.orange.shade700,
-                              Colors.orange.shade100,
-                              mediaQuery,
-                            ),
-                            _buildAttendanceBox(
-                              "4",
-                              "Holiday",
-                              Colors.teal.shade700,
-                              Colors.teal.shade100,
-                              mediaQuery,
-                            ),
-                            _buildAttendanceBox(
-                              "6",
-                              "Half Day",
-                              Colors.purple.shade700,
-                              Colors.purple.shade100,
-                              mediaQuery,
-                            ),
-                            _buildAttendanceBox(
-                              "4",
-                              "Week Off",
-                              Colors.indigo.shade700,
-                              Colors.indigo.shade100,
-                              mediaQuery,
-                            ),
-                            _buildAttendanceBox(
-                              "3",
-                              "Leave",
-                              Colors.red.shade700,
-                              Colors.red.shade100,
-                              mediaQuery,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: mediaQuery.size.height * 0.05),
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (controller.isLoading.value &&
+                    controller.connectionType.value != 0)
+                  Center(
+                    child: CircularProgressIndicator(
+                      color: ColorResources.whiteColor,
+                      strokeWidth: 3.0,
+                      strokeCap: StrokeCap.square,
                     ),
                   ),
-                ],
-              ),
+              ],
             ),
           );
         }),
       ),
+    );
+  }
+
+  Widget _buildOfflineBanner(MediaQueryData mediaQuery) {
+    return SafeArea(
+      child: Container(
+        padding: EdgeInsets.all(mediaQuery.size.width * 0.03),
+        color: Colors.red,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off, color: Colors.white),
+            SizedBox(width: mediaQuery.size.width * 0.02),
+            Text(
+              'No Internet Connection',
+              style: GoogleFonts.sora(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullScreenOfflineUI(
+    HomeScreenController controller,
+    MediaQueryData mediaQuery,
+  ) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.wifi_off,
+            size: mediaQuery.size.width * 0.2,
+            color: Colors.grey,
+          ),
+          SizedBox(height: mediaQuery.size.height * 0.02),
+          Text(
+            'No Internet Connection',
+            style: GoogleFonts.sora(
+              fontSize: mediaQuery.size.width * 0.045,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          SizedBox(height: mediaQuery.size.height * 0.02),
+          ElevatedButton(
+            onPressed: () => controller.fetchHomeData(),
+            child: Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisabledMainContent(
+    HomeScreenController controller,
+    MediaQueryData mediaQuery,
+  ) {
+    return Opacity(
+      opacity: 0.6,
+      child: AbsorbPointer(child: _buildMainContent(controller, mediaQuery)),
+    );
+  }
+
+  Widget _buildDisabledSummarySection(MediaQueryData mediaQuery) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Attendance Summary (Offline)',
+          style: GoogleFonts.sora(
+            color: Colors.grey,
+            fontSize: mediaQuery.size.width * 0.035,
+          ),
+        ),
+        SizedBox(height: mediaQuery.size.height * 0.02),
+        buildShimmerAttendanceBoxes(mediaQuery),
+      ],
     );
   }
 
@@ -256,13 +406,6 @@ class HomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ColorResources.secondryColor,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
               ),
               padding: EdgeInsets.all(mediaQuery.size.width * 0.05),
               child: Column(
@@ -293,10 +436,12 @@ class HomeScreen extends StatelessWidget {
                   // Check In/Out Button
                   AbsorbPointer(
                     absorbing:
+                        !controller.isLocationEnabled.value ||
                         !controller.isLocationMatched.value ||
                         controller.currentButtonState.value == 'completed' ||
                         controller.isProcessingCheckIn.value ||
-                        controller.isProcessingCheckOut.value,
+                        controller.isProcessingCheckOut.value ||
+                        controller.connectionType.value == 0,
                     child: Stack(
                       children: [
                         AvatarGlow(
@@ -346,7 +491,9 @@ class HomeScreen extends StatelessWidget {
                                         return SizedBox(
                                           width: mediaQuery.size.width * 0.17,
                                           height: mediaQuery.size.width * 0.17,
-                                          child: null,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
                                         );
                                       }
                                       return Icon(
@@ -375,26 +522,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Obx(
-                          () =>
-                              controller.isProcessingCheckIn.value ||
-                                  controller.isProcessingCheckOut.value
-                              ? Positioned.fill(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.black.withOpacity(0.3),
-                                    ),
-                                    child: Center(
-                                      child: const CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 3,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                        ),
                       ],
                     ),
                   ),
@@ -412,14 +539,16 @@ class HomeScreen extends StatelessWidget {
                         ),
                         SizedBox(width: mediaQuery.size.width * 0.02),
                         Text(
-                          controller.isLocationMatched.value &&
-                                  controller
-                                          .homeScreenData
-                                          .value
-                                          .officeLocations
-                                          ?.isNotEmpty ==
-                                      true
-                              ? 'You are in ${controller.homeScreenData.value.officeLocations!.firstWhere((office) => office.id == controller.matchedOfficeId.value).name} range'
+                          !controller.isLocationEnabled.value
+                              ? 'Location services disabled'
+                              : controller.isLocationMatched.value &&
+                                    controller
+                                            .homeScreenData
+                                            .value
+                                            .officeLocations
+                                            .isNotEmpty ==
+                                        true
+                              ? 'You are in ${controller.homeScreenData.value.officeLocations.firstWhere((office) => office.id == controller.matchedOfficeId.value).name} range'
                               : 'You are not in any office range',
                           style: GoogleFonts.sora(
                             fontSize: mediaQuery.size.width * 0.035,
@@ -429,8 +558,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2),
-
+                  ),
                   SizedBox(height: mediaQuery.size.height * 0.04),
 
                   // Time Info Row
@@ -443,12 +571,12 @@ class HomeScreen extends StatelessWidget {
                                     .homeScreenData
                                     .value
                                     .singleAttendance
-                                    ?.isNotEmpty ==
+                                    .isNotEmpty ==
                                 true
                             ? controller
                                       .homeScreenData
                                       .value
-                                      .singleAttendance![0]
+                                      .singleAttendance[0]
                                       .checkInTime ??
                                   '--:--'
                             : '--:--',
@@ -461,12 +589,12 @@ class HomeScreen extends StatelessWidget {
                                     .homeScreenData
                                     .value
                                     .singleAttendance
-                                    ?.isNotEmpty ==
+                                    .isNotEmpty ==
                                 true
                             ? controller
                                       .homeScreenData
                                       .value
-                                      .singleAttendance![0]
+                                      .singleAttendance[0]
                                       .checkOutTime ??
                                   '--:--'
                             : '--:--',
@@ -479,70 +607,21 @@ class HomeScreen extends StatelessWidget {
                                     .homeScreenData
                                     .value
                                     .singleAttendance
-                                    ?.isNotEmpty ==
+                                    .isNotEmpty ==
                                 true
                             ? controller
                                       .homeScreenData
                                       .value
-                                      .singleAttendance![0]
+                                      .singleAttendance[0]
                                       .workHours ??
-                                  '0h 0m'
-                            : '0h 0m',
+                                  '--:--'
+                            : '--:--',
                         'Working Hours',
                         mediaQuery,
                       ),
                     ],
                   ),
                 ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoInternetUI(
-    HomeScreenController controller,
-    MediaQueryData mediaQuery,
-  ) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.wifi_off,
-            size: mediaQuery.size.width * 0.2,
-            color: Colors.grey,
-          ),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          Text(
-            'No Internet Connection',
-            style: GoogleFonts.sora(
-              fontSize: mediaQuery.size.width * 0.045,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
-            ),
-          ),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          ElevatedButton(
-            onPressed: () => controller.fetchHomeData(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorResources.appMainColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: mediaQuery.size.width * 0.1,
-                vertical: mediaQuery.size.height * 0.02,
-              ),
-            ),
-            child: Text(
-              'Retry',
-              style: GoogleFonts.sora(
-                fontSize: mediaQuery.size.width * 0.035,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
               ),
             ),
           ),
@@ -583,7 +662,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2);
+    );
   }
 
   Widget _buildAttendanceBox(

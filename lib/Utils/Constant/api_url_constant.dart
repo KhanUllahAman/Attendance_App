@@ -6,5 +6,6 @@ const getOfficeLocations = '$baseUrl/office-locations';
 const checkInUrl = '$baseUrl/attendances/check-in';
 const checkOutUrl = '$baseUrl/attendances/check-out';
 const getSingleAttendanceUrl = '$baseUrl/attendances/single-attendance';
-
-
+const fetchAttendanceSummaryApi = '$baseUrl/attendances/summary';
+const leaveHistoryApi = '$baseUrl/leaves/all';
+const leaveSummaryApi = '$baseUrl/leaves/summary';

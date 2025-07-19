@@ -128,3 +128,55 @@ class HomeScreenResponse {
     );
   }
 }
+
+///Summery Attendance //
+
+class AttendanceSummary {
+  final int employeeId;
+  final String totalDays;
+  final String workingDays;
+  final String presentDays;
+  final String absentDays;
+  final String leaveDays;
+  final String weekendDays;
+  final String holidayDays;
+  final String manualPresentDays;
+  final String workFromHomeDays;
+  final String lateCheckIns;
+  final String halfDayCheckOuts;
+  final String earlyLeaveCheckOuts;
+
+  AttendanceSummary({
+    required this.employeeId,
+    required this.totalDays,
+    required this.workingDays,
+    required this.presentDays,
+    required this.absentDays,
+    required this.leaveDays,
+    required this.weekendDays,
+    required this.holidayDays,
+    required this.manualPresentDays,
+    required this.workFromHomeDays,
+    required this.lateCheckIns,
+    required this.halfDayCheckOuts,
+    required this.earlyLeaveCheckOuts,
+  });
+
+  factory AttendanceSummary.fromJson(Map<String, dynamic> json) {
+    return AttendanceSummary(
+      employeeId: json['employee_id'] ?? 0,
+      totalDays: json['total_days'] ?? '0',
+      workingDays: json['working_days'] ?? '0',
+      presentDays: json['present_days'] ?? '0',
+      absentDays: json['absent_days'] ?? '0',
+      leaveDays: json['leave_days'] ?? '0',
+      weekendDays: json['weekend_days'] ?? '0',
+      holidayDays: json['holiday_days'] ?? '0',
+      manualPresentDays: json['manual_present_days'] ?? '0',
+      workFromHomeDays: json['work_from_home_days'] ?? '0',
+      lateCheckIns: json['late_check_ins'] ?? '0',
+      halfDayCheckOuts: json['half_day_check_outs'] ?? '0',
+      earlyLeaveCheckOuts: json['early_leave_check_outs'] ?? '0',
+    );
+  }
+}

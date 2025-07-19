@@ -34,7 +34,7 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: LeaveHistoryPageScreen.routeName,
-    page: () => const LeaveHistoryPageScreen(),
+    page: () =>  LeaveHistoryPageScreen(),
   ),
   GetPage(
     name: NotificationScreen.routeName,
@@ -84,7 +84,7 @@ class Routes {
     HomeScreen.routeName: (context) => const HomeScreen(),
     ApplyLeaveScreen.routeName: (context) => const ApplyLeaveScreen(),
     LeaveHistoryPageScreen.routeName: (context) =>
-        const LeaveHistoryPageScreen(),
+         LeaveHistoryPageScreen(),
     NotificationScreen.routeName: (context) => const NotificationScreen(),
     ProfileViewScreen.routeName: (context) => const ProfileViewScreen(),
     MenuScreen.routeName: (context) => const MenuScreen(),
