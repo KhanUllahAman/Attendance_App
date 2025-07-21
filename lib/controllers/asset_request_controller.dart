@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/Controllers/asset_complain_request_list_controller.dart';
@@ -85,7 +87,7 @@ class AssetRequestController extends NetworkManager {
         "asset_type": assetType.apiValue,
         "reason": reasonCtrl.text.trim(),
       };
-
+      log("This is body:::::: $body");
       final response = await Network.postApi(
         null,
         assetsCreateComplain,
