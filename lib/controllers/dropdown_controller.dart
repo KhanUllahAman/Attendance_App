@@ -11,4 +11,8 @@ class DropdownController extends GetxController {
   void selectItem(String item) {
     selectedItem.value = item;
   }
+
+  void clearSelection() {
+    selectedItem.value = '';
+  }
 }

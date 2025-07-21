@@ -59,11 +59,11 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: AssetComplainRequestScreenList.routeName,
-    page: () => const AssetComplainRequestScreenList(),
+    page: () =>  AssetComplainRequestScreenList(),
   ),
   GetPage(
     name: AssetComplainRequestScreen.routeName,
-    page: () => const AssetComplainRequestScreen(),
+    page: () =>  AssetComplainRequestScreen(),
   ),
   GetPage(
     name: OfficeWifiScreen.routeName,
@@ -94,9 +94,9 @@ class Routes {
     MyCorrectionRequestList.routeName: (context) =>
         const MyCorrectionRequestList(),
     AssetComplainRequestScreenList.routeName: (context) =>
-        const AssetComplainRequestScreenList(),
+         AssetComplainRequestScreenList(),
     AssetComplainRequestScreen.routeName: (context) =>
-        const AssetComplainRequestScreen(),
+         AssetComplainRequestScreen(),
       OfficeWifiScreen.routeName: (context) =>
          OfficeWifiScreen(),
           DailyAttendanceRecordScreen.routeName: (context) =>

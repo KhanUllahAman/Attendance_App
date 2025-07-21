@@ -4,18 +4,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/asset_complain_request_screen.dart';
-
+import '../Controllers/asset_complain_request_list_controller.dart';
 import '../Utils/AppWidget/App_widget.dart';
 import '../Utils/Colors/color_resoursec.dart';
+import '../models/asset_complian_request_model.dart';
 
 class AssetComplainRequestScreenList extends StatelessWidget {
   static const String routeName = '/assetComplainRequestScreenList';
-  const AssetComplainRequestScreenList({super.key});
+  final AssetComplainRequestListController controller = Get.put(
+    AssetComplainRequestListController(),
+  );
+
+  AssetComplainRequestScreenList({super.key});
 
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final searchController = TextEditingController();
 
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
@@ -24,99 +28,146 @@ class AssetComplainRequestScreenList extends StatelessWidget {
         showAppBar: true,
         showLogo: true,
         showBackButton: true,
-        body: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(mq.size.width * 0.04),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "My Asset Complaints",
-                    style: GoogleFonts.sora(
-                      fontSize: mq.size.width * 0.040,
-                      fontWeight: FontWeight.w600,
-                      color: ColorResources.whiteColor,
-                    ),
-                  ),
-                  SizedBox(height: mq.size.height * 0.015),
-                  CustomSearchField(
-                    controller: searchController,
-                    hintText: "Search by type, category or status",
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(height: mq.size.height * 0.02),
-                  Expanded(
-                    child: ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () =>
-                              _showRequestDetailBottomSheet(context, mq),
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              bottom: mq.size.height * 0.015,
-                            ),
-                            padding: EdgeInsets.all(mq.size.width * 0.035),
-                            decoration: BoxDecoration(
-                              color: ColorResources.whiteColor.withOpacity(
-                                0.04,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white10),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _infoRow("Request Type", "Repair", mq),
-                                _infoRow("Category", "Laptop", mq),
-                                _infoRow("Asset Type", "Dell XPS 15", mq),
-                                _infoRow(
-                                  "Status",
-                                  "in_progress",
-                                  mq,
-                                  badgeColor: Colors.orangeAccent,
-                                ),
-                                _infoRow("Requested On", "2024-12-05", mq),
-                                _infoRow("Reviewed On", "-", mq),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(AssetComplainRequestScreen.routeName);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: ColorResources.appBarGradient,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 8,
-                        offset: Offset(2, 4),
+        body: Obx(() {
+          if (controller.connectionType.value == 0) {
+            return buildFullScreenOfflineUI(mq);
+          }
+
+          return Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(mq.size.width * 0.04),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "My Asset Complaints",
+                      style: GoogleFonts.sora(
+                        fontSize: mq.size.width * 0.040,
+                        fontWeight: FontWeight.w600,
+                        color: ColorResources.whiteColor,
                       ),
-                    ],
-                  ),
-                  child: Icon(Iconsax.add_circle, color: Colors.white),
+                    ),
+                    SizedBox(height: mq.size.height * 0.015),
+                    CustomSearchField(
+                      controller: controller.searchController,
+                      hintText: "Search by type, category or status",
+                      onChanged: (value) => controller.filterComplaints(),
+                    ),
+                    SizedBox(height: mq.size.height * 0.02),
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: ColorResources.secondryColor,
+                        backgroundColor: ColorResources.whiteColor,
+                        onRefresh: () => controller.fetchAssetComplaints(),
+                        child: _buildComplaintsList(mq),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.toNamed(AssetComplainRequestScreen.routeName);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: ColorResources.appBarGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(2, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(Iconsax.add_circle, color: Colors.white),
+                  ),
+                ),
+              ),
+              if (controller.isLoading.value) Apploader(),
+            ],
+          );
+        }),
       ),
+    );
+  }
+
+  Widget _buildComplaintsList(MediaQueryData mq) {
+    if (controller.errorMessage.value.isNotEmpty &&
+        controller.filteredComplaints.isEmpty) {
+      return Center(
+        child: Text(
+          controller.errorMessage.value,
+          style: GoogleFonts.sora(color: Colors.white),
+        ),
+      );
+    }
+
+    if (controller.filteredComplaints.isEmpty) {
+      return Center(
+        child: Text(
+          "No complaints found",
+          style: GoogleFonts.sora(color: Colors.white70),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: controller.filteredComplaints.length,
+      itemBuilder: (context, index) {
+        final complaint = controller.filteredComplaints[index];
+        return GestureDetector(
+          onTap: () => _showRequestDetailBottomSheet(context, mq, complaint),
+          child: Container(
+            margin: EdgeInsets.only(bottom: mq.size.height * 0.015),
+            padding: EdgeInsets.all(mq.size.width * 0.035),
+            decoration: BoxDecoration(
+              color: ColorResources.whiteColor.withOpacity(0.04),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _infoRow(
+                  "Request Type",
+                  complaint.requestType.capitalizeFirst.toString(),
+                  mq,
+                ),
+                _infoRow(
+                  "Category",
+                  complaint.category.capitalizeFirst.toString(),
+                  mq,
+                ),
+                _infoRow(
+                  "Asset Type",
+                  complaint.assetType.capitalizeFirst.toString(),
+                  mq,
+                ),
+                _infoRow(
+                  "Status",
+                  complaint.statusText,
+                  mq,
+                  badgeColor: complaint.statusColor,
+                ),
+                _infoRow("Requested On", complaint.formattedRequestedAt, mq),
+                _infoRow(
+                  "Reviewed On",
+                  complaint.formattedReviewedAt ?? "-",
+                  mq,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -156,7 +207,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      "In Progress",
+                      value,
                       style: GoogleFonts.sora(
                         fontSize: mq.size.width * 0.032,
                         color: badgeColor ?? Colors.grey,
@@ -177,7 +228,11 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     );
   }
 
-  void _showRequestDetailBottomSheet(BuildContext context, MediaQueryData mq) {
+  void _showRequestDetailBottomSheet(
+    BuildContext context,
+    MediaQueryData mq,
+    AssetComplaint complaint,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -218,22 +273,38 @@ class AssetComplainRequestScreenList extends StatelessWidget {
               ),
             ),
             SizedBox(height: mq.size.height * 0.025),
-            _bottomSheetDetail("Request Type", "Repair", mq),
-            _bottomSheetDetail("Category & Asset", "Laptop - Dell XPS 15", mq),
-            _bottomSheetDetail("Reason", "Keyboard not working", mq),
-            _bottomSheetDetail("Requested Date", "2024-12-05", mq),
+            _bottomSheetDetail(
+              "Request Type",
+              complaint.requestType.capitalizeFirst.toString(),
+              mq,
+            ),
+            _bottomSheetDetail(
+              "Category & Asset",
+              "${complaint.category.capitalizeFirst} - ${complaint.assetType.capitalizeFirst}",
+              mq,
+            ),
+            _bottomSheetDetail("Reason", complaint.reason, mq),
+            _bottomSheetDetail(
+              "Requested Date",
+              complaint.formattedRequestedAt,
+              mq,
+            ),
             _bottomSheetDetail(
               "Status",
-              "In Progress",
+              complaint.statusText,
               mq,
-              color: Colors.orangeAccent,
+              color: complaint.statusColor,
             ),
             _bottomSheetDetail(
               "Resolution Remarks",
-              "Awaiting technician response",
+              complaint.resolutionRemarks ?? "No remarks yet",
               mq,
             ),
-            _bottomSheetDetail("Reviewed By", "Admin", mq),
+            _bottomSheetDetail(
+              "Reviewed By",
+              complaint.reviewedBy?.toString() ?? "Not reviewed yet",
+              mq,
+            ),
           ],
         ),
       ),

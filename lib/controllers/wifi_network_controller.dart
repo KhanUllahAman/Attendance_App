@@ -1,4 +1,6 @@
 // wifi_network_controller.dart
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/Network/Network%20Manager/network_manager.dart';
 import 'package:orioattendanceapp/Network/network.dart';
@@ -46,6 +48,7 @@ class WifiNetworkController extends NetworkManager {
               .map((e) => WifiNetwork.fromJson(e))
               .toList(),
         );
+        log("Response hai yai $response");
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch WiFi networks');
       }

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:orioattendanceapp/Controllers/home_screen_controller.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/my_correction_request_list.dart';
 import 'package:orioattendanceapp/screens/office_wifi_screen.dart';
@@ -31,6 +32,8 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeScreenController homeScreenController =
+        Get.find<HomeScreenController>();
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
@@ -66,25 +69,29 @@ class MenuScreen extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                              'Aman Khan',
-                              style: GoogleFonts.sora(
-                                fontSize: mq.size.width * 0.040,
-                                fontWeight: FontWeight.w500,
-                                color: ColorResources.whiteColor,
+                        Obx(
+                              () => Text(
+                                'Hi, ${homeScreenController.userName.value}',
+                                style: GoogleFonts.sora(
+                                  fontSize: mq.size.width * 0.040,
+                                  fontWeight: FontWeight.w500,
+                                  color: ColorResources.whiteColor,
+                                ),
                               ),
                             )
                             .animate()
                             .fadeIn(duration: 600.ms)
                             .slideX(begin: -0.2),
                         SizedBox(height: mq.size.height * 0.005),
-                        Text(
-                              _getGreeting(),
-                              style: GoogleFonts.sora(
-                                fontSize: mq.size.width * 0.035,
-                                fontWeight: FontWeight.w400,
-                                color: ColorResources.whiteColor.withOpacity(
-                                  0.8,
+                        Obx(
+                              () => Text(
+                                homeScreenController.greeting.value,
+                                style: GoogleFonts.sora(
+                                  fontSize: mq.size.width * 0.035,
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorResources.whiteColor.withOpacity(
+                                    0.8,
+                                  ),
                                 ),
                               ),
                             )

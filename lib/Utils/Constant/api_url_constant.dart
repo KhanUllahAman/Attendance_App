@@ -12,3 +12,5 @@ const leaveSummaryApi = '$baseUrl/leaves/summary';
 const leaveTypesApi = '$baseUrl/leave-types';
 const applyLeaveApi = '$baseUrl/leaves/';
 const allWifiNetworkApi = '$baseUrl/wifi-networks/all';
+const assetsComplainsList = '$baseUrl/asset-complaints/all';
+const assetsCreateComplain = '$baseUrl/asset-complaints/';
