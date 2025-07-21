@@ -9,3 +9,5 @@ const getSingleAttendanceUrl = '$baseUrl/attendances/single-attendance';
 const fetchAttendanceSummaryApi = '$baseUrl/attendances/summary';
 const leaveHistoryApi = '$baseUrl/leaves/all';
 const leaveSummaryApi = '$baseUrl/leaves/summary';
+const leaveTypesApi = '$baseUrl/leave-types';
+const applyLeaveApi = '$baseUrl/leaves/';

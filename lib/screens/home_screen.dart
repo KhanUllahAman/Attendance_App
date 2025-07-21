@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
         body: Obx(() {
           if (controller.isLoading.value &&
               controller.connectionType.value == 0) {
-            return _buildFullScreenOfflineUI(controller, mediaQuery);
+            return buildFullScreenOfflineUI(mediaQuery);
           }
 
           return RefreshIndicator(
@@ -325,38 +325,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFullScreenOfflineUI(
-    HomeScreenController controller,
-    MediaQueryData mediaQuery,
-  ) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.wifi_off,
-            size: mediaQuery.size.width * 0.2,
-            color: Colors.grey,
-          ),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          Text(
-            'No Internet Connection',
-            style: GoogleFonts.sora(
-              fontSize: mediaQuery.size.width * 0.045,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
-            ),
-          ),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          ElevatedButton(
-            onPressed: () => controller.fetchHomeData(),
-            child: Text('Retry'),
-          ),
-        ],
       ),
     );
   }

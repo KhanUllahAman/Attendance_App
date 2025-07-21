@@ -10,7 +10,8 @@ import '../models/leave_history_model.dart';
 
 class LeaveHistoryController extends NetworkManager {
   final searchController = TextEditingController();
-  final RxList<LeaveHistory> leaveHistoryList = <LeaveHistory>[].obs;
+  final RxList<LeaveHistory> allLeaveHistoryList = <LeaveHistory>[].obs;
+  final RxList<LeaveHistory> filteredLeaveHistoryList = <LeaveHistory>[].obs;
   final RxList<LeaveSummary> leaveSummaryList = <LeaveSummary>[].obs;
   final RxBool isLoading = true.obs;
   final RxString errorMessage = ''.obs;
@@ -19,6 +20,30 @@ class LeaveHistoryController extends NetworkManager {
   void onInit() async {
     super.onInit();
     await fetchAllLeaveData();
+    // Add listener to search controller
+    searchController.addListener(filterLeaveHistory);
+  }
+
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
+  }
+
+  void filterLeaveHistory() {
+    final query = searchController.text.toLowerCase();
+    if (query.isEmpty) {
+      filteredLeaveHistoryList.assignAll(allLeaveHistoryList);
+    } else {
+      filteredLeaveHistoryList.assignAll(
+        allLeaveHistoryList.where((leave) {
+          return leave.reason.toLowerCase().contains(query) ||
+              leave.statusText.toLowerCase().contains(query) ||
+              leave.reason.toLowerCase().contains(query) ||
+              leave.formattedDateRange.toLowerCase().contains(query);
+        }).toList(),
+      );
+    }
   }
 
   Future<void> fetchAllLeaveData() async {
@@ -52,9 +77,9 @@ class LeaveHistoryController extends NetworkManager {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
-      
-      final body = {'employee_id': 1};
-      
+
+      final body = {'employee_id': employeeId};
+
       final response = await Network.postApi(
         token,
         leaveHistoryApi,
@@ -63,9 +88,10 @@ class LeaveHistoryController extends NetworkManager {
       ).timeout(const Duration(seconds: 15));
 
       if (response['status'] == 1) {
-        leaveHistoryList.value = (response['payload'] as List)
+        allLeaveHistoryList.value = (response['payload'] as List)
             .map((e) => LeaveHistory.fromJson(e))
             .toList();
+        filteredLeaveHistoryList.assignAll(allLeaveHistoryList);
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch leave history');
       }
@@ -81,7 +107,7 @@ class LeaveHistoryController extends NetworkManager {
         'Authorization': 'Bearer $token',
       };
 
-      final body = {'employee_id': 1};
+      final body = {'employee_id': employeeId};
 
       final response = await Network.postApi(
         token,
@@ -94,8 +120,11 @@ class LeaveHistoryController extends NetworkManager {
         leaveSummaryList.value = (response['payload'] as List)
             .map((e) => LeaveSummary.fromJson(e))
             .toList();
-        customSnackBar("Success", response['message'], 
-            snackBarType: SnackBarType.success);
+        customSnackBar(
+          "Success",
+          response['message'],
+          snackBarType: SnackBarType.success,
+        );
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch leave summary');
       }

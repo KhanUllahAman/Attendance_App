@@ -426,25 +426,11 @@ class Apploader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final screenWidth = mediaQuery.size.width;
-    final screenHeight = mediaQuery.size.height;
-    return Container(
-      color: Colors.black.withOpacity(0.3),
-      child: Center(
-        child: Container(
-          width: screenWidth * 0.2,
-          height: screenHeight * 0.1,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: const Center(
-            child: CupertinoActivityIndicator(
-              color: ColorResources.appMainColor,
-            ),
-          ),
-        ),
+    return Center(
+      child: CircularProgressIndicator(
+        color: ColorResources.appMainColor,
+        strokeWidth: 3.0,
+        strokeCap: StrokeCap.square,
       ),
     );
   }
@@ -962,3 +948,29 @@ Widget buildShimmerAttendanceBoxes(MediaQueryData mediaQuery) {
     }),
   );
 }
+
+Widget buildFullScreenOfflineUI(
+    MediaQueryData mediaQuery,
+  ) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.wifi_off,
+            size: mediaQuery.size.width * 0.2,
+            color: Colors.grey,
+          ),
+          SizedBox(height: mediaQuery.size.height * 0.02),
+          Text(
+            'No Internet Connection',
+            style: GoogleFonts.sora(
+              fontSize: mediaQuery.size.width * 0.045,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
