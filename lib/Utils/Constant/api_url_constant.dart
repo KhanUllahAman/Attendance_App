@@ -11,3 +11,4 @@ const leaveHistoryApi = '$baseUrl/leaves/all';
 const leaveSummaryApi = '$baseUrl/leaves/summary';
 const leaveTypesApi = '$baseUrl/leave-types';
 const applyLeaveApi = '$baseUrl/leaves/';
+const allWifiNetworkApi = '$baseUrl/wifi-networks/all';

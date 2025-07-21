@@ -67,7 +67,7 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: OfficeWifiScreen.routeName,
-    page: () => const OfficeWifiScreen(),
+    page: () =>  OfficeWifiScreen(),
   ),
   GetPage(
     name: DailyAttendanceRecordScreen.routeName,
@@ -98,7 +98,7 @@ class Routes {
     AssetComplainRequestScreen.routeName: (context) =>
         const AssetComplainRequestScreen(),
       OfficeWifiScreen.routeName: (context) =>
-        const OfficeWifiScreen(),
+         OfficeWifiScreen(),
           DailyAttendanceRecordScreen.routeName: (context) =>
         const DailyAttendanceRecordScreen(),
   };
