@@ -168,19 +168,7 @@ class ApplyLeaveScreen extends StatelessWidget {
             ),
             Obx(
               () => controller.isLoading.value
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: ColorResources.whiteColor,
-                          strokeWidth: 3.0,
-                          strokeCap: StrokeCap.square,
-                        ),
-                      ),
-                    )
+                  ? Apploader()
                   : const SizedBox.shrink(),
             ),
           ],

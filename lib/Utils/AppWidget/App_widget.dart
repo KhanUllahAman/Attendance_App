@@ -603,6 +603,145 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
   }
 }
 
+
+class CustomDatePicker extends StatelessWidget {
+  final DateTime? initialDate;
+  final Function(DateTime) onDateSelected;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+
+  const CustomDatePicker({
+    super.key,
+    this.initialDate,
+    required this.onDateSelected,
+    this.firstDate,
+    this.lastDate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final screenWidth = mediaQuery.size.width;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+        vertical: screenHeight * 0.02,
+      ),
+      decoration: const BoxDecoration(
+        color: ColorResources.secondryColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Title
+            Text(
+              'Select Date',
+              style: GoogleFonts.sora(
+                fontSize: screenHeight * 0.02,
+                fontWeight: FontWeight.w600,
+                color: ColorResources.whiteColor,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            
+            // Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: AppButton(
+                    backgroundColor: ColorResources.containerColor,
+                    onPressed: () => Navigator.pop(context),
+                    mediaQuery: mediaQuery,
+                    isLoading: false,
+                    child: Text(
+                      'Cancel',
+                      style: GoogleFonts.sora(color: Colors.black),
+                    ),
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.03),
+                Expanded(
+                  child: AppButton(
+                    mediaQuery: mediaQuery,
+                    onPressed: () {
+                      // This will be handled by the calendar's onValueChanged
+                      Navigator.pop(context);
+                    },
+                    isLoading: false,
+                    child: Text(
+                      'OK',
+                      style: GoogleFonts.sora(
+                        color: ColorResources.whiteColor,
+                        fontWeight: FontWeight.w400,
+                        fontSize: screenHeight * 0.015,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            
+            // Calendar
+            CalendarDatePicker2(
+              config: CalendarDatePicker2Config(
+                calendarType: CalendarDatePicker2Type.single,
+                selectedDayHighlightColor: ColorResources.appMainColor,
+                selectedDayTextStyle: TextStyle(
+                  color: ColorResources.whiteColor,
+                  fontSize: screenWidth * 0.032,
+                ),
+                todayTextStyle: TextStyle(
+                  color: ColorResources.appMainColor,
+                  fontSize: screenWidth * 0.032,
+                ),
+                weekdayLabelTextStyle: TextStyle(
+                  color: ColorResources.whiteColor,
+                  fontSize: screenWidth * 0.032,
+                ),
+                dayTextStyle: TextStyle(
+                  color: ColorResources.whiteColor,
+                  fontSize: screenWidth * 0.032,
+                ),
+                controlsTextStyle: TextStyle(
+                  color: ColorResources.appMainColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: screenWidth * 0.025,
+                ),
+                disableModePicker: true,
+                lastMonthIcon: const Icon(
+                  Icons.chevron_left,
+                  size: 15,
+                  color: ColorResources.whiteColor,
+                ),
+                nextMonthIcon: const Icon(
+                  Icons.chevron_right,
+                  size: 15,
+                  color: ColorResources.whiteColor,
+                ),
+                firstDate: firstDate ?? DateTime(1900),
+                lastDate: lastDate ?? DateTime(2100),
+              ),
+              value: initialDate != null ? [initialDate] : [],
+              onValueChanged: (dates) {
+                if (dates.isNotEmpty && dates[0] != null) {
+                  onDateSelected(dates[0]!);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 String formatDateRange(DateTime? start, DateTime? end) {
   if (start == null || end == null) return 'Select Date Range';
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -949,28 +1088,26 @@ Widget buildShimmerAttendanceBoxes(MediaQueryData mediaQuery) {
   );
 }
 
-Widget buildFullScreenOfflineUI(
-    MediaQueryData mediaQuery,
-  ) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.wifi_off,
-            size: mediaQuery.size.width * 0.2,
+Widget buildFullScreenOfflineUI(MediaQueryData mediaQuery) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.wifi_off,
+          size: mediaQuery.size.width * 0.2,
+          color: Colors.grey,
+        ),
+        SizedBox(height: mediaQuery.size.height * 0.02),
+        Text(
+          'No Internet Connection',
+          style: GoogleFonts.sora(
+            fontSize: mediaQuery.size.width * 0.045,
+            fontWeight: FontWeight.w500,
             color: Colors.grey,
           ),
-          SizedBox(height: mediaQuery.size.height * 0.02),
-          Text(
-            'No Internet Connection',
-            style: GoogleFonts.sora(
-              fontSize: mediaQuery.size.width * 0.045,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}

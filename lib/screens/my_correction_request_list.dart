@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Controllers/my_correction_request_list_controller.dart';
@@ -9,16 +8,19 @@ import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/attendance_correction_request.dart';
 
 import '../Utils/Colors/color_resoursec.dart';
+import '../models/attendance_correction_list_model.dart';
 
 class MyCorrectionRequestList extends StatelessWidget {
   static const String routeName = '/myCorrectionRequestListScreen';
-  const MyCorrectionRequestList({super.key});
+  final MyCorrectionRequestListController controller = Get.put(
+    MyCorrectionRequestListController(),
+  );
+
+  MyCorrectionRequestList({super.key});
 
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final controller = Get.put(MyCorrectionRequestListController());
-    final searchController = TextEditingController();
 
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
@@ -27,179 +29,192 @@ class MyCorrectionRequestList extends StatelessWidget {
         showAppBar: true,
         showLogo: true,
         showBackButton: true,
-        body: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.all(mq.size.width * 0.04),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "My Correction Requests",
-                    style: GoogleFonts.sora(
-                      fontSize: mq.size.width * 0.040,
-                      fontWeight: FontWeight.w600,
-                      color: ColorResources.whiteColor,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomSearchField(
-                    controller: searchController,
-                    hintText: "Search by date or type...",
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: controller.requests.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final request = controller.requests[index];
-                        return GestureDetector(
-                          onTap: () {
-                            _showCorrectionDetailBottomSheet(context, request);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: ColorResources.whiteColor.withOpacity(
-                                0.05,
-                              ),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: ColorResources.whiteColor.withOpacity(
-                                  0.08,
-                                ),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  request['date'],
-                                  style: TextStyle(
-                                    fontSize: mq.size.width * 0.035,
-                                    color: ColorResources.whiteColor
-                                        .withOpacity(0.8),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  request['type']
-                                      .toString()
-                                      .replaceAll('_', ' ')
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: mq.size.width * 0.04,
-                                    color: ColorResources.whiteColor,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    if (request['checkIn'] != null)
-                                      Text(
-                                        'Check-In: ${request['checkIn']}',
-                                        style: TextStyle(
-                                          fontSize: mq.size.width * 0.035,
-                                          color: ColorResources.whiteColor,
-                                        ),
-                                      ),
-                                    const SizedBox(width: 12),
-                                    if (request['checkOut'] != null)
-                                      Text(
-                                        'Check-Out: ${request['checkOut']}',
-                                        style: TextStyle(
-                                          fontSize: mq.size.width * 0.035,
-                                          color: ColorResources.whiteColor,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Status: ${request['status']}",
-                                      style: TextStyle(
-                                        fontSize: mq.size.width * 0.035,
-                                        color: _getStatusColor(
-                                          request['status'],
-                                        ),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    if (request['status'] == 'Pending')
-                                      TextButton(
-                                        onPressed: () {
-                                          // Cancel logic
-                                        },
-                                        child: Text(
-                                          "Cancel",
-                                          style: TextStyle(
-                                            color: Colors.redAccent,
-                                            fontSize: mq.size.width * 0.035,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(AttendanceCorrectionRequest.routeName);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    gradient: ColorResources.appBarGradient,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 8,
-                        offset: Offset(2, 4),
+        body: Obx(() {
+          if (controller.connectionType.value == 0) {
+            return buildFullScreenOfflineUI(mq);
+          }
+
+          return Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(mq.size.width * 0.04),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "My Correction Requests",
+                      style: GoogleFonts.sora(
+                        fontSize: mq.size.width * 0.040,
+                        fontWeight: FontWeight.w600,
+                        color: ColorResources.whiteColor,
                       ),
-                    ],
-                  ),
-                  child: Icon(Iconsax.add_circle, color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    CustomSearchField(
+                      controller: controller.searchController,
+                      hintText: "Search by date or type...",
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: ColorResources.whiteColor,
+                        backgroundColor: ColorResources.secondryColor,
+                        onRefresh: () => controller.fetchCorrectionRequests(),
+                        child: _buildCorrectionsList(mq),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.toNamed(AttendanceCorrectionRequest.routeName);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      gradient: ColorResources.appBarGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          offset: Offset(2, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(Iconsax.add_circle, color: Colors.white),
+                  ),
+                ),
+              ),
+              if (controller.isLoading.value) Apploader(),
+            ],
+          );
+        }),
       ).noKeyboard(),
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'approved':
-        return Colors.greenAccent;
-      case 'rejected':
-        return Colors.redAccent;
-      default:
-        return Colors.orangeAccent;
+  Widget _buildCorrectionsList(MediaQueryData mq) {
+    if (controller.errorMessage.value.isNotEmpty &&
+        controller.filteredCorrections.isEmpty) {
+      return Center(
+        child: Text(
+          controller.errorMessage.value,
+          style: GoogleFonts.sora(color: Colors.white),
+        ),
+      );
+    }
+
+    if (controller.filteredCorrections.isEmpty) {
+      return Center(
+        child: Text(
+          "No correction requests found",
+          style: GoogleFonts.sora(color: Colors.white70),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      itemCount: controller.filteredCorrections.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final correction = controller.filteredCorrections[index];
+        return GestureDetector(
+          onTap: () => _showCorrectionDetailBottomSheet(context, correction),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: ColorResources.whiteColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: ColorResources.whiteColor.withOpacity(0.08),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  correction.formattedAttendanceDate,
+                  style: TextStyle(
+                    fontSize: mq.size.width * 0.035,
+                    color: ColorResources.whiteColor.withOpacity(0.8),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  correction.requestTypeDisplay.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: mq.size.width * 0.04,
+                    color: ColorResources.whiteColor,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (correction.requestedCheckIn != null)
+                      Text(
+                        'Check-In: ${_formatTime(correction.requestedCheckIn!)}',
+                        style: TextStyle(
+                          fontSize: mq.size.width * 0.035,
+                          color: ColorResources.whiteColor,
+                        ),
+                      ),
+                    if (correction.requestedCheckOut != null)
+                      Text(
+                        'Check-Out: ${_formatTime(correction.requestedCheckOut!)}',
+                        style: TextStyle(
+                          fontSize: mq.size.width * 0.035,
+                          color: ColorResources.whiteColor,
+                        ),
+                      ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Status: ${correction.statusText}",
+                      style: TextStyle(
+                        fontSize: mq.size.width * 0.035,
+                        color: correction.statusColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatTime(String time) {
+    try {
+      final timeParts = time.split(':');
+      if (timeParts.length >= 2) {
+        final hour = int.parse(timeParts[0]);
+        final minute = timeParts[1];
+        final period = hour >= 12 ? 'PM' : 'AM';
+        final displayHour = hour > 12 ? hour - 12 : hour;
+        return '$displayHour:$minute $period';
+      }
+      return time;
+    } catch (e) {
+      return time;
     }
   }
 
   void _showCorrectionDetailBottomSheet(
     BuildContext context,
-    Map<String, dynamic> data,
+    AttendanceCorrection correction,
   ) {
     final mq = MediaQuery.of(context);
 
@@ -250,50 +265,59 @@ class MyCorrectionRequestList extends StatelessWidget {
               _buildDetailItem(
                 Icons.calendar_today,
                 "Attendance Date",
-                data['date'],
+                correction.formattedAttendanceDate,
               ),
               _buildDetailItem(
                 Icons.access_time,
                 "Original Check-In",
-                data['originalIn'],
+                correction.originalCheckIn != null
+                    ? _formatTime(correction.originalCheckIn!)
+                    : "—",
               ),
               _buildDetailItem(
                 Icons.access_time_outlined,
                 "Original Check-Out",
-                data['originalOut'],
+                correction.originalCheckOut != null
+                    ? _formatTime(correction.originalCheckOut!)
+                    : "—",
               ),
-              if (data['checkIn'] != null)
+              if (correction.requestedCheckIn != null)
                 _buildDetailItem(
                   Icons.login,
                   "Requested Check-In",
-                  data['checkIn'],
+                  _formatTime(correction.requestedCheckIn!),
                 ),
-              if (data['checkOut'] != null)
+              if (correction.requestedCheckOut != null)
                 _buildDetailItem(
                   Icons.logout,
                   "Requested Check-Out",
-                  data['checkOut'],
+                  _formatTime(correction.requestedCheckOut!),
                 ),
               _buildDetailItem(
                 Icons.label_outline,
                 "Request Type",
-                data['type'],
+                correction.requestTypeDisplay,
               ),
               _buildDetailItem(
                 Icons.message_outlined,
                 "Reason",
-                data['reason'],
+                correction.reason,
               ),
-              _buildDetailItem(Icons.info_outline, "Status", data['status']),
+              _buildDetailItem(
+                Icons.info_outline,
+                "Status",
+                correction.statusText,
+                color: correction.statusColor,
+              ),
               _buildDetailItem(
                 Icons.verified_user_outlined,
                 "Manager/HR Remarks",
-                data['managerRemarks'] ?? "—",
+                correction.remarks ?? "—",
               ),
               _buildDetailItem(
                 Icons.date_range,
                 "Submitted On",
-                data['submittedOn'],
+                correction.formattedCreatedAt,
               ),
               const SizedBox(height: 24),
             ],
@@ -303,7 +327,12 @@ class MyCorrectionRequestList extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem(IconData icon, String title, String value) {
+  Widget _buildDetailItem(
+    IconData icon,
+    String title,
+    String value, {
+    Color? color,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -324,7 +353,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                   TextSpan(
                     text: value,
                     style: GoogleFonts.sora(
-                      color: Colors.white,
+                      color: color ?? Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

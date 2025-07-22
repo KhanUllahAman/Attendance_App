@@ -51,11 +51,11 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: AttendanceCorrectionRequest.routeName,
-    page: () => const AttendanceCorrectionRequest(),
+    page: () =>  AttendanceCorrectionRequest(),
   ),
   GetPage(
     name: MyCorrectionRequestList.routeName,
-    page: () => const MyCorrectionRequestList(),
+    page: () =>  MyCorrectionRequestList(),
   ),
   GetPage(
     name: AssetComplainRequestScreenList.routeName,
@@ -71,7 +71,7 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: DailyAttendanceRecordScreen.routeName,
-    page: () => const DailyAttendanceRecordScreen(),
+    page: () =>  DailyAttendanceRecordScreen(),
   ),
 ];
 
@@ -90,9 +90,9 @@ class Routes {
     MenuScreen.routeName: (context) => const MenuScreen(),
     ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
     AttendanceCorrectionRequest.routeName: (context) =>
-        const AttendanceCorrectionRequest(),
+         AttendanceCorrectionRequest(),
     MyCorrectionRequestList.routeName: (context) =>
-        const MyCorrectionRequestList(),
+         MyCorrectionRequestList(),
     AssetComplainRequestScreenList.routeName: (context) =>
          AssetComplainRequestScreenList(),
     AssetComplainRequestScreen.routeName: (context) =>
@@ -100,6 +100,6 @@ class Routes {
       OfficeWifiScreen.routeName: (context) =>
          OfficeWifiScreen(),
           DailyAttendanceRecordScreen.routeName: (context) =>
-        const DailyAttendanceRecordScreen(),
+         DailyAttendanceRecordScreen(),
   };
 }

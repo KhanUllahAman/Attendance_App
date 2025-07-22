@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
 import 'package:orioattendanceapp/Utils/Constant/images_constant.dart';
-import 'package:orioattendanceapp/screens/otp_screen.dart';
 
+import '../Controllers/forgot_password_controller.dart';
 import '../Utils/Colors/color_resoursec.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -18,10 +18,9 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(ForgotPasswordController());
     final mediaQuery = MediaQuery.of(context);
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
@@ -96,12 +95,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     SizedBox(height: mediaQuery.size.height * 0.03),
                     Form(
-                      key: formKey,
+                      key: controller.formKey,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CustomTextFeild(
+                            controller: controller.emailController,
                             mediaQuery: mediaQuery,
                             hintText: 'Enter Email',
                             validator: (value) {
@@ -112,25 +112,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             },
                           ),
                           SizedBox(height: mediaQuery.size.height * 0.02),
-                          AppButton(
-                            isLoading: false,
-                            onPressed: () {
-                              Get.toNamed(OtpScreen.routeName);
-                            },
-                            mediaQuery: mediaQuery,
-                            child: Text(
-                              'Send OTP',
-                              style: GoogleFonts.sora(
-                                color: ColorResources.whiteColor,
-                                fontSize: mediaQuery.size.width * 0.03,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          Obx(
+                            () => AppButton(
+                              mediaQuery: mediaQuery,
+                              isLoading: controller.isLoading.value,
+                              onPressed: controller.changePassword,
+                              child: controller.isLoading.value
+                                  ? CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3.0,
+                                      strokeCap: StrokeCap.square,
+                                    )
+                                  : Text(
+                                      'Done',
+                                      style: GoogleFonts.sora(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                             ),
                           ),
                           SizedBox(height: mediaQuery.size.height * 0.03),
                           GestureDetector(
                             onTap: () {
-                              // Navigate back to login screen
                               Navigator.pop(context);
                             },
                             child: Text(

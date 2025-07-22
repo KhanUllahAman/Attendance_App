@@ -122,11 +122,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                     },
                     child: Obx(() {
                       if (controller.isLoading.value) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: ColorResources.whiteColor,
-                          ),
-                        );
+                        return Apploader();
                       }
                       if (controller.filteredLeaveHistoryList.isEmpty) {
                         return Center(
