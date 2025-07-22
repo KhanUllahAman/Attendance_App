@@ -1,20 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
-
+import '../Controllers/profile_view_controller.dart';
 import '../Utils/AppWidget/App_widget.dart';
 import '../Utils/Colors/color_resoursec.dart';
+import '../models/profile_screen_model.dart';
 
 class ProfileViewScreen extends StatelessWidget {
   static const String routeName = '/profileViewScreen';
+  final controller = Get.put(ProfileViewController());
 
-  const ProfileViewScreen({super.key});
+  ProfileViewScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
+
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
       child: Layout(
@@ -22,121 +25,129 @@ class ProfileViewScreen extends StatelessWidget {
         showAppBar: true,
         showBackButton: true,
         showLogo: true,
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: mq.size.width * 0.04,
-            vertical: mq.size.height * 0.02,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        body: Obx(() {
+          return Stack(
             children: [
-              // Profile Picture
-              Center(
-                child: Container(
-                  padding: EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    gradient: ColorResources.appBarGradient,
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    radius: mq.size.width * 0.16,
-                    backgroundImage: AssetImage('assets/images/profile.png'),
-                    backgroundColor: ColorResources.whiteColor,
-                  ),
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: mq.size.width * 0.04,
+                  vertical: mq.size.height * 0.02,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Profile Picture
+                    Center(
+                      child: Container(
+                        padding: EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          gradient: ColorResources.appBarGradient,
+                          shape: BoxShape.circle,
+                        ),
+                        child: CircleAvatar(
+                          radius: mq.size.width * 0.16,
+                          backgroundImage:
+                              controller
+                                          .employeeProfile
+                                          .value
+                                          ?.profilePicture !=
+                                      null &&
+                                  controller
+                                          .employeeProfile
+                                          .value!
+                                          .profilePicture !=
+                                      'default.png'
+                              ? NetworkImage(
+                                  controller
+                                      .employeeProfile
+                                      .value!
+                                      .profilePicture!,
+                                )
+                              : AssetImage('assets/images/profile.png')
+                                    as ImageProvider,
+                          backgroundColor: ColorResources.whiteColor,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: mq.size.height * 0.03),
+
+                    if (controller.employeeProfile.value != null) ...[
+                      _buildProfileInfoSection(
+                        controller.employeeProfile.value!,
+                        mq,
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              SizedBox(height: mq.size.height * 0.03),
-
-              // === Editable Fields ===
-              _buildSectionHeader("Personal Information", mq),
-              CustomTextFeild(mediaQuery: mq, hintText: 'Full Name'),
-              SizedBox(height: 12),
-              CustomTextFeild(mediaQuery: mq, hintText: 'Father Name'),
-              SizedBox(height: 12),
-              CustomTextFeild(mediaQuery: mq, hintText: 'Date of Birth'),
-              SizedBox(height: 12),
-
-              _buildSectionHeader("Contact Information", mq),
-              CustomTextFeild(mediaQuery: mq, hintText: 'Email'),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Phone',
-                keyboardType: TextInputType.phone,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'CNIC',
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(mediaQuery: mq, hintText: 'Address'),
-              SizedBox(height: 24),
-
-              _buildSectionHeader("Organization Info", mq),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Employee Code',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'User ID',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Reporting Person',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Join Date',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Department',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Designation',
-                readOnly: true,
-              ),
-              SizedBox(height: 12),
-              CustomTextFeild(
-                mediaQuery: mq,
-                hintText: 'Shift Time',
-                readOnly: true,
-              ),
-              SizedBox(height: mq.size.height * 0.035),
-
-              AppButton(
-                mediaQuery: mq,
-                isLoading: false,
-                onPressed: () {
-                  // Save logic here
-                },
-                child: Text(
-                  'Save Changes',
-                  style: GoogleFonts.sora(
-                    color: ColorResources.whiteColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              SizedBox(height: mq.size.height * 0.03),
+              if (controller.isLoading.value)
+                Center(child: CircularProgressIndicator()),
             ],
-          ),
-        ),
+          );
+        }),
       ).noKeyboard(),
+    );
+  }
+
+  Widget _buildProfileInfoSection(EmployeeProfile profile, MediaQueryData mq) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Personal Information
+        _buildSectionHeader("Personal Information", mq),
+        _buildInfoField('Full Name', profile.fullName),
+        _buildInfoField('Gender', profile.gender ?? '--'),
+        _buildInfoField('Date of Birth', profile.dob ?? '--'),
+        SizedBox(height: 12),
+
+        // Contact Information
+        _buildSectionHeader("Contact Information", mq),
+        _buildInfoField('Email', profile.email ?? '--'),
+        _buildInfoField('Phone', profile.phone ?? '--'),
+        _buildInfoField('CNIC', profile.cnic ?? '--'),
+        _buildInfoField('Address', profile.address ?? '--'),
+        SizedBox(height: 24),
+
+        // Organization Info
+        _buildSectionHeader("Organization Info", mq),
+        _buildInfoField('Employee Code', profile.employeeCode),
+        _buildInfoField('Department', profile.departmentName ?? '--'),
+        _buildInfoField('Designation', profile.designationTitle ?? '--'),
+        _buildInfoField('Shift', profile.shiftName ?? '--'),
+        _buildInfoField('Shift Time', profile.formattedShiftTime),
+        _buildInfoField('Join Date', profile.formattedJoinDate),
+        _buildInfoField('Teams', profile.teamNames ?? '--'),
+        _buildInfoField('Team Leads', profile.teamLeads ?? '--'),
+        SizedBox(height: mq.size.height * 0.035),
+      ],
+    );
+  }
+
+  Widget _buildInfoField(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.sora(color: Colors.white60, fontSize: 14),
+          ),
+          SizedBox(height: 4),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              value,
+              style: GoogleFonts.sora(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

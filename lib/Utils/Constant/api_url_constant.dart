@@ -19,3 +19,4 @@ const attendanceCorrectionCreateApi = '$baseUrl/attendance-corrections';
 const dailyAttendanceRecordApi = '$baseUrl/attendances/';
 const changePasswordApi = '$baseUrl/employees/change-password';
 const forgotPasswordApi = '$baseUrl/auth/forget-password';
+const profileGetApi = '$baseUrl/employees/profile';

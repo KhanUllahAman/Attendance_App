@@ -79,7 +79,7 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await Get.delete<LoginController>(force: true);
     await Get.delete<OtpController>(force: true);
-    // await Get.delete<HomeScreenController>(force: true);
+    await Get.delete<HomeScreenController>(force: true);
     await Get.delete<LeaveHistoryController>(force: true);
     await Get.delete<ApplyLeaveController>(force: true);
     await Get.delete<AssetComplainRequestListController>(force: true);
