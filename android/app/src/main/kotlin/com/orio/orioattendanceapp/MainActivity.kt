@@ -1,4 +1,4 @@
-package com.example.orioattendanceapp
+package com.orio.orioattendanceapp
 
 import io.flutter.embedding.android.FlutterActivity
 

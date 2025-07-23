@@ -1028,7 +1028,7 @@ class HomeScreenController extends NetworkManager {
     if (!isLocationMatched.value) return Colors.grey;
     return currentButtonState.value == 'check_in'
         ? ColorResources.appMainColor
-        : Colors.orange.shade700;
+        : Color.fromARGB(255, 245, 80, 69);
   }
 
   Color getGlowColor() {
@@ -1036,7 +1036,7 @@ class HomeScreenController extends NetworkManager {
     if (!isLocationMatched.value) return Colors.grey.withOpacity(0.5);
     return currentButtonState.value == 'check_in'
         ? ColorResources.appMainColor.withOpacity(0.5)
-        : Colors.orange.shade700.withOpacity(0.5);
+        : Color.fromARGB(255, 245, 80, 69).withOpacity(0.5);
   }
 
   IconData getButtonIcon() {

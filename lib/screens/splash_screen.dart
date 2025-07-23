@@ -24,7 +24,7 @@ class SplashScreen extends StatelessWidget {
         init: SplashController(),
         builder: (_) => Scaffold(
           body: Container(
-            decoration: BoxDecoration(gradient: ColorResources.appBarGradient),
+            decoration: BoxDecoration(gradient: ColorResources.appBarGradient1),
             child: SafeArea(
               child: Center(
                 child: Column(

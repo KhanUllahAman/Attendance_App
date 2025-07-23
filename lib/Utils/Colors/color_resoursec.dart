@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 class ColorResources {
   //Theme One //
 
-  static const textfeildColor = Color(0xffF3F2F2);
+  static const textfeildColor = Color(0xffE0E0E0);
   static const appMainColor = Color(0xff0074FC);
-  static const secondryColor = Color(0xff001e31);
+  static const secondryColor = Color(0xff001E31);
   static const whiteColor = Color(0xffFFFFFF);
   static const blackColor = Color(0xff000000);
   static const hintTextColor = Color(0xff1A1C1E);
@@ -19,6 +19,12 @@ class ColorResources {
 
   static LinearGradient get appBarGradient => const LinearGradient(
     colors: [secondryColor, appMainColor],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  static LinearGradient get appBarGradient1 => const LinearGradient(
+    colors: [Color(0xff001E31), Color(0xff0074FC)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
