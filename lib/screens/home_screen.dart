@@ -370,226 +370,231 @@ class HomeScreen extends StatelessWidget {
             top: -(mediaQuery.size.height * 0.17 / 2),
             left: mediaQuery.size.width * 0.05,
             right: mediaQuery.size.width * 0.05,
-            child: Container(
-              decoration: BoxDecoration(
-                color: ColorResources.secondryColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: EdgeInsets.all(mediaQuery.size.width * 0.05),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Obx(
-                    () => Text(
-                      controller.currentTime.value,
-                      style: GoogleFonts.sora(
-                        fontSize: mediaQuery.size.width * 0.060,
-                        fontWeight: FontWeight.w500,
-                        color: ColorResources.whiteColor,
+            child: Card(
+              elevation: 2,
+              color: ColorResources.secondryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: ColorResources.secondryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: EdgeInsets.all(mediaQuery.size.width * 0.05),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Obx(
+                      () => Text(
+                        controller.currentTime.value,
+                        style: GoogleFonts.sora(
+                          fontSize: mediaQuery.size.width * 0.060,
+                          fontWeight: FontWeight.w500,
+                          color: ColorResources.whiteColor,
+                        ),
                       ),
                     ),
-                  ),
-                  Obx(
-                    () => Text(
-                      controller.currentDate.value,
-                      style: GoogleFonts.sora(
-                        fontSize: mediaQuery.size.width * 0.035,
-                        fontWeight: FontWeight.w500,
-                        color: ColorResources.whiteColor,
+                    Obx(
+                      () => Text(
+                        controller.currentDate.value,
+                        style: GoogleFonts.sora(
+                          fontSize: mediaQuery.size.width * 0.035,
+                          fontWeight: FontWeight.w500,
+                          color: ColorResources.whiteColor,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: mediaQuery.size.height * 0.03),
+                    SizedBox(height: mediaQuery.size.height * 0.03),
 
-                  // Check In/Out Button
-                  AbsorbPointer(
-                    absorbing:
-                        !controller.isLocationEnabled.value ||
-                        !controller.isLocationMatched.value ||
-                        controller.currentButtonState.value == 'completed' ||
-                        controller.isProcessingCheckIn.value ||
-                        controller.isProcessingCheckOut.value ||
-                        controller.connectionType.value == 0,
-                    child: Stack(
-                      children: [
-                        AvatarGlow(
-                          glowColor: controller.getGlowColor(),
-                          duration: const Duration(milliseconds: 2000),
-                          repeat: true,
-                          glowCount: 2,
-                          glowRadiusFactor: 0.3,
-                          child: Material(
-                            shape: const CircleBorder(),
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (controller.currentButtonState.value ==
-                                    'check_in') {
-                                  await controller.checkIn();
-                                } else if (controller
-                                        .currentButtonState
-                                        .value ==
-                                    'check_out') {
-                                  await controller.checkOut();
-                                }
-                              },
-                              child: Container(
-                                width: mediaQuery.size.width * 0.50,
-                                height: mediaQuery.size.width * 0.50,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: controller.getButtonColor(),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Obx(() {
-                                      if (controller
-                                              .isProcessingCheckIn
-                                              .value ||
-                                          controller
-                                              .isProcessingCheckOut
-                                              .value) {
-                                        return SizedBox(
-                                          width: mediaQuery.size.width * 0.17,
-                                          height: mediaQuery.size.width * 0.17,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                          ),
-                                        );
-                                      }
-                                      return Icon(
-                                        controller.getButtonIcon(),
-                                        size: mediaQuery.size.width * 0.17,
-                                        color: ColorResources.whiteColor,
-                                      );
-                                    }),
-                                    SizedBox(
-                                      height: mediaQuery.size.height * 0.005,
-                                    ),
-                                    Obx(
-                                      () => Text(
-                                        controller.getButtonText(),
-                                        style: GoogleFonts.sora(
-                                          fontSize:
-                                              mediaQuery.size.width * 0.035,
-                                          fontWeight: FontWeight.w500,
+                    // Check In/Out Button
+                    AbsorbPointer(
+                      absorbing:
+                          !controller.isLocationEnabled.value ||
+                          !controller.isLocationMatched.value ||
+                          controller.currentButtonState.value == 'completed' ||
+                          controller.isProcessingCheckIn.value ||
+                          controller.isProcessingCheckOut.value ||
+                          controller.connectionType.value == 0,
+                      child: Stack(
+                        children: [
+                          AvatarGlow(
+                            glowColor: controller.getGlowColor(),
+                            duration: const Duration(milliseconds: 2000),
+                            repeat: true,
+                            glowCount: 2,
+                            glowRadiusFactor: 0.3,
+                            child: Material(
+                              shape: const CircleBorder(),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (controller.currentButtonState.value ==
+                                      'check_in') {
+                                    await controller.checkIn();
+                                  } else if (controller
+                                          .currentButtonState
+                                          .value ==
+                                      'check_out') {
+                                    await controller.checkOut();
+                                  }
+                                },
+                                child: Container(
+                                  width: mediaQuery.size.width * 0.50,
+                                  height: mediaQuery.size.width * 0.50,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: controller.getButtonColor(),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Obx(() {
+                                        if (controller
+                                                .isProcessingCheckIn
+                                                .value ||
+                                            controller
+                                                .isProcessingCheckOut
+                                                .value) {
+                                          return SizedBox(
+                                            width: mediaQuery.size.width * 0.17,
+                                            height:
+                                                mediaQuery.size.width * 0.17,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }
+                                        return Icon(
+                                          controller.getButtonIcon(),
+                                          size: mediaQuery.size.width * 0.17,
                                           color: ColorResources.whiteColor,
+                                        );
+                                      }),
+                                      SizedBox(
+                                        height: mediaQuery.size.height * 0.005,
+                                      ),
+                                      Obx(
+                                        () => Text(
+                                          controller.getButtonText(),
+                                          style: GoogleFonts.sora(
+                                            fontSize:
+                                                mediaQuery.size.width * 0.035,
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorResources.whiteColor,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: mediaQuery.size.height * 0.02),
+                    SizedBox(height: mediaQuery.size.height * 0.02),
 
-                  // Location Status
-                  Obx(
-                    () => Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Iconsax.location,
-                          size: mediaQuery.size.width * 0.06,
-                          color: ColorResources.whiteColor.withOpacity(0.8),
-                        ),
-                        SizedBox(width: mediaQuery.size.width * 0.02),
-                        Text(
-                          !controller.isLocationEnabled.value
-                              ? 'Location services disabled'
-                              : controller.isLocationMatched.value &&
-                                    controller
-                                            .homeScreenData
-                                            .value
-                                            .officeLocations
-                                            .isNotEmpty ==
-                                        true
-                              ? 'You are in ${controller.homeScreenData.value.officeLocations.firstWhere((office) => office.id == controller.matchedOfficeId.value).name} range'
-                              : 'You are not in any office range',
-                          style: GoogleFonts.sora(
-                            fontSize: mediaQuery.size.width * 0.035,
-                            fontWeight: FontWeight.w400,
+                    // Location Status
+                    Obx(
+                      () => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Iconsax.location,
+                            size: mediaQuery.size.width * 0.06,
                             color: ColorResources.whiteColor.withOpacity(0.8),
                           ),
+                          SizedBox(width: mediaQuery.size.width * 0.02),
+                          Text(
+                            !controller.isLocationEnabled.value
+                                ? 'Location services disabled'
+                                : controller.isLocationMatched.value &&
+                                      controller
+                                              .homeScreenData
+                                              .value
+                                              .officeLocations
+                                              .isNotEmpty ==
+                                          true
+                                ? 'You are in ${controller.homeScreenData.value.officeLocations.firstWhere((office) => office.id == controller.matchedOfficeId.value).name} range'
+                                : 'You are not in any office range',
+                            style: GoogleFonts.sora(
+                              fontSize: mediaQuery.size.width * 0.035,
+                              fontWeight: FontWeight.w400,
+                              color: ColorResources.whiteColor.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: mediaQuery.size.height * 0.04),
+
+                    // Time Info Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildTimeInfo(
+                          Iconsax.login,
+                          controller
+                                      .homeScreenData
+                                      .value
+                                      .singleAttendance
+                                      .isNotEmpty ==
+                                  true
+                              ? controller
+                                        .homeScreenData
+                                        .value
+                                        .singleAttendance[0]
+                                        .checkInTime ??
+                                    '--:--'
+                              : '--:--',
+                          'Check In',
+                          mediaQuery,
+                        ),
+                        _buildTimeInfo(
+                          Iconsax.logout,
+                          controller
+                                      .homeScreenData
+                                      .value
+                                      .singleAttendance
+                                      .isNotEmpty ==
+                                  true
+                              ? controller
+                                        .homeScreenData
+                                        .value
+                                        .singleAttendance[0]
+                                        .checkOutTime ??
+                                    '--:--'
+                              : '--:--',
+                          'Check Out',
+                          mediaQuery,
+                        ),
+                        _buildTimeInfo(
+                          Iconsax.clock,
+                          controller
+                                      .homeScreenData
+                                      .value
+                                      .singleAttendance
+                                      .isNotEmpty ==
+                                  true
+                              ? controller
+                                        .homeScreenData
+                                        .value
+                                        .singleAttendance[0]
+                                        .workHours ??
+                                    '--:--'
+                              : '--:--',
+                          'Working Hours',
+                          mediaQuery,
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(height: mediaQuery.size.height * 0.04),
-
-                  // Time Info Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildTimeInfo(
-                        Iconsax.login,
-                        controller
-                                    .homeScreenData
-                                    .value
-                                    .singleAttendance
-                                    .isNotEmpty ==
-                                true
-                            ? controller
-                                      .homeScreenData
-                                      .value
-                                      .singleAttendance[0]
-                                      .checkInTime ??
-                                  '--:--'
-                            : '--:--',
-                        'Check In',
-                        mediaQuery,
-                      ),
-                      _buildTimeInfo(
-                        Iconsax.logout,
-                        controller
-                                    .homeScreenData
-                                    .value
-                                    .singleAttendance
-                                    .isNotEmpty ==
-                                true
-                            ? controller
-                                      .homeScreenData
-                                      .value
-                                      .singleAttendance[0]
-                                      .checkOutTime ??
-                                  '--:--'
-                            : '--:--',
-                        'Check Out',
-                        mediaQuery,
-                      ),
-                      _buildTimeInfo(
-                        Iconsax.clock,
-                        controller
-                                    .homeScreenData
-                                    .value
-                                    .singleAttendance
-                                    .isNotEmpty ==
-                                true
-                            ? controller
-                                      .homeScreenData
-                                      .value
-                                      .singleAttendance[0]
-                                      .workHours ??
-                                  '--:--'
-                            : '--:--',
-                        'Working Hours',
-                        mediaQuery,
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

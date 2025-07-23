@@ -41,7 +41,6 @@
 //   }
 // }
 
-
 import 'dart:developer' as developer;
 import 'package:dio/dio.dart' as dio;
 
@@ -92,10 +91,7 @@ class Network {
     Map<String, dynamic>? headers,
   }) async {
     try {
-      final authHeaders = {
-        'Content-Type': 'application/json',
-        ...?headers,
-      };
+      final authHeaders = {'Content-Type': 'application/json', ...?headers};
       response = await _dio.get(
         endUrl,
         options: dio.Options(
@@ -117,6 +113,44 @@ class Network {
       }
     } catch (e) {
       developer.log('Unexpected GET Error: $e');
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  static Future<dynamic> putApi(
+    String? token,
+    String endUrl,
+    dynamic data,
+    Map<String, dynamic>? header,
+  ) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+        ...?header,
+      };
+      response = await _dio.put(
+        endUrl,
+        options: dio.Options(
+          headers: headers,
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+        data: data,
+      );
+      developer.log('PUT Response: ${response.toString()}');
+      return response!.data;
+    } on dio.DioException catch (e) {
+      if (e.response == null) {
+        developer.log('PUT Error: ${e.error}');
+        throw Exception('Network error: ${e.message}');
+      } else {
+        developer.log('PUT Error Response: ${e.response!.data}');
+        return e.response!.data;
+      }
+    } catch (e) {
+      developer.log('Unexpected PUT Error: $e');
       throw Exception('Unexpected error: $e');
     }
   }
