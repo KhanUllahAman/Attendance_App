@@ -80,8 +80,7 @@ class ProfileViewScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              if (controller.isLoading.value)
-                Center(child: CircularProgressIndicator()),
+              if (controller.isLoading.value) Apploader(),
             ],
           );
         }),

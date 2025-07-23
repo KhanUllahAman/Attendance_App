@@ -3,6 +3,7 @@ import 'package:get/route_manager.dart';
 import 'package:orioattendanceapp/Controllers/change_password_controller.dart';
 import 'package:orioattendanceapp/Controllers/login_controller.dart';
 import 'package:orioattendanceapp/Controllers/otp_controller.dart';
+import 'package:orioattendanceapp/Controllers/profile_view_controller.dart';
 import 'package:orioattendanceapp/screens/login_screen.dart';
 import 'package:orioattendanceapp/screens/my_correction_request_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,6 +90,7 @@ class AuthService {
     await Get.delete<WifiNetworkController>(force: true);
     await Get.delete<DailyAttendanceRecordController>(force: true);
     await Get.delete<ChangePasswordController>(force: true);
+    await Get.delete<ProfileViewController>(force: true);
     await prefs.clear();
     await Get.offAllNamed(LoginScreen.routeName);
   }

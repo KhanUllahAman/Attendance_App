@@ -178,96 +178,235 @@ class _AttendanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(10),
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final double titleFontSize = screenWidth * 0.035 * textScaleFactor;
+    final double statusFontSize = screenWidth * 0.03 * textScaleFactor;
+    final double labelFontSize = screenWidth * 0.03 * textScaleFactor;
+    final double valueFontSize = screenWidth * 0.0325 * textScaleFactor;
+    final double containerPadding = screenWidth * 0.03;
+    final double containerMargin = screenWidth * 0.025;
+    final double spacing = screenWidth * 0.025;
+
+    return GestureDetector(
+      onTap: () => _showDetailsBottomSheet(context),
+      child: Container(
+        margin: EdgeInsets.only(bottom: containerMargin),
+        padding: EdgeInsets.all(containerPadding),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(containerPadding * 0.833),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  record.formattedDate,
+                  style: GoogleFonts.sora(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  record.dayStatusLabel,
+                  style: GoogleFonts.sora(
+                    fontSize: statusFontSize,
+                    color: record.dayStatusColorValue,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: spacing),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Check In',
+                      style: GoogleFonts.sora(
+                        fontSize: labelFontSize,
+                        color: Colors.white60,
+                      ),
+                    ),
+                    Text(
+                      record.checkInTime ?? '--',
+                      style: GoogleFonts.sora(
+                        fontSize: valueFontSize,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Check Out',
+                      style: GoogleFonts.sora(
+                        fontSize: labelFontSize,
+                        color: Colors.white60,
+                      ),
+                    ),
+                    Text(
+                      record.checkOutTime ?? '--',
+                      style: GoogleFonts.sora(
+                        fontSize: valueFontSize,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hours',
+                      style: GoogleFonts.sora(
+                        fontSize: labelFontSize,
+                        color: Colors.white60,
+                      ),
+                    ),
+                    Text(
+                      record.workHours ?? '--',
+                      style: GoogleFonts.sora(
+                        fontSize: valueFontSize,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    );
+  }
+
+  void _showDetailsBottomSheet(BuildContext context) {
+    // Get screen width and text scale factor for bottom sheet
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final double titleFontSize = screenWidth * 0.045 * textScaleFactor;
+    final double padding = screenWidth * 0.04;
+    final double handleWidth = screenWidth * 0.1;
+    final double handleHeight = screenWidth * 0.01;
+    final double borderRadius = screenWidth * 0.05;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: EdgeInsets.all(padding),
+        decoration: BoxDecoration(
+          color:
+              ColorResources.secondryColor, // Ensure ColorResources is defined
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(borderRadius),
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
+              Center(
+                child: Container(
+                  width: handleWidth,
+                  height: handleHeight,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(handleHeight * 0.5),
+                  ),
+                ),
+              ),
+              SizedBox(height: padding),
               Text(
-                record.shortDate,
+                'Attendance Details',
                 style: GoogleFonts.sora(
-                  fontSize: 14,
+                  fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              Text(
-                record.status,
-                style: GoogleFonts.sora(
-                  fontSize: 12,
-                  color: record.status == 'Present'
-                      ? Colors.green
-                      : record.status == 'Half Day'
-                      ? Colors.orange
-                      : Colors.red,
-                ),
-              ),
+              SizedBox(height: padding),
+              _buildDetailTable(), // Ensure this method is responsive if needed
+              SizedBox(height: padding),
             ],
           ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Check In',
-                    style: GoogleFonts.sora(
-                      fontSize: 12,
-                      color: Colors.white60,
-                    ),
-                  ),
-                  Text(
-                    record.checkInTime ?? '--',
-                    style: GoogleFonts.sora(fontSize: 13, color: Colors.white),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Check Out',
-                    style: GoogleFonts.sora(
-                      fontSize: 12,
-                      color: Colors.white60,
-                    ),
-                  ),
-                  Text(
-                    record.checkOutTime ?? '--',
-                    style: GoogleFonts.sora(fontSize: 13, color: Colors.white),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hours',
-                    style: GoogleFonts.sora(
-                      fontSize: 12,
-                      color: Colors.white60,
-                    ),
-                  ),
-                  Text(
-                    record.workHours ?? '--',
-                    style: GoogleFonts.sora(fontSize: 13, color: Colors.white),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildDetailTable() {
+    return Table(
+      columnWidths: const {0: FlexColumnWidth(1), 1: FlexColumnWidth(2)},
+      border: TableBorder(
+        horizontalInside: BorderSide(color: Colors.white24, width: 1),
+      ),
+      children: [
+        _buildTableRow('Date', record.formattedDate),
+        _buildTableRow('Employee', record.fullName),
+        _buildTableRow('Employee Code', record.employeeCode),
+        _buildTableRow('Status', record.dayStatusLabel),
+        if (record.checkInTime != null) ...[
+          _buildTableRow('Check In Time', record.checkInTime!),
+          _buildTableRow(
+            'Check In Status',
+            AttendanceRecord.checkInStatusLabels[record.checkInStatus] ?? '--',
+            color: record.checkInStatus != null
+                ? AttendanceRecord.checkInStatusColors[record.checkInStatus]
+                : null,
+          ),
+          _buildTableRow('Check In Office', record.checkInOffice ?? '--'),
+        ],
+        if (record.checkOutTime != null) ...[
+          _buildTableRow('Check Out Time', record.checkOutTime!),
+          _buildTableRow(
+            'Check Out Status',
+            AttendanceRecord.checkOutStatusLabels[record.checkOutStatus] ??
+                '--',
+            color: record.checkOutStatus != null
+                ? AttendanceRecord.checkOutStatusColors[record.checkOutStatus]
+                : null,
+          ),
+          _buildTableRow('Check Out Office', record.checkOutOffice ?? '--'),
+        ],
+        _buildTableRow('Work Hours', record.workHours ?? '--'),
+      ],
+    );
+  }
+
+  TableRow _buildTableRow(String label, String value, {Color? color}) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            label,
+            style: GoogleFonts.sora(color: Colors.white60, fontSize: 14),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            value,
+            style: GoogleFonts.sora(
+              color: color ?? Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
