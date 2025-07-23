@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "935278158202",
+    "project_id": "oams-683f4",
+    "storage_bucket": "oams-683f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:935278158202:android:8b75d31a41cbb64cb976c3",
+        "android_client_info": {
+          "package_name": "com.orio.orioattendanceapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBklBPG69qTkx2yO2oHQzhH4Ww1-SJFJSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

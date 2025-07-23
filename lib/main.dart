@@ -1,7 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:orioattendanceapp/firebase_options.dart';
 import 'Screens/splash_screen.dart';
 import 'Utils/AppWidget/App_widget.dart';
 import 'Utils/Routes/routes.dart';
@@ -12,6 +14,7 @@ void main() async {
     debugDisableShadows = true;
   }
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
