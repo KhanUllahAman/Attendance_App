@@ -21,3 +21,5 @@ const changePasswordApi = '$baseUrl/employees/change-password';
 const forgotPasswordApi = '$baseUrl/auth/forget-password';
 const profileGetApi = '$baseUrl/employees/profile';
 const profileUpdateApi = '$baseUrl/employees/update-profile';
+const notificationListApiUrl = '$baseUrl/notifications/all';
+const notificationDetailApiUrl = '$baseUrl/notifications/single';

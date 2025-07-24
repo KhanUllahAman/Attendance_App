@@ -39,16 +39,20 @@ class MenuScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
       child: Layout(
-        showAppBar: false,
-        showLogo: false,
+        showAppBar: true,
+        showLogo: true,
+        showBackButton: false,
         currentTab: 4,
         body: SafeArea(
           child: Column(
             children: [
               Container(
                 decoration: BoxDecoration(
-                  gradient: ColorResources.appBarGradient,
-                  borderRadius: BorderRadius.circular(20.0),
+                  color: ColorResources.appMainColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0),
+                  ),
                 ),
                 padding: EdgeInsets.symmetric(
                   horizontal: mq.size.width * 0.04,
@@ -142,7 +146,6 @@ class MenuScreen extends StatelessWidget {
                         Get.toNamed(OfficeWifiScreen.routeName);
                       },
                     ),
-                    Divider(color: Colors.white24),
                     _buildMenuItem(
                       context,
                       icon: Iconsax.logout,
@@ -171,7 +174,7 @@ class MenuScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: mq.size.height * 0.008),
       child: Material(
-        color: ColorResources.whiteColor.withOpacity(0.05),
+        color: ColorResources.blackColor.withOpacity(0.05),
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
           borderRadius: BorderRadius.circular(14),
@@ -197,14 +200,10 @@ class MenuScreen extends StatelessWidget {
                       fontSize: mq.size.width * 0.032,
                       color: isDanger
                           ? Colors.redAccent
-                          : ColorResources.whiteColor,
+                          : ColorResources.blackColor,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                ),
-                Icon(
-                  Iconsax.arrow_right_3,
-                  color: ColorResources.whiteColor.withOpacity(0.5),
                 ),
               ],
             ),
@@ -219,13 +218,13 @@ class MenuScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: ColorResources.secondryColor,
+        backgroundColor: ColorResources.backgroundWhiteColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           "Are you sure?",
           style: TextStyle(
             fontSize: mq.size.width * 0.045,
-            color: ColorResources.whiteColor,
+            color: ColorResources.blackColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -233,7 +232,7 @@ class MenuScreen extends StatelessWidget {
           "Do you really want to logout?",
           style: TextStyle(
             fontSize: mq.size.width * 0.035,
-            color: Colors.white70,
+            color: ColorResources.blackColor,
           ),
         ),
         actions: [

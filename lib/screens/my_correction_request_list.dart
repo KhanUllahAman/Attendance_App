@@ -41,15 +41,30 @@ class MyCorrectionRequestList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "My Correction Requests",
-                      style: GoogleFonts.sora(
-                        fontSize: mq.size.width * 0.040,
-                        fontWeight: FontWeight.w600,
-                        color: ColorResources.whiteColor,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "My Correction Requests",
+                          style: GoogleFonts.sora(
+                            fontSize: mq.size.width * 0.040,
+                            fontWeight: FontWeight.w600,
+                            color: ColorResources.blackColor,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Get.toNamed(AttendanceCorrectionRequest.routeName);
+                          },
+                          icon: Icon(
+                            Iconsax.add_circle,
+                            color: ColorResources.appMainColor,
+                            size: mq.size.height * 0.04,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 5),
                     CustomSearchField(
                       controller: controller.searchController,
                       hintText: "Search by date or type...",
@@ -66,30 +81,6 @@ class MyCorrectionRequestList extends StatelessWidget {
                   ],
                 ),
               ),
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.toNamed(AttendanceCorrectionRequest.routeName);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: ColorResources.appBarGradient,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 8,
-                          offset: Offset(2, 4),
-                        ),
-                      ],
-                    ),
-                    child: Icon(Iconsax.add_circle, color: Colors.white),
-                  ),
-                ),
-              ),
               if (controller.isLoading.value) Apploader(),
             ],
           );
@@ -104,7 +95,7 @@ class MyCorrectionRequestList extends StatelessWidget {
       return Center(
         child: Text(
           controller.errorMessage.value,
-          style: GoogleFonts.sora(color: Colors.white),
+          style: GoogleFonts.sora(color: ColorResources.blackColor),
         ),
       );
     }
@@ -113,7 +104,7 @@ class MyCorrectionRequestList extends StatelessWidget {
       return Center(
         child: Text(
           "No correction requests found",
-          style: GoogleFonts.sora(color: Colors.white70),
+          style: GoogleFonts.sora(color: ColorResources.blackColor),
         ),
       );
     }
@@ -128,10 +119,10 @@ class MyCorrectionRequestList extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: ColorResources.whiteColor.withOpacity(0.05),
+              color: ColorResources.blackColor.withOpacity(0.05),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: ColorResources.whiteColor.withOpacity(0.08),
+                color: ColorResources.blackColor.withOpacity(0.08),
               ),
             ),
             child: Column(
@@ -141,16 +132,16 @@ class MyCorrectionRequestList extends StatelessWidget {
                   correction.formattedAttendanceDate,
                   style: TextStyle(
                     fontSize: mq.size.width * 0.035,
-                    color: ColorResources.whiteColor.withOpacity(0.8),
+                    color: ColorResources.blackColor.withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   correction.requestTypeDisplay.toUpperCase(),
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: mq.size.width * 0.04,
-                    color: ColorResources.whiteColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: mq.size.width * 0.03,
+                    color: ColorResources.blackColor,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -162,7 +153,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                         'Check-In: ${_formatTime(correction.requestedCheckIn!)}',
                         style: TextStyle(
                           fontSize: mq.size.width * 0.035,
-                          color: ColorResources.whiteColor,
+                          color: ColorResources.blackColor,
                         ),
                       ),
                     if (correction.requestedCheckOut != null)
@@ -170,7 +161,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                         'Check-Out: ${_formatTime(correction.requestedCheckOut!)}',
                         style: TextStyle(
                           fontSize: mq.size.width * 0.035,
-                          color: ColorResources.whiteColor,
+                          color: ColorResources.blackColor,
                         ),
                       ),
                   ],
@@ -221,7 +212,7 @@ class MyCorrectionRequestList extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: ColorResources.secondryColor,
+      backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -242,7 +233,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                   height: 5,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white30,
+                    color: ColorResources.greyColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -253,7 +244,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                   style: GoogleFonts.sora(
                     fontSize: mq.size.width * 0.05,
                     fontWeight: FontWeight.w700,
-                    color: ColorResources.whiteColor,
+                    color: ColorResources.blackColor,
                   ),
                 ),
               ),
@@ -345,7 +336,7 @@ class MyCorrectionRequestList extends StatelessWidget {
               text: TextSpan(
                 text: "$title: ",
                 style: GoogleFonts.sora(
-                  color: Colors.white70,
+                  color: ColorResources.blackColor.withOpacity(0.8),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -353,7 +344,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                   TextSpan(
                     text: value,
                     style: GoogleFonts.sora(
-                      color: color ?? Colors.white,
+                      color: color ?? ColorResources.blackColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

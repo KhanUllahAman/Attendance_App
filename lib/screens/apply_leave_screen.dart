@@ -75,7 +75,7 @@ class ApplyLeaveScreen extends StatelessWidget {
                           style: GoogleFonts.sora(
                             fontSize: mq.size.width * 0.040,
                             fontWeight: FontWeight.w600,
-                            color: ColorResources.whiteColor,
+                            color: ColorResources.blackColor,
                           ),
                         ),
                         SizedBox(height: mq.size.height * 0.02),
@@ -99,11 +99,11 @@ class ApplyLeaveScreen extends StatelessWidget {
                                 .map((type) => type.name)
                                 .toList(),
                             onChange: controller.setLeaveType,
-                            fillColor: ColorResources.whiteColor.withOpacity(
+                            fillColor: ColorResources.blackColor.withOpacity(
                               0.05,
                             ),
-                            hintColor: Colors.white70,
-                            textColor: ColorResources.whiteColor,
+                            hintColor: Colors.black38,
+                            textColor: Colors.black54,
                             dropdownController:
                                 controller.leaveTypeController.value,
                           );
@@ -135,9 +135,10 @@ class ApplyLeaveScreen extends StatelessWidget {
                           mediaQuery: mq,
                           hintText: "Reason",
                           keyboardType: TextInputType.text,
+                          maxLines: 3,
                         ),
 
-                        SizedBox(height: mq.size.height * 0.04),
+                        SizedBox(height: mq.size.height * 0.02),
                         // Submit Button
                         Obx(
                           () => AppButton(
@@ -186,7 +187,7 @@ class ApplyLeaveScreen extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: ColorResources.whiteColor.withOpacity(0.05),
+        color: ColorResources.blackColor.withOpacity(0.05),
         border: Border.all(color: Colors.white10),
       ),
       child: Column(
@@ -194,13 +195,16 @@ class ApplyLeaveScreen extends StatelessWidget {
           Text(
             count,
             style: TextStyle(
-              color: ColorResources.whiteColor,
+              color: ColorResources.blackColor,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 4),
-          Text(title, style: TextStyle(color: Colors.white70, fontSize: 12)),
+          Text(
+            title,
+            style: TextStyle(color: ColorResources.blackColor, fontSize: 12),
+          ),
         ],
       ),
     );

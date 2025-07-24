@@ -40,7 +40,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                     horizontal: mq.size.width * 0.03,
                     vertical: mq.size.width * 0.02,
                   ),
-                  color: ColorResources.secondryColor,
+                  color: ColorResources.backgroundWhiteColor,
                   child: Column(
                     children: [
                       // Quota Summary
@@ -52,14 +52,18 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                           return Container(
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade800.withOpacity(0.3),
+                              color: ColorResources.blackColor.withOpacity(
+                                0.05,
+                              ),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Text(
                               controller.errorMessage.value.isNotEmpty
                                   ? controller.errorMessage.value
                                   : 'No leave summary available',
-                              style: GoogleFonts.sora(color: Colors.white),
+                              style: GoogleFonts.sora(
+                                color: ColorResources.blackColor,
+                              ),
                             ),
                           );
                         }
@@ -94,7 +98,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                             style: GoogleFonts.sora(
                               fontSize: mq.size.width * 0.040,
                               fontWeight: FontWeight.w600,
-                              color: ColorResources.whiteColor,
+                              color: ColorResources.blackColor,
                             ),
                           ),
                           IconButton(
@@ -130,7 +134,9 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                             controller.errorMessage.value.isNotEmpty
                                 ? controller.errorMessage.value
                                 : 'No leave history found',
-                            style: GoogleFonts.sora(color: Colors.white),
+                            style: GoogleFonts.sora(
+                              color: ColorResources.blackColor,
+                            ),
                           ),
                         );
                       }
@@ -154,7 +160,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                             child: Container(
                               padding: EdgeInsets.all(mq.size.width * 0.035),
                               decoration: BoxDecoration(
-                                color: ColorResources.whiteColor.withOpacity(
+                                color: ColorResources.blackColor.withOpacity(
                                   0.05,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
@@ -167,20 +173,16 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                                     children: [
                                       Icon(
                                         Iconsax.calendar,
-                                        color: Colors.white70,
+                                        color: ColorResources.blackColor,
                                         size: mq.size.width * 0.05,
                                       ),
                                       SizedBox(width: mq.size.width * 0.02),
                                       Text(
-                                        leave.leaveTypeId == 1
-                                            ? "Sick Leave"
-                                            : leave.leaveTypeId == 2
-                                            ? "Casual Leave"
-                                            : "Annual Leave",
+                                        leave.leaveTypeName,
                                         style: GoogleFonts.sora(
                                           fontSize: mq.size.width * 0.04,
                                           fontWeight: FontWeight.w500,
-                                          color: ColorResources.whiteColor,
+                                          color: ColorResources.blackColor,
                                         ),
                                       ),
                                       Spacer(),
@@ -213,7 +215,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                                     leave.formattedDateRange,
                                     style: GoogleFonts.sora(
                                       fontSize: mq.size.width * 0.032,
-                                      color: Colors.white70,
+                                      color: ColorResources.blackColor,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -221,7 +223,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                                     "Reason: ${leave.reason}",
                                     style: GoogleFonts.sora(
                                       fontSize: mq.size.width * 0.032,
-                                      color: Colors.white60,
+                                      color: ColorResources.blackColor,
                                     ),
                                   ),
                                 ],
@@ -309,8 +311,8 @@ class LeaveHistoryPageScreen extends StatelessWidget {
             ),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(14)),
             child: Shimmer.fromColors(
-              baseColor: Colors.grey.shade800,
-              highlightColor: Colors.grey.shade700,
+              baseColor: Colors.grey[400]!,
+              highlightColor: Colors.grey[300]!,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -341,7 +343,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
   ) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: ColorResources.secondryColor,
+      backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -360,7 +362,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                   width: 40,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: ColorResources.greyColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -383,7 +385,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                     style: GoogleFonts.sora(
                       fontSize: mq.size.width * 0.045,
                       fontWeight: FontWeight.bold,
-                      color: ColorResources.whiteColor,
+                      color: ColorResources.blackColor,
                     ),
                   ),
                 ],
@@ -399,7 +401,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                 color: leave.statusColor,
               ),
               _buildDetailItem("Applied on", leave.formattedAppliedOn, mq),
-              _buildDetailItem("Approved By", leave.approvedBy.toString(), mq),
+              _buildDetailItem("Approved By", leave.formattedApprovedBy, mq),
               _buildDetailItem("Approved On", leave.formattedApprovedOn, mq),
               _buildDetailItem("Remarks", leave.remarks ?? "--", mq),
               SizedBox(height: mq.size.height * 0.02),
@@ -428,7 +430,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
               style: GoogleFonts.sora(
                 fontSize: mq.size.width * 0.032,
                 fontWeight: FontWeight.w600,
-                color: Colors.white70,
+                color: ColorResources.blackColor,
               ),
             ),
           ),
@@ -437,7 +439,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
               value,
               style: GoogleFonts.sora(
                 fontSize: mq.size.width * 0.032,
-                color: color ?? Colors.white,
+                color: color ?? ColorResources.blackColor,
               ),
             ),
           ),

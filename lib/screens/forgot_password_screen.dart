@@ -25,7 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
       child: Scaffold(
-        backgroundColor: ColorResources.secondryColor,
+        backgroundColor: ColorResources.backgroundWhiteColor,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
@@ -40,12 +40,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
               elevation: 5,
-              backgroundColor: ColorResources.secondryColor,
+              backgroundColor: ColorResources.backgroundWhiteColor,
               expandedHeight: mediaQuery.size.height * 0.20,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   decoration: BoxDecoration(
-                    gradient: ColorResources.appBarGradient,
+                    color: ColorResources.appMainColor,
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(30),
                     ),
@@ -80,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: GoogleFonts.sora(
                         fontSize: mediaQuery.size.width * 0.06,
                         fontWeight: FontWeight.w600,
-                        color: ColorResources.whiteColor,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     SizedBox(height: mediaQuery.size.height * 0.01),
@@ -89,7 +89,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       style: GoogleFonts.sora(
                         fontSize: mediaQuery.size.width * 0.03,
                         fontWeight: FontWeight.w400,
-                        color: ColorResources.whiteColor,
+                        color: ColorResources.blackColor,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -106,7 +106,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             hintText: 'Enter Email',
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Email is required';
+                                return 'Please enter email';
+                              }
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value)) {
+                                return 'Please enter a valid email';
                               }
                               return null;
                             },
@@ -140,7 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             child: Text(
                               'Back to Login',
                               style: GoogleFonts.sora(
-                                color: ColorResources.whiteColor,
+                                color: ColorResources.blackColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: mediaQuery.size.width * 0.03,
                                 decoration: TextDecoration.underline,

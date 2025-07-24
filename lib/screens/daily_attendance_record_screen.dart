@@ -40,7 +40,7 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
                     style: GoogleFonts.sora(
                       fontSize: mq.size.width * 0.045,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: ColorResources.blackColor,
                     ),
                   ),
                   SizedBox(height: mq.size.height * 0.02),
@@ -83,35 +83,56 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
                   ),
                   SizedBox(height: mq.size.height * 0.02),
 
-                  // View Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorResources.appMainColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                      ),
-                      onPressed: controller.fetchAttendanceRecords,
-                      child: Obx(() {
-                        return controller.isLoading.value
-                            ? CircularProgressIndicator(
+                  AppButton(
+                    mediaQuery: mq,
+                    onPressed: controller.fetchAttendanceRecords,
+                    isLoading: false,
+                    child: Obx(() {
+                      return controller.isLoading.value
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3.0,
+                              strokeCap: StrokeCap.square,
+                            )
+                          : Text(
+                              'View Attendance',
+                              style: GoogleFonts.sora(
                                 color: Colors.white,
-                                strokeWidth: 3.0,
-                                strokeCap: StrokeCap.square,
-                              )
-                            : Text(
-                                'View Attendance',
-                                style: GoogleFonts.sora(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              );
-                      }),
-                    ),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            );
+                    }),
                   ),
+
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: ColorResources.appMainColor,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10),
+                  //       ),
+                  //       padding: EdgeInsets.symmetric(vertical: 15),
+                  //     ),
+                  //     onPressed: controller.fetchAttendanceRecords,
+                  //     child:
+                  //     Obx(() {
+                  //       return controller.isLoading.value
+                  //           ? CircularProgressIndicator(
+                  //               color: Colors.white,
+                  //               strokeWidth: 3.0,
+                  //               strokeCap: StrokeCap.square,
+                  //             )
+                  //           : Text(
+                  //               'View Attendance',
+                  //               style: GoogleFonts.sora(
+                  //                 color: Colors.white,
+                  //                 fontWeight: FontWeight.w500,
+                  //               ),
+                  //             );
+                  //     }),
+                  //   ),
+                  // ),
                   SizedBox(height: mq.size.height * 0.02),
                   Expanded(
                     child: Obx(() {
@@ -149,7 +170,7 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: ColorResources.blackColor.withOpacity(0.05),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -157,14 +178,20 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.sora(fontSize: 12, color: Colors.white60),
+            style: GoogleFonts.sora(
+              fontSize: 12,
+              color: ColorResources.blackColor,
+            ),
           ),
           SizedBox(height: 5),
           Text(
             date != null
                 ? DateFormat('yyyy-MM-dd').format(date)
                 : 'Select date',
-            style: GoogleFonts.sora(fontSize: 14, color: Colors.white),
+            style: GoogleFonts.sora(
+              fontSize: 14,
+              color: ColorResources.blackColor,
+            ),
           ),
         ],
       ),
@@ -194,7 +221,7 @@ class _AttendanceCard extends StatelessWidget {
         margin: EdgeInsets.only(bottom: containerMargin),
         padding: EdgeInsets.all(containerPadding),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: ColorResources.blackColor.withOpacity(0.05),
           borderRadius: BorderRadius.circular(containerPadding * 0.833),
         ),
         child: Column(
@@ -208,7 +235,7 @@ class _AttendanceCard extends StatelessWidget {
                   style: GoogleFonts.sora(
                     fontSize: titleFontSize,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: ColorResources.blackColor,
                   ),
                 ),
                 Text(
@@ -231,14 +258,14 @@ class _AttendanceCard extends StatelessWidget {
                       'Check In',
                       style: GoogleFonts.sora(
                         fontSize: labelFontSize,
-                        color: Colors.white60,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     Text(
                       record.checkInTime ?? '--',
                       style: GoogleFonts.sora(
                         fontSize: valueFontSize,
-                        color: Colors.white,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                   ],
@@ -250,14 +277,14 @@ class _AttendanceCard extends StatelessWidget {
                       'Check Out',
                       style: GoogleFonts.sora(
                         fontSize: labelFontSize,
-                        color: Colors.white60,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     Text(
                       record.checkOutTime ?? '--',
                       style: GoogleFonts.sora(
                         fontSize: valueFontSize,
-                        color: Colors.white,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                   ],
@@ -269,14 +296,14 @@ class _AttendanceCard extends StatelessWidget {
                       'Hours',
                       style: GoogleFonts.sora(
                         fontSize: labelFontSize,
-                        color: Colors.white60,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     Text(
                       record.workHours ?? '--',
                       style: GoogleFonts.sora(
                         fontSize: valueFontSize,
-                        color: Colors.white,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                   ],
@@ -306,8 +333,8 @@ class _AttendanceCard extends StatelessWidget {
       builder: (context) => Container(
         padding: EdgeInsets.all(padding),
         decoration: BoxDecoration(
-          color:
-              ColorResources.secondryColor, // Ensure ColorResources is defined
+          color: ColorResources
+              .backgroundWhiteColor, // Ensure ColorResources is defined
           borderRadius: BorderRadius.vertical(
             top: Radius.circular(borderRadius),
           ),
@@ -322,7 +349,7 @@ class _AttendanceCard extends StatelessWidget {
                   width: handleWidth,
                   height: handleHeight,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: ColorResources.greyColor,
                     borderRadius: BorderRadius.circular(handleHeight * 0.5),
                   ),
                 ),
@@ -333,7 +360,7 @@ class _AttendanceCard extends StatelessWidget {
                 style: GoogleFonts.sora(
                   fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: ColorResources.blackColor,
                 ),
               ),
               SizedBox(height: padding),
@@ -350,7 +377,7 @@ class _AttendanceCard extends StatelessWidget {
     return Table(
       columnWidths: const {0: FlexColumnWidth(1), 1: FlexColumnWidth(2)},
       border: TableBorder(
-        horizontalInside: BorderSide(color: Colors.white24, width: 1),
+        horizontalInside: BorderSide(color: ColorResources.greyColor, width: 1),
       ),
       children: [
         _buildTableRow('Date', record.formattedDate),
@@ -392,7 +419,10 @@ class _AttendanceCard extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 8),
           child: Text(
             label,
-            style: GoogleFonts.sora(color: Colors.white60, fontSize: 14),
+            style: GoogleFonts.sora(
+              color: ColorResources.blackColor,
+              fontSize: 14,
+            ),
           ),
         ),
         Padding(
@@ -400,7 +430,7 @@ class _AttendanceCard extends StatelessWidget {
           child: Text(
             value,
             style: GoogleFonts.sora(
-              color: color ?? Colors.white,
+              color: color ?? ColorResources.blackColor,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),

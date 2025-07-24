@@ -1,14 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
+import 'package:orioattendanceapp/models/notification_model.dart';
+import '../Controllers/notification_controller.dart';
+import '../Utils/AppWidget/App_widget.dart';
 import '../Utils/Colors/color_resoursec.dart';
 
 class NotificationScreen extends StatelessWidget {
   static const String routeName = '/notificationScreen';
+  final NotificationController controller = Get.put(NotificationController());
 
-  const NotificationScreen({super.key});
+  NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,85 +31,143 @@ class NotificationScreen extends StatelessWidget {
             onPressed: () {},
           ),
         ],
-        body: Padding(
-          padding: EdgeInsets.all(mq.size.width * 0.04),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Notifications",
-                style: GoogleFonts.sora(
-                  fontSize: mq.size.width * 0.055,
-                  fontWeight: FontWeight.bold,
-                  color: ColorResources.whiteColor,
+        body: Obx(() {
+          if (controller.connectionType.value == 0) {
+            return buildFullScreenOfflineUI(mq);
+          }
+
+          return Padding(
+            padding: EdgeInsets.all(mq.size.width * 0.04),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Notifications",
+                  style: GoogleFonts.sora(
+                    fontSize: mq.size.width * 0.055,
+                    fontWeight: FontWeight.bold,
+                    color: ColorResources.blackColor,
+                  ),
                 ),
-              ),
-              SizedBox(height: mq.size.height * 0.02),
-              Expanded(
-                child: ListView.separated(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: 10,
-                  separatorBuilder: (_, __) => SizedBox(height: 14),
-                  itemBuilder: (context, index) {
-                    final priorityColor = [
-                      Colors.green,
-                      Colors.orange,
-                      Colors.red,
-                    ][index % 3];
-                    final type = ["Attendance", "Leave", "Shift"][index % 3];
-                    return GestureDetector(
-                      onTap: () {
-                        showNotificationDetailsBottomSheet(context, mq);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(mq.size.width * 0.04),
-                        decoration: BoxDecoration(
-                          color: ColorResources.whiteColor.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.white12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Team Meeting at 10:00 AM",
-                              style: GoogleFonts.sora(
-                                fontSize: mq.size.width * 0.042,
-                                fontWeight: FontWeight.w600,
-                                color: ColorResources.whiteColor,
-                              ),
-                            ),
-                            SizedBox(height: 6),
-                            Row(
-                              children: [
-                                _buildTag(
-                                  type,
-                                  ColorResources.appMainColor,
-                                  mq,
-                                ),
-                                SizedBox(width: 6),
-                                _buildTag("High", priorityColor, mq),
-                                Spacer(),
-                                Text(
-                                  "Jul 13, 09:45 AM",
-                                  style: GoogleFonts.sora(
-                                    fontSize: mq.size.width * 0.03,
-                                    color: Colors.white54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                SizedBox(height: mq.size.height * 0.02),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      NotificationListener<ScrollNotification>(
+                        onNotification: (scrollNotification) {
+                          if (scrollNotification is ScrollEndNotification &&
+                              scrollNotification.metrics.extentAfter == 0) {
+                            controller.fetchAllNotifications();
+                          }
+                          return false;
+                        },
+                        child: RefreshIndicator(
+                          color: ColorResources.secondryColor,
+                          backgroundColor: ColorResources.whiteColor,
+                          onRefresh: () async {
+                            await Future.delayed(Duration(milliseconds: 100));
+                            await controller.fetchAllNotifications();
+                          },
+                          child: _buildNotificationsList(mq),
                         ),
                       ),
-                    );
-                  },
+                      if (controller.isLoading.value &&
+                          controller.notificationsList.isEmpty)
+                        Apploader(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildNotificationsList(MediaQueryData mq) {
+    if (controller.errorMessage.value.isNotEmpty &&
+        controller.filteredNotifications.isEmpty) {
+      return SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Text(
+            controller.errorMessage.value,
+            style: GoogleFonts.sora(color: ColorResources.blackColor),
           ),
         ),
-      ),
+      );
+    }
+
+    if (controller.notificationsList.isEmpty) {
+      return SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: Center(
+          child: Text(
+            "No notifications found",
+            style: GoogleFonts.sora(color: ColorResources.blackColor),
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      physics: AlwaysScrollableScrollPhysics(),
+      itemCount: controller.filteredNotifications.length,
+      separatorBuilder: (_, __) => SizedBox(height: 14),
+      itemBuilder: (context, index) {
+        final notification = controller.filteredNotifications[index];
+        return GestureDetector(
+          onTap: () {
+            _showNotificationDetails(context, mq, notification);
+          },
+          child: Container(
+            padding: EdgeInsets.all(mq.size.width * 0.04),
+            decoration: BoxDecoration(
+              color: ColorResources.blackColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  notification.title,
+                  style: GoogleFonts.sora(
+                    fontSize: mq.size.width * 0.035,
+                    fontWeight: FontWeight.w500,
+                    color: ColorResources.blackColor,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Row(
+                  children: [
+                    _buildTag(
+                      notification.type.capitalize.toString(),
+                      ColorResources.appMainColor,
+                      mq,
+                    ),
+                    SizedBox(width: 6),
+                    _buildTag(
+                      notification.priority.capitalize.toString(),
+                      notification.priorityColor,
+                      mq,
+                    ),
+                    Spacer(),
+                    Text(
+                      notification.formattedSentAt,
+                      style: GoogleFonts.sora(
+                        fontSize: mq.size.width * 0.03,
+                        color: ColorResources.blackColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -127,14 +189,31 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  void showNotificationDetailsBottomSheet(
+  void _showNotificationDetails(
     BuildContext context,
     MediaQueryData mq,
-  ) {
+    NotificationModel notification,
+  ) async {
+    // Show loading dialog immediately when tapping
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: Apploader()),
+    );
+
+    final detailedNotification = await controller.fetchNotificationDetails(
+      notification.id,
+    );
+
+    // Close the loading dialog
+    Navigator.of(context).pop();
+
+    if (detailedNotification == null) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: ColorResources.secondryColor,
+      backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -155,38 +234,46 @@ class NotificationScreen extends StatelessWidget {
                   width: 40,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: Colors.white24,
+                    color: ColorResources.greyColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),
               SizedBox(height: mq.size.height * 0.025),
               Text(
-                "Team Meeting at 10:00 AM",
+                detailedNotification.title,
                 style: GoogleFonts.sora(
                   fontSize: mq.size.width * 0.05,
                   fontWeight: FontWeight.bold,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
               ),
               SizedBox(height: 12),
               Row(
                 children: [
-                  _buildTag("Leave", Colors.orange, mq),
+                  _buildTag(
+                    detailedNotification.type.capitalize.toString(),
+                    ColorResources.appMainColor,
+                    mq,
+                  ),
                   SizedBox(width: 8),
-                  _buildTag("High", Colors.redAccent, mq),
+                  _buildTag(
+                    detailedNotification.priority.capitalize.toString(),
+                    detailedNotification.priorityColor,
+                    mq,
+                  ),
                   Spacer(),
                   Icon(
                     Icons.access_time,
                     size: mq.size.width * 0.045,
-                    color: Colors.white54,
+                    color: ColorResources.blackColor,
                   ),
                   SizedBox(width: 6),
                   Text(
-                    "Jul 13, 09:45 AM",
+                    detailedNotification.formattedSentAt,
                     style: GoogleFonts.sora(
                       fontSize: mq.size.width * 0.03,
-                      color: Colors.white60,
+                      color: ColorResources.blackColor,
                     ),
                   ),
                 ],
@@ -197,18 +284,19 @@ class NotificationScreen extends StatelessWidget {
                 style: GoogleFonts.sora(
                   fontSize: mq.size.width * 0.038,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: ColorResources.blackColor,
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 0),
               Text(
-                "You are requested to attend a team meeting scheduled today at 10:00 AM sharp. Please be punctual and prepared to discuss project updates and deadlines.",
+                detailedNotification.message,
                 style: GoogleFonts.sora(
                   fontSize: mq.size.width * 0.035,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                   height: 1.5,
                 ),
               ),
+              SizedBox(height: mq.size.height * 0.035),
             ],
           ),
         );

@@ -1,8 +1,12 @@
-import 'package:get/get.dart';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:orioattendanceapp/Network/Network%20Manager/network_manager.dart';
 import '../AuthServices/auth_service.dart';
-import '../Network/Network Manager/network_manager.dart';
 import '../Network/network.dart';
+import '../Utils/AppWidget/App_widget.dart';
 import '../Utils/Constant/api_url_constant.dart';
 import '../Utils/Snack Bar/custom_snack_bar.dart';
 import '../models/profile_screen_model.dart';
@@ -10,9 +14,21 @@ import '../models/profile_screen_model.dart';
 class ProfileViewController extends NetworkManager {
   final isLoading = false.obs;
   final employeeProfile = Rxn<EmployeeProfile>();
+  final fullNameController = TextEditingController();
+  final fatherNameController = TextEditingController();
+  final dobController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final cnicController = TextEditingController();
+  final addressController = TextEditingController();
+  bool _isFetching = false;
+  bool _isDatePickerShowing = false;
 
   Future<void> fetchEmployeeProfile() async {
+    if (_isFetching) return;
+    _isFetching = true;
     try {
+      print('Fetching profile...');
       isLoading.value = true;
 
       final token = await AuthService().getToken();
@@ -33,19 +49,83 @@ class ProfileViewController extends NetworkManager {
         header,
       ).timeout(const Duration(seconds: 15));
 
+      print('Fetch API response: $response');
+
       if (response['status'] == 1) {
         final data =
             response['payload'] is List && response['payload'].isNotEmpty
             ? response['payload'][0]
             : {};
         employeeProfile.value = EmployeeProfile.fromJson(data);
+        // Pre-fill text fields with fetched data
+        fullNameController.text = employeeProfile.value!.fullName;
+        fatherNameController.text = employeeProfile.value!.fatherName ?? '';
+        dobController.text = _formatDob(employeeProfile.value!.dob);
+        emailController.text = employeeProfile.value!.email ?? '';
+        phoneController.text = employeeProfile.value!.phone ?? '';
+        cnicController.text = _formatCnic(employeeProfile.value!.cnic);
+        addressController.text = employeeProfile.value!.address ?? '';
+        print('DOB set to: ${dobController.text}');
+        print('CNIC set to: ${cnicController.text}');
       } else {
         throw Exception(response['message'] ?? "Failed to fetch profile");
       }
     } catch (e) {
+      print('Error fetching profile: $e');
       customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
+      _isFetching = false;
+    }
+  }
+
+  String _formatDob(String? dob) {
+    if (dob == null || dob.isEmpty) return '';
+    try {
+      final dateFormat = DateFormat('MMMM d, yyyy');
+      final date = dateFormat.parseLoose(dob);
+      return DateFormat('yyyy-MM-dd').format(date);
+    } catch (e) {
+      try {
+        final date = DateTime.parse(dob);
+        return DateFormat('yyyy-MM-dd').format(date);
+      } catch (e) {
+        print('Error parsing DOB: $dob, error: $e');
+        return '';
+      }
+    }
+  }
+
+  String _formatCnic(String? cnic) {
+    if (cnic == null || cnic.isEmpty) return '';
+    final digits = cnic.replaceAll(RegExp(r'\D'), '');
+    if (digits.length == 13) {
+      return '${digits.substring(0, 5)}-${digits.substring(5, 12)}-${digits.substring(12)}';
+    }
+    return digits; 
+  }
+
+  Future<void> showDatePicker(BuildContext context) async {
+    if (_isDatePickerShowing) return;
+    _isDatePickerShowing = true;
+    try {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => CustomDatePicker(
+          initialDate: dobController.text.isNotEmpty
+              ? DateTime.tryParse(dobController.text)
+              : DateTime.now(),
+          onDateSelected: (date) {
+            dobController.text = DateFormat('yyyy-MM-dd').format(date);
+          },
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        ),
+      );
+    } finally {
+      _isDatePickerShowing = false;
     }
   }
 
@@ -65,10 +145,8 @@ class ProfileViewController extends NetworkManager {
         'Content-Type': 'application/json',
       };
 
-      final body = {
-        'employee_id': employeeId,
-        ...profileData,
-      };
+      final body = {'employee_id': employeeId, ...profileData};
+      log('Sending update request with body: $body');
 
       final response = await Network.putApi(
         null,
@@ -77,14 +155,21 @@ class ProfileViewController extends NetworkManager {
         header,
       ).timeout(const Duration(seconds: 15));
 
+      print('Update API response: $response');
+
       if (response['status'] == 1) {
-        customSnackBar("Success", "Profile updated successfully", 
-            snackBarType: SnackBarType.success);
-        await fetchEmployeeProfile(); // Refresh the profile data
+        customSnackBar(
+          "Success",
+          "Profile updated successfully",
+          snackBarType: SnackBarType.success,
+        );
+        // Refresh profile data
+        await fetchEmployeeProfile();
       } else {
         throw Exception(response['message'] ?? "Failed to update profile");
       }
     } catch (e) {
+      print('Error updating profile: $e');
       customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
@@ -95,5 +180,17 @@ class ProfileViewController extends NetworkManager {
   void onInit() {
     fetchEmployeeProfile();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    fullNameController.dispose();
+    fatherNameController.dispose();
+    dobController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    cnicController.dispose();
+    addressController.dispose();
+    super.onClose();
   }
 }

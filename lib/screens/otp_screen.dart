@@ -37,7 +37,7 @@ class OtpScreen extends StatelessWidget {
         child: Stack(
           children: [
             Scaffold(
-              backgroundColor: ColorResources.secondryColor,
+              backgroundColor: ColorResources.backgroundWhiteColor,
               body: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -50,12 +50,12 @@ class OtpScreen extends StatelessWidget {
                       ),
                     ),
                     elevation: 5,
-                    backgroundColor: ColorResources.secondryColor,
+                    backgroundColor: ColorResources.backgroundWhiteColor,
                     expandedHeight: mediaQuery.size.height * 0.20,
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(
                         decoration: BoxDecoration(
-                          gradient: ColorResources.appBarGradient,
+                          color: ColorResources.appMainColor,
                           borderRadius: const BorderRadius.vertical(
                             bottom: Radius.circular(30),
                           ),
@@ -96,7 +96,7 @@ class OtpScreen extends StatelessWidget {
                             style: GoogleFonts.sora(
                               fontSize: mediaQuery.size.width * 0.06,
                               fontWeight: FontWeight.w500,
-                              color: ColorResources.whiteColor,
+                              color: ColorResources.blackColor,
                             ),
                           ),
                           SizedBox(height: mediaQuery.size.height * 0.02),
@@ -117,7 +117,7 @@ class OtpScreen extends StatelessWidget {
                                   style: GoogleFonts.sora(
                                     fontSize: mediaQuery.size.width * 0.05,
                                     fontWeight: FontWeight.normal,
-                                    color: ColorResources.whiteColor,
+                                    color: ColorResources.blackColor,
                                   ),
                                   decoration: InputDecoration(
                                     counterText: '',
@@ -129,8 +129,9 @@ class OtpScreen extends StatelessWidget {
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: ColorResources.whiteColor,
+                                      borderSide: BorderSide(
+                                        color: ColorResources.blackColor
+                                            .withOpacity(0.8),
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(

@@ -45,7 +45,7 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                       style: GoogleFonts.sora(
                         fontSize: mq.size.width * 0.040,
                         fontWeight: FontWeight.w600,
-                        color: ColorResources.whiteColor,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     SizedBox(height: mq.size.height * 0.03),
@@ -91,9 +91,9 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                       dropdownController:
                           controller.requestTypeDropdownController,
                       onChange: controller.setRequestType,
-                      fillColor: ColorResources.whiteColor.withOpacity(0.05),
-                      hintColor: Colors.white70,
-                      textColor: Colors.white,
+                      fillColor: ColorResources.blackColor.withOpacity(0.05),
+                      hintColor: Colors.black38,
+                      textColor: Colors.black54,
                     ),
                     SizedBox(height: mq.size.height * 0.02),
                     Obx(() {
@@ -112,28 +112,29 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                                     return Theme(
                                       data: ThemeData.dark().copyWith(
                                         timePickerTheme: TimePickerThemeData(
-                                          backgroundColor:
-                                              ColorResources.secondryColor,
+                                          backgroundColor: ColorResources
+                                              .backgroundWhiteColor,
                                           dialHandColor:
                                               ColorResources.appMainColor,
                                           dialTextColor:
-                                              ColorResources.whiteColor,
+                                              ColorResources.blackColor,
                                           entryModeIconColor:
                                               ColorResources.appMainColor,
                                           hourMinuteTextColor:
-                                              ColorResources.whiteColor,
+                                              ColorResources.blackColor,
                                           dayPeriodTextColor:
-                                              ColorResources.whiteColor,
+                                              ColorResources.blackColor,
                                           helpTextStyle: TextStyle(
-                                            color: ColorResources.whiteColor,
+                                            color: ColorResources.blackColor,
                                             fontSize: 16,
                                           ),
                                         ),
                                         colorScheme: ColorScheme.dark(
                                           primary: ColorResources.appMainColor,
-                                          onPrimary: ColorResources.whiteColor,
-                                          surface: ColorResources.secondryColor,
-                                          onSurface: ColorResources.whiteColor,
+                                          onPrimary: ColorResources.blackColor,
+                                          surface: ColorResources
+                                              .backgroundWhiteColor,
+                                          onSurface: ColorResources.blackColor,
                                         ),
                                         textButtonTheme: TextButtonThemeData(
                                           style: TextButton.styleFrom(
@@ -165,20 +166,20 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                                       return Theme(
                                         data: ThemeData.dark().copyWith(
                                           timePickerTheme: TimePickerThemeData(
-                                            backgroundColor:
-                                                ColorResources.secondryColor,
+                                            backgroundColor: ColorResources
+                                                .backgroundWhiteColor,
                                             dialHandColor:
                                                 ColorResources.appMainColor,
                                             dialTextColor:
-                                                ColorResources.whiteColor,
+                                                ColorResources.blackColor,
                                             entryModeIconColor:
                                                 ColorResources.appMainColor,
                                             hourMinuteTextColor:
-                                                ColorResources.whiteColor,
+                                                ColorResources.blackColor,
                                             dayPeriodTextColor:
-                                                ColorResources.whiteColor,
+                                                ColorResources.blackColor,
                                             helpTextStyle: TextStyle(
-                                              color: ColorResources.whiteColor,
+                                              color: ColorResources.blackColor,
                                               fontSize: 16,
                                             ),
                                           ),
@@ -186,11 +187,11 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                                             primary:
                                                 ColorResources.appMainColor,
                                             onPrimary:
-                                                ColorResources.whiteColor,
-                                            surface:
-                                                ColorResources.secondryColor,
+                                                ColorResources.blackColor,
+                                            surface: ColorResources
+                                                .backgroundWhiteColor,
                                             onSurface:
-                                                ColorResources.whiteColor,
+                                                ColorResources.blackColor,
                                           ),
                                           textButtonTheme: TextButtonThemeData(
                                             style: TextButton.styleFrom(
@@ -217,6 +218,7 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                       controller: controller.reasonController,
                       mediaQuery: mq,
                       hintText: 'Reason for Correction',
+                      maxLines: 4,
                     ),
                     SizedBox(height: mq.size.height * 0.04),
                     AppButton(
@@ -241,7 +243,7 @@ class AttendanceCorrectionRequest extends StatelessWidget {
             ],
           );
         }),
-      ),
+      ).noKeyboard(),
     );
   }
 }

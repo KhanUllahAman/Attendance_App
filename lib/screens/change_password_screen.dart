@@ -39,7 +39,7 @@ class ChangePasswordScreen extends StatelessWidget {
                   style: GoogleFonts.sora(
                     fontSize: mq.size.width * 0.040,
                     fontWeight: FontWeight.w600,
-                    color: ColorResources.whiteColor,
+                    color: ColorResources.blackColor,
                   ),
                 ),
                 SizedBox(height: mq.size.height * 0.03),

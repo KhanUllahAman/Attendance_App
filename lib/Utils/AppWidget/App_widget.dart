@@ -26,6 +26,32 @@ class AppBindings extends Bindings {
   }
 }
 
+class CnicInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    String formatted = '';
+    if (digits.length <= 5) {
+      formatted = digits;
+    } else if (digits.length <= 12) {
+      formatted = '${digits.substring(0, 5)}-${digits.substring(5)}';
+    } else if (digits.length <= 13) {
+      formatted =
+          '${digits.substring(0, 5)}-${digits.substring(5, 12)}-${digits.substring(12)}';
+    } else {
+      formatted =
+          '${digits.substring(0, 5)}-${digits.substring(5, 12)}-${digits.substring(12, 13)}';
+    }
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
+
 class CustomTextFeild extends StatefulWidget {
   const CustomTextFeild({
     super.key,
@@ -34,9 +60,11 @@ class CustomTextFeild extends StatefulWidget {
     this.hintText,
     this.validator,
     this.isPassword = false,
-    this.readOnly,
+    this.readOnly = false,
     this.keyboardType,
     this.inputFormatters,
+    this.maxLines = 1,
+    this.onTap,
   });
 
   final TextEditingController? controller;
@@ -44,9 +72,11 @@ class CustomTextFeild extends StatefulWidget {
   final String? hintText;
   final String? Function(String?)? validator;
   final bool isPassword;
-  final bool? readOnly;
+  final bool readOnly;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final int maxLines;
+  final VoidCallback? onTap;
 
   @override
   State<CustomTextFeild> createState() => _CustomTextFeildState();
@@ -58,23 +88,22 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
   @override
   Widget build(BuildContext context) {
     final mq = widget.mediaQuery;
-    final isReadOnly = widget.readOnly ?? false;
 
     return TextFormField(
       controller: widget.controller,
-      keyboardType:
-          widget.keyboardType ??
-          (widget.isPassword ? TextInputType.text : TextInputType.emailAddress),
+      keyboardType: widget.keyboardType ?? TextInputType.text,
       obscureText: widget.isPassword ? _obscureText : false,
       inputFormatters: widget.inputFormatters,
+      maxLines: widget.maxLines,
       style: GoogleFonts.sora(
-        color: ColorResources.whiteColor,
+        color: Colors.black54,
         fontSize: mq.size.width * 0.038,
       ),
-      cursorColor: isReadOnly
+      cursorColor: widget.readOnly
           ? Colors.transparent
           : ColorResources.appMainColor,
-      readOnly: isReadOnly,
+      readOnly: widget.readOnly,
+      onTap: widget.onTap,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(
           horizontal: mq.size.width * 0.04,
@@ -82,13 +111,13 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
         ),
         hintText: widget.hintText,
         hintStyle: GoogleFonts.sora(
-          color: Colors.white70,
+          color: Colors.black38,
           fontSize: mq.size.width * 0.030,
         ),
         filled: true,
-        fillColor: isReadOnly
-            ? ColorResources.whiteColor.withOpacity(0.025)
-            : ColorResources.whiteColor.withOpacity(0.05),
+        fillColor: widget.readOnly
+            ? ColorResources.blackColor.withOpacity(0.025)
+            : ColorResources.blackColor.withOpacity(0.05),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
           borderSide: BorderSide.none,
@@ -97,7 +126,7 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
           borderSide: const BorderSide(color: Colors.white10),
         ),
-        focusedBorder: isReadOnly
+        focusedBorder: widget.readOnly
             ? OutlineInputBorder(
                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
                 borderSide: const BorderSide(color: Colors.transparent),
@@ -125,7 +154,7 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Iconsax.eye_slash : Iconsax.eye,
-                  color: Colors.white70,
+                  color: ColorResources.blackColor,
                   size: mq.size.width * 0.055,
                 ),
                 onPressed: () {
@@ -226,7 +255,7 @@ class SearchableDropdown extends StatelessWidget {
         selectedValue: dropdownController.selectedItem.value,
       ),
       isScrollControlled: true,
-      backgroundColor: ColorResources.secondryColor,
+      backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -280,7 +309,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
       padding: const EdgeInsets.all(16),
       height: MediaQuery.of(context).size.height * 0.5,
       decoration: const BoxDecoration(
-        color: ColorResources.secondryColor,
+        color: ColorResources.backgroundWhiteColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(35)),
       ),
       child: Column(
@@ -294,7 +323,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                     widget.topText,
                     style: GoogleFonts.sora(
                       fontWeight: FontWeight.bold,
-                      color: ColorResources.whiteColor,
+                      color: ColorResources.blackColor,
                       fontSize: 20,
                     ),
                   ),
@@ -313,7 +342,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
           TextField(
             onChanged: _filterItems,
             style: GoogleFonts.sora(
-              color: ColorResources.whiteColor,
+              color: ColorResources.blackColor,
               fontSize: mq.size.width * 0.038, // 👈 responsive font
             ),
             decoration: InputDecoration(
@@ -323,11 +352,11 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
               ),
               hintText: "Search",
               hintStyle: GoogleFonts.sora(
-                color: Colors.white70,
+                color: Colors.black38,
                 fontSize: mq.size.width * 0.030, // 👈 responsive font
               ),
               filled: true,
-              fillColor: ColorResources.whiteColor.withOpacity(0.05),
+              fillColor: ColorResources.blackColor.withOpacity(0.05),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
                 borderSide: const BorderSide(color: Colors.white10),
@@ -342,7 +371,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
               ),
               prefixIcon: Icon(
                 Icons.search,
-                color: Colors.white70,
+                color: Colors.black38,
                 size: mq.size.width * 0.055, // 👈 responsive icon size
               ),
             ),
@@ -361,7 +390,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
                           item,
                           style: GoogleFonts.sora(
                             fontSize: 15,
-                            color: ColorResources.whiteColor,
+                            color: ColorResources.blackColor,
                           ),
                         ),
                         trailing: isSelected
@@ -407,13 +436,23 @@ class AppButton extends StatelessWidget {
       height: mediaQuery.size.height * 0.06,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isLoading
-              ? ColorResources.greyColor
-              : backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14.0),
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (states) => isLoading
+                ? ColorResources.blackColor.withOpacity(0.05)
+                : backgroundColor,
           ),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.0),
+              side: BorderSide.none,
+            ),
+          ),
+          elevation: MaterialStateProperty.all(0),
+          shadowColor: MaterialStateProperty.all(
+            Colors.transparent,
+          ), // Ensures no shadow
         ),
         child: child,
       ),
@@ -463,7 +502,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
         vertical: screenHeight * 0.02,
       ),
       decoration: const BoxDecoration(
-        color: ColorResources.secondryColor,
+        color: ColorResources.backgroundWhiteColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SingleChildScrollView(
@@ -476,7 +515,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               style: GoogleFonts.sora(
                 fontSize: screenHeight * 0.02,
                 fontWeight: FontWeight.w600,
-                color: ColorResources.whiteColor,
+                color: ColorResources.blackColor,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
@@ -547,11 +586,11 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                   fontSize: screenWidth * 0.032,
                 ),
                 weekdayLabelTextStyle: TextStyle(
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                   fontSize: screenWidth * 0.032,
                 ),
                 dayTextStyle: TextStyle(
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                   fontSize: screenWidth * 0.032,
                 ),
                 controlsTextStyle: TextStyle(
@@ -563,12 +602,12 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 lastMonthIcon: const Icon(
                   Icons.chevron_left,
                   size: 15,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
                 nextMonthIcon: const Icon(
                   Icons.chevron_right,
                   size: 15,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
                 firstDate: DateTime(1900),
                 lastDate: DateTime(2100),
@@ -603,7 +642,6 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
   }
 }
 
-
 class CustomDatePicker extends StatelessWidget {
   final DateTime? initialDate;
   final Function(DateTime) onDateSelected;
@@ -630,7 +668,7 @@ class CustomDatePicker extends StatelessWidget {
         vertical: screenHeight * 0.02,
       ),
       decoration: const BoxDecoration(
-        color: ColorResources.secondryColor,
+        color: ColorResources.backgroundWhiteColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SingleChildScrollView(
@@ -644,11 +682,11 @@ class CustomDatePicker extends StatelessWidget {
               style: GoogleFonts.sora(
                 fontSize: screenHeight * 0.02,
                 fontWeight: FontWeight.w600,
-                color: ColorResources.whiteColor,
+                color: ColorResources.blackColor,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
-            
+
             // Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -687,7 +725,7 @@ class CustomDatePicker extends StatelessWidget {
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
-            
+
             // Calendar
             CalendarDatePicker2(
               config: CalendarDatePicker2Config(
@@ -702,11 +740,11 @@ class CustomDatePicker extends StatelessWidget {
                   fontSize: screenWidth * 0.032,
                 ),
                 weekdayLabelTextStyle: TextStyle(
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                   fontSize: screenWidth * 0.032,
                 ),
                 dayTextStyle: TextStyle(
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                   fontSize: screenWidth * 0.032,
                 ),
                 controlsTextStyle: TextStyle(
@@ -718,12 +756,12 @@ class CustomDatePicker extends StatelessWidget {
                 lastMonthIcon: const Icon(
                   Icons.chevron_left,
                   size: 15,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
                 nextMonthIcon: const Icon(
                   Icons.chevron_right,
                   size: 15,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
                 firstDate: firstDate ?? DateTime(1900),
                 lastDate: lastDate ?? DateTime(2100),
@@ -768,7 +806,7 @@ class CustomSearchField extends StatelessWidget {
       controller: controller,
       onChanged: onChanged,
       style: GoogleFonts.sora(
-        color: ColorResources.whiteColor,
+        color: ColorResources.blackColor,
         fontSize: mq.size.width * 0.038, // 👈 responsive font
       ),
       decoration: InputDecoration(
@@ -778,18 +816,18 @@ class CustomSearchField extends StatelessWidget {
         ),
         hintText: hintText,
         hintStyle: GoogleFonts.sora(
-          color: Colors.white70,
+          color: Colors.black38,
           fontSize: mq.size.width * 0.030, // 👈 responsive font
         ),
         filled: true,
-        fillColor: ColorResources.whiteColor.withOpacity(0.05),
+        fillColor: ColorResources.blackColor.withOpacity(0.06),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: const BorderSide(color: Colors.white10),
+          borderSide: const BorderSide(color: Colors.black12),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-          borderSide: const BorderSide(color: Colors.white10),
+          borderSide: const BorderSide(color: Colors.black12),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
@@ -797,7 +835,7 @@ class CustomSearchField extends StatelessWidget {
         ),
         prefixIcon: Icon(
           Icons.search,
-          color: Colors.white70,
+          color: Colors.black38,
           size: mq.size.width * 0.055, // 👈 responsive icon size
         ),
       ),
@@ -836,18 +874,18 @@ class CustomTimePickerField extends StatelessWidget {
           vertical: mq.size.height * 0.02,
         ),
         decoration: BoxDecoration(
-          color: ColorResources.whiteColor.withOpacity(0.05),
+          color: ColorResources.blackColor.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(Icons.access_time, color: ColorResources.whiteColor),
+            Icon(Icons.access_time, color: Colors.black38),
             SizedBox(width: mq.size.width * 0.04),
             Expanded(
               child: Text(
                 "$label: ${_formatTime(selectedTime)}",
                 style: GoogleFonts.sora(
-                  color: ColorResources.whiteColor,
+                  color: Colors.black54,
                   fontSize: mq.size.width * 0.030,
                 ),
               ),
@@ -868,7 +906,7 @@ class ShimmerHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: mediaQuery.size.height * 0.45,
-      color: ColorResources.secondryColor,
+      color: ColorResources.backgroundWhiteColor,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -878,13 +916,14 @@ class ShimmerHomeScreen extends StatelessWidget {
             right: mediaQuery.size.width * 0.05,
             child: Container(
               decoration: BoxDecoration(
-                color: ColorResources.secondryColor,
+                color: const Color.fromARGB(255, 248, 248, 248),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    color: Colors.black.withOpacity(0.1), // Soft black shadow
+                    blurRadius: 10, // How soft the shadow should be
+                    spreadRadius: 2, // Slightly expands the shadow
+                    offset: const Offset(0, 4), // Shadow position (x, y)
                   ),
                 ],
               ),
@@ -1073,8 +1112,8 @@ Widget buildShimmerAttendanceBoxes(MediaQueryData mediaQuery) {
     runSpacing: mediaQuery.size.height * 0.02,
     children: List.generate(8, (index) {
       return Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
+        baseColor: Colors.grey[400]!,
+        highlightColor: Colors.grey[300]!,
         child: Container(
           width: mediaQuery.size.width * 0.26,
           height: mediaQuery.size.height * 0.12,
@@ -1096,7 +1135,7 @@ Widget buildFullScreenOfflineUI(MediaQueryData mediaQuery) {
         Icon(
           Icons.wifi_off,
           size: mediaQuery.size.width * 0.2,
-          color: Colors.grey,
+          color: ColorResources.appMainColor,
         ),
         SizedBox(height: mediaQuery.size.height * 0.02),
         Text(
@@ -1104,7 +1143,7 @@ Widget buildFullScreenOfflineUI(MediaQueryData mediaQuery) {
           style: GoogleFonts.sora(
             fontSize: mediaQuery.size.width * 0.045,
             fontWeight: FontWeight.w500,
-            color: Colors.grey,
+            color: ColorResources.blackColor,
           ),
         ),
       ],

@@ -13,7 +13,7 @@ import '../Utils/Layout/layout.dart';
 class OfficeWifiScreen extends StatelessWidget {
   static const String routeName = '/officeWifiScreen';
   final WifiNetworkController controller = Get.put(WifiNetworkController());
-  
+
   OfficeWifiScreen({super.key});
 
   @override
@@ -23,7 +23,7 @@ class OfficeWifiScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(false),
       child: Layout(
-        currentTab: 1,
+        currentTab: 4,
         showAppBar: true,
         showLogo: true,
         showBackButton: true,
@@ -36,11 +36,12 @@ class OfficeWifiScreen extends StatelessWidget {
             return const Center(child: Apploader());
           }
 
-          if (controller.errorMessage.value.isNotEmpty && controller.wifiNetworks.isEmpty) {
+          if (controller.errorMessage.value.isNotEmpty &&
+              controller.wifiNetworks.isEmpty) {
             return Center(
               child: Text(
                 controller.errorMessage.value,
-                style: GoogleFonts.sora(color: Colors.white),
+                style: GoogleFonts.sora(color: ColorResources.blackColor),
               ),
             );
           }
@@ -51,8 +52,10 @@ class OfficeWifiScreen extends StatelessWidget {
             onRefresh: () async {
               await controller.fetchWifiNetworks();
             },
-            child: SingleChildScrollView(  // Add this wrapper
-              physics: const AlwaysScrollableScrollPhysics(),  // Important for RefreshIndicator
+            child: SingleChildScrollView(
+              // Add this wrapper
+              physics:
+                  const AlwaysScrollableScrollPhysics(), // Important for RefreshIndicator
               child: Padding(
                 padding: EdgeInsets.all(mq.size.width * 0.04),
                 child: Column(
@@ -63,7 +66,7 @@ class OfficeWifiScreen extends StatelessWidget {
                       style: GoogleFonts.sora(
                         fontSize: mq.size.width * 0.040,
                         fontWeight: FontWeight.w600,
-                        color: ColorResources.whiteColor,
+                        color: ColorResources.blackColor,
                       ),
                     ),
                     SizedBox(height: mq.size.height * 0.02),
@@ -72,7 +75,9 @@ class OfficeWifiScreen extends StatelessWidget {
                       Center(
                         child: Text(
                           "No WiFi networks available",
-                          style: GoogleFonts.sora(color: Colors.white70),
+                          style: GoogleFonts.sora(
+                            color: ColorResources.blackColor,
+                          ),
                         ),
                       )
                     else
@@ -130,15 +135,9 @@ class _WifiTileState extends State<_WifiTile> {
       margin: EdgeInsets.only(bottom: widget.mq.size.height * 0.025),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: ColorResources.whiteColor.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: ColorResources.blackColor.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ColorResources.blackColor.withOpacity(0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,13 +145,12 @@ class _WifiTileState extends State<_WifiTile> {
           Text(
             widget.wifiName,
             style: GoogleFonts.sora(
-              fontSize: widget.mq.size.width * 0.045,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+              fontSize: widget.mq.size.width * 0.040,
+              fontWeight: FontWeight.w500,
+              color: ColorResources.blackColor,
             ),
           ),
-          const SizedBox(height: 10),
-
+          const SizedBox(height: 0),
           Row(
             children: [
               Expanded(
@@ -162,7 +160,7 @@ class _WifiTileState extends State<_WifiTile> {
                     isPasswordVisible ? widget.password : '●●●●●●●●●',
                     style: GoogleFonts.sora(
                       fontSize: widget.mq.size.width * 0.040,
-                      color: Colors.white70,
+                      color: ColorResources.blackColor.withOpacity(0.8),
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -171,7 +169,7 @@ class _WifiTileState extends State<_WifiTile> {
               IconButton(
                 icon: Icon(
                   isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
-                  color: Colors.white70,
+                  color: ColorResources.blackColor,
                 ),
                 onPressed: () {
                   setState(() {
@@ -180,7 +178,10 @@ class _WifiTileState extends State<_WifiTile> {
                 },
               ),
               IconButton(
-                icon: const Icon(Iconsax.copy, color: Colors.white70),
+                icon: const Icon(
+                  Iconsax.copy,
+                  color: ColorResources.blackColor,
+                ),
                 onPressed: () => copyToClipboard(widget.password),
               ),
             ],
@@ -191,7 +192,7 @@ class _WifiTileState extends State<_WifiTile> {
             Text(
               "Notes: ${widget.notes}",
               style: GoogleFonts.sora(
-                color: Colors.white60,
+                color: ColorResources.blackColor,
                 fontSize: widget.mq.size.width * 0.034,
               ),
             ),

@@ -5,6 +5,7 @@ class ColorResources {
   //Theme One //
 
   static const textfeildColor = Color(0xffE0E0E0);
+  static const backgroundWhiteColor = Color(0xffF9FAFB);
   static const appMainColor = Color(0xff0074FC);
   static const secondryColor = Color(0xff001E31);
   static const whiteColor = Color(0xffFFFFFF);
@@ -44,10 +45,10 @@ class ColorResources {
     return SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light, // Explicitly set
-      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-      systemNavigationBarColor: secondryColor,
+      statusBarBrightness: Brightness.light,
+      systemNavigationBarColor: backgroundWhiteColor,
       systemNavigationBarDividerColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarIconBrightness: Brightness.light,
     );
   }
 }

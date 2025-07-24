@@ -2,6 +2,7 @@ import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:orioattendanceapp/Controllers/change_password_controller.dart';
 import 'package:orioattendanceapp/Controllers/login_controller.dart';
+import 'package:orioattendanceapp/Controllers/notification_controller.dart';
 import 'package:orioattendanceapp/Controllers/otp_controller.dart';
 import 'package:orioattendanceapp/Controllers/profile_view_controller.dart';
 import 'package:orioattendanceapp/screens/login_screen.dart';
@@ -15,7 +16,7 @@ import '../Controllers/daily_attendnce_record_controller.dart';
 import '../Controllers/home_screen_controller.dart';
 import '../Controllers/leave_history_controller.dart';
 import '../Controllers/wifi_network_controller.dart';
-import '../models/otp_model.dart'; // Assuming OtpPayload is defined here
+import '../models/otp_model.dart';
 
 class AuthService {
   static const String _tokenKey = 'auth_token';
@@ -24,7 +25,6 @@ class AuthService {
   static const String _employeeIdKey = 'employee_id';
   static const String _employeeCodeKey = 'employee_code';
 
-  // Save authentication data to shared preferences
   Future<void> saveAuthData(OtpPayload payload) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, payload.token);
@@ -91,6 +91,7 @@ class AuthService {
     await Get.delete<DailyAttendanceRecordController>(force: true);
     await Get.delete<ChangePasswordController>(force: true);
     await Get.delete<ProfileViewController>(force: true);
+    await Get.delete<NotificationController>(force: true);
     await prefs.clear();
     await Get.offAllNamed(LoginScreen.routeName);
   }

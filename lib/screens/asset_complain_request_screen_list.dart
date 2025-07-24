@@ -40,15 +40,30 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "My Asset Complaints",
-                      style: GoogleFonts.sora(
-                        fontSize: mq.size.width * 0.040,
-                        fontWeight: FontWeight.w600,
-                        color: ColorResources.whiteColor,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "My Asset Complaints",
+                          style: GoogleFonts.sora(
+                            fontSize: mq.size.width * 0.040,
+                            fontWeight: FontWeight.w600,
+                            color: ColorResources.blackColor,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Get.toNamed(AssetComplainRequestScreen.routeName);
+                          },
+                          icon: Icon(
+                            Iconsax.add_circle,
+                            color: ColorResources.appMainColor,
+                            size: mq.size.height * 0.04,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: mq.size.height * 0.015),
+                    SizedBox(height: mq.size.height * 0.010),
                     CustomSearchField(
                       controller: controller.searchController,
                       hintText: "Search by type, category or status",
@@ -66,30 +81,6 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                   ],
                 ),
               ),
-              Positioned(
-                bottom: 20,
-                right: 20,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.toNamed(AssetComplainRequestScreen.routeName);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: ColorResources.appBarGradient,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 8,
-                          offset: Offset(2, 4),
-                        ),
-                      ],
-                    ),
-                    child: Icon(Iconsax.add_circle, color: Colors.white),
-                  ),
-                ),
-              ),
               if (controller.isLoading.value) Apploader(),
             ],
           );
@@ -104,7 +95,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
       return Center(
         child: Text(
           controller.errorMessage.value,
-          style: GoogleFonts.sora(color: Colors.white),
+          style: GoogleFonts.sora(color: ColorResources.blackColor),
         ),
       );
     }
@@ -113,7 +104,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
       return Center(
         child: Text(
           "No complaints found",
-          style: GoogleFonts.sora(color: Colors.white70),
+          style: GoogleFonts.sora(color: ColorResources.blackColor),
         ),
       );
     }
@@ -129,9 +120,11 @@ class AssetComplainRequestScreenList extends StatelessWidget {
             margin: EdgeInsets.only(bottom: mq.size.height * 0.015),
             padding: EdgeInsets.all(mq.size.width * 0.035),
             decoration: BoxDecoration(
-              color: ColorResources.whiteColor.withOpacity(0.04),
+              color: ColorResources.blackColor.withOpacity(0.05),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(
+                color: ColorResources.blackColor.withOpacity(0.08),
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +184,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
               style: GoogleFonts.sora(
                 fontSize: mq.size.width * 0.032,
                 fontWeight: FontWeight.w500,
-                color: Colors.white70,
+                color: ColorResources.blackColor,
               ),
             ),
           ),
@@ -219,7 +212,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                     value,
                     style: GoogleFonts.sora(
                       fontSize: mq.size.width * 0.032,
-                      color: Colors.white,
+                      color: ColorResources.blackColor,
                     ),
                   ),
           ),
@@ -236,7 +229,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: ColorResources.secondryColor,
+      backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -256,7 +249,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                 width: 50,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.white30,
+                  color: ColorResources.greyColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -268,7 +261,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                 style: GoogleFonts.sora(
                   fontSize: mq.size.width * 0.045,
                   fontWeight: FontWeight.bold,
-                  color: ColorResources.whiteColor,
+                  color: ColorResources.blackColor,
                 ),
               ),
             ),
@@ -329,7 +322,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
               style: GoogleFonts.sora(
                 fontSize: mq.size.width * 0.032,
                 fontWeight: FontWeight.w600,
-                color: Colors.white70,
+                color: ColorResources.blackColor,
               ),
             ),
           ),
@@ -338,7 +331,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
               value,
               style: GoogleFonts.sora(
                 fontSize: mq.size.width * 0.032,
-                color: color ?? Colors.white,
+                color: color ?? ColorResources.blackColor,
               ),
             ),
           ),

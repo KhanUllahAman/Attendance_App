@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LeaveHistory {
-  final int id;
+  final int leaveId;  // Changed from 'id' to 'leave_id' to match response
   final int employeeId;
   final int leaveTypeId;
+  final String leaveTypeName;  // Added this new field from response
   final String startDate;
   final String endDate;
   final int totalDays;
   final String reason;
-  final String status;
+  final String status;  // Note: response has 'STATUS' in uppercase
   final String appliedOn;
   final int? approvedBy;
   final String? approvedOn;
@@ -20,9 +21,10 @@ class LeaveHistory {
   final String updatedAt;
 
   LeaveHistory({
-    required this.id,
+    required this.leaveId,
     required this.employeeId,
     required this.leaveTypeId,
+    required this.leaveTypeName,
     required this.startDate,
     required this.endDate,
     required this.totalDays,
@@ -40,25 +42,27 @@ class LeaveHistory {
 
   factory LeaveHistory.fromJson(Map<String, dynamic> json) {
     return LeaveHistory(
-      id: json['id'] ?? 0,
+      leaveId: json['leave_id'] ?? 0,  // Changed from 'id' to 'leave_id'
       employeeId: json['employee_id'] ?? 0,
       leaveTypeId: json['leave_type_id'] ?? 0,
+      leaveTypeName: json['leave_type_name'] ?? '',  // Added this new field
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
       totalDays: json['total_days'] ?? 0,
       reason: json['reason'] ?? '',
-      status: json['status'] ?? 'pending',
+      status: json['STATUS']?.toLowerCase() ?? 'pending',  // Note uppercase in response
       appliedOn: json['applied_on'] ?? '',
       approvedBy: json['approved_by'],
       approvedOn: json['approved_on'],
       remarks: json['remarks'],
-      isActive: json['is_active'] ?? true,
-      isDeleted: json['is_deleted'] ?? false,
+      isActive: (json['is_active'] ?? 0) == 1,  // Convert int to bool
+      isDeleted: (json['is_deleted'] ?? 0) == 1,  // Convert int to bool
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );
   }
 
+  // Rest of your methods remain the same...
   String get formattedDateRange {
     final start = DateTime.parse(startDate);
     final end = DateTime.parse(endDate);
@@ -74,10 +78,19 @@ class LeaveHistory {
     }
   }
 
-   String get formattedApprovedOn {
+  String get formattedApprovedOn {
     try {
       final appliedOnDate = DateTime.parse(approvedOn.toString());
       return '${DateFormat('MMM d, y').format(appliedOnDate)} at ${DateFormat('h:mm a').format(appliedOnDate)}';
+    } catch (e) {
+      return 'Date not available';
+    }
+  }
+
+  String get formattedApprovedBy {
+    try {
+      final appliedbyDate = DateTime.parse(approvedBy.toString());
+      return '${DateFormat('MMM d, y').format(appliedbyDate)} at ${DateFormat('h:mm a').format(appliedbyDate)}';
     } catch (e) {
       return 'Date not available';
     }

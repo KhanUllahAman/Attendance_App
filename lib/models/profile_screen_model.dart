@@ -4,6 +4,7 @@ class EmployeeProfile {
   final int employeeId;
   final String employeeCode;
   final String fullName;
+  final String? fatherName;
   final String? email;
   final String? phone;
   final String? cnic;
@@ -24,6 +25,7 @@ class EmployeeProfile {
     required this.employeeId,
     required this.employeeCode,
     required this.fullName,
+    this.fatherName,
     this.email,
     this.phone,
     this.cnic,
@@ -46,6 +48,7 @@ class EmployeeProfile {
       employeeId: json['employee_id'] ?? 0,
       employeeCode: json['employee_code'] ?? '',
       fullName: json['full_name'] ?? '',
+      fatherName: json['father_name'],
       email: json['email'],
       phone: json['phone'],
       cnic: json['cnic'],
@@ -81,7 +84,7 @@ class EmployeeProfile {
       final hour = int.parse(parts[0]);
       final minute = parts[1];
       final period = hour >= 12 ? 'PM' : 'AM';
-      final displayHour = hour > 12 ? hour - 12 : hour;
+      final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
       return '$displayHour:$minute $period';
     } catch (e) {
       return time;
