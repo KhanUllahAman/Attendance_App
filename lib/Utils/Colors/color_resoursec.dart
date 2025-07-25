@@ -41,13 +41,33 @@ class ColorResources {
     );
   }
 
-  static SystemUiOverlayStyle getSystemUiOverlayAllPages() {
+  static SystemUiOverlayStyle getSystemUiOverlayAllPages({
+    Color? statusBarColor,
+    Brightness? statusBarIconBrightness,
+    Brightness? statusBarBrightness,
+    Color? systemNavigationBarColor,
+    Color? systemNavigationBarDividerColor,
+    Brightness? systemNavigationBarIconBrightness,
+  }) {
+    return SystemUiOverlayStyle(
+      statusBarColor: statusBarColor ?? Colors.transparent,
+      statusBarIconBrightness: statusBarIconBrightness ?? Brightness.light,
+      statusBarBrightness: statusBarBrightness ?? Brightness.light,
+      systemNavigationBarColor: systemNavigationBarColor ?? Colors.transparent,
+      systemNavigationBarDividerColor:
+          systemNavigationBarDividerColor ?? Colors.transparent,
+      systemNavigationBarIconBrightness:
+          systemNavigationBarIconBrightness ?? Brightness.dark,
+    );
+  }
+
+  static SystemUiOverlayStyle getSystemUiOverlayAllPagesSplash() {
     return SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light, // Explicitly set
       statusBarBrightness: Brightness.light,
-      systemNavigationBarColor: backgroundWhiteColor,
-      systemNavigationBarDividerColor: backgroundWhiteColor,
+      systemNavigationBarColor: secondryColor,
+      systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.light,
     );
   }

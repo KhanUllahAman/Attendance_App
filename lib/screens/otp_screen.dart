@@ -20,7 +20,11 @@ class OtpScreen extends StatelessWidget {
     final controller = Get.put(OtpController());
     final mediaQuery = MediaQuery.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: ColorResources.getSystemUiOverlayAllPages(),
+      value: ColorResources.getSystemUiOverlayAllPages(
+        systemNavigationBarColor: ColorResources.backgroundWhiteColor,
+        systemNavigationBarDividerColor: ColorResources.backgroundWhiteColor,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
       child: PopScope(
         canPop: false,
         onPopInvoked: (didPop) async {

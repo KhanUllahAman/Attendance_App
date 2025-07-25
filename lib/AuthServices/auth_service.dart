@@ -24,17 +24,18 @@ class AuthService {
   static const String _userIdKey = 'user_id';
   static const String _employeeIdKey = 'employee_id';
   static const String _employeeCodeKey = 'employee_code';
+  static const String _fullNameKey = 'full_name';
 
   Future<void> saveAuthData(OtpPayload payload) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, payload.token);
     await prefs.setString(_usernameKey, payload.username);
-    await prefs.setInt(_userIdKey, payload.userId);
+    await prefs.setInt(_userIdKey, payload.id);
     await prefs.setInt(_employeeIdKey, payload.employeeId);
-    await prefs.setString(_employeeCodeKey, payload.employeeCode);
+    await prefs.setString(_employeeCodeKey, payload.employee.employeeCode);
+    await prefs.setString(_fullNameKey, payload.employee.fullName);
   }
 
-  // Get all authentication data as a map
   Future<Map<String, dynamic>?> getAuthData() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(_tokenKey);
@@ -46,10 +47,10 @@ class AuthService {
       'userId': prefs.getInt(_userIdKey) ?? 0,
       'employeeId': prefs.getInt(_employeeIdKey) ?? 0,
       'employeeCode': prefs.getString(_employeeCodeKey) ?? '',
+      'fullName': prefs.getString(_fullNameKey) ?? '',
     };
   }
 
-  // Get individual fields
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
@@ -58,6 +59,11 @@ class AuthService {
   Future<String?> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_usernameKey);
+  }
+
+  Future<String?> getFullName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_fullNameKey);
   }
 
   Future<int?> getUserId() async {

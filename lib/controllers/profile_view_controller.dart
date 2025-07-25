@@ -28,7 +28,7 @@ class ProfileViewController extends NetworkManager {
     if (_isFetching) return;
     _isFetching = true;
     try {
-      print('Fetching profile...');
+      log('Fetching profile...');
       isLoading.value = true;
 
       final token = await AuthService().getToken();
@@ -37,10 +37,12 @@ class ProfileViewController extends NetworkManager {
       if (token == null || employeeId == null) {
         throw Exception("Authentication failed");
       }
+
       final header = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
+
       final body = {"employee_id": employeeId};
       final response = await Network.postApi(
         null,
@@ -49,15 +51,14 @@ class ProfileViewController extends NetworkManager {
         header,
       ).timeout(const Duration(seconds: 15));
 
-      print('Fetch API response: $response');
+      log('Fetch API response: $response');
 
       if (response['status'] == 1) {
-        final data =
-            response['payload'] is List && response['payload'].isNotEmpty
-            ? response['payload'][0]
-            : {};
-        employeeProfile.value = EmployeeProfile.fromJson(data);
-        // Pre-fill text fields with fetched data
+        final Map<String, dynamic> payload = response['payload'] is List
+            ? (response['payload'][0] as Map).cast<String, dynamic>()
+            : (response['payload'] as Map).cast<String, dynamic>();
+
+        employeeProfile.value = EmployeeProfile.fromJson(payload);
         fullNameController.text = employeeProfile.value!.fullName;
         fatherNameController.text = employeeProfile.value!.fatherName ?? '';
         dobController.text = _formatDob(employeeProfile.value!.dob);
@@ -65,14 +66,14 @@ class ProfileViewController extends NetworkManager {
         phoneController.text = employeeProfile.value!.phone ?? '';
         cnicController.text = _formatCnic(employeeProfile.value!.cnic);
         addressController.text = employeeProfile.value!.address ?? '';
-        print('DOB set to: ${dobController.text}');
-        print('CNIC set to: ${cnicController.text}');
+
+        log('Profile data loaded successfully');
       } else {
         throw Exception(response['message'] ?? "Failed to fetch profile");
       }
     } catch (e) {
-      print('Error fetching profile: $e');
-      // customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
+      log('Error fetching profile: $e');
+      customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
       _isFetching = false;

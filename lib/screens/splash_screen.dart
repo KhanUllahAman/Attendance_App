@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../Controllers/splash_controller.dart';
@@ -16,10 +17,9 @@ class SplashScreen extends StatelessWidget {
     final logoHeight = screenHeight * 0.35;
     final logoWidth = screenWidth * 0.55;
     final titleFontSize = screenWidth * 0.07;
-    final subtitleFontSize = screenWidth * 0.045;
     final spacing = screenHeight * 0.02;
-    return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayStyle(),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: ColorResources.getSystemUiOverlayAllPagesSplash(),
       child: GetBuilder<SplashController>(
         init: SplashController(),
         builder: (_) => Scaffold(

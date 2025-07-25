@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../AuthServices/auth_service.dart';
@@ -13,17 +15,30 @@ class LeaveHistoryController extends NetworkManager {
   final RxList<LeaveSummary> leaveSummaryList = <LeaveSummary>[].obs;
   final RxBool isLoading = true.obs;
   final RxString errorMessage = ''.obs;
+  final RxBool hasInitialLoad = false.obs;
+
+  StreamSubscription? _connectivitySubscription;
 
   @override
   void onInit() async {
     super.onInit();
-    await fetchAllLeaveData();
     searchController.addListener(filterLeaveHistory);
+
+    _connectivitySubscription = connectionType.stream.listen((status) {
+      if (status != 0 && !hasInitialLoad.value) {
+        fetchAllLeaveData();
+      } else if (status != 0 && errorMessage.value.isNotEmpty) {
+        fetchAllLeaveData();
+      }
+    });
+
+    await fetchAllLeaveData();
   }
 
   @override
   void onClose() {
     searchController.dispose();
+    _connectivitySubscription?.cancel(); // Cancel the subscription
     super.onClose();
   }
 
@@ -44,6 +59,13 @@ class LeaveHistoryController extends NetworkManager {
   }
 
   Future<void> fetchAllLeaveData() async {
+    // Don't proceed if there's no internet
+    if (connectionType.value == 0) {
+      errorMessage.value = 'No internet connection';
+      isLoading.value = false;
+      return;
+    }
+
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -61,8 +83,15 @@ class LeaveHistoryController extends NetworkManager {
         fetchLeaveHistory(token, employeeId),
         fetchLeaveSummary(token, employeeId),
       ]);
+
+      hasInitialLoad.value = true;
     } catch (e) {
       errorMessage.value = 'Failed to load leave data: ${e.toString()}';
+      // If it's a network error, show more specific message
+      if (e.toString().toLowerCase().contains('socket') ||
+          e.toString().toLowerCase().contains('network')) {
+        errorMessage.value = 'Network error. Please check your connection.';
+      }
     } finally {
       isLoading.value = false;
     }

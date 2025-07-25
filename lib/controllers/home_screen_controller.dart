@@ -648,7 +648,7 @@ class HomeScreenController extends NetworkManager {
   }
 
   Future<void> fetchUserName() async {
-    final username = await authService.getUsername();
+    final username = await authService.getFullName();
     userName.value = username ?? 'User';
   }
 

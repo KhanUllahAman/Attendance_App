@@ -25,7 +25,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final controller = Get.put(ForgotPasswordController());
     final mediaQuery = MediaQuery.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: ColorResources.getSystemUiOverlayAllPages(),
+      value: ColorResources.getSystemUiOverlayAllPages(
+        systemNavigationBarColor: ColorResources.backgroundWhiteColor,
+        systemNavigationBarDividerColor: ColorResources.backgroundWhiteColor,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
       child: PopScope(
         canPop: false,
         onPopInvoked: (didPop) async {
