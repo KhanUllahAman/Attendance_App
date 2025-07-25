@@ -38,7 +38,7 @@ class LeaveHistoryController extends NetworkManager {
   @override
   void onClose() {
     searchController.dispose();
-    _connectivitySubscription?.cancel(); // Cancel the subscription
+    _connectivitySubscription?.cancel();
     super.onClose();
   }
 
