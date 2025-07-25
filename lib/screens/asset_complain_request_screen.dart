@@ -18,7 +18,7 @@ class AssetComplainRequestScreen extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 4,
         showAppBar: true,

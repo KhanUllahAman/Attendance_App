@@ -23,7 +23,7 @@ class MyCorrectionRequestList extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 4,
         showAppBar: true,
@@ -72,8 +72,10 @@ class MyCorrectionRequestList extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: RefreshIndicator(
-                        color: ColorResources.whiteColor,
-                        backgroundColor: ColorResources.secondryColor,
+            elevation: 0.0,
+                        
+                        color: ColorResources.backgroundWhiteColor,
+                        backgroundColor: ColorResources.appMainColor,
                         onRefresh: () => controller.fetchCorrectionRequests(),
                         child: _buildCorrectionsList(mq),
                       ),

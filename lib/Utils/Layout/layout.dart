@@ -310,7 +310,6 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    bool keyboardIsOpened = mediaQuery.viewInsets.bottom != 0.0;
     double defaultAppBarHeight = mediaQuery.size.height * 0.07;
 
     return Scaffold(
@@ -372,7 +371,7 @@ class Layout extends StatelessWidget {
   Widget _buildCurvedNavigationBar() {
     return CurvedNavigationBar(
       index: currentTab,
-      items: <Widget>[
+      items: const <Widget>[
         Icon(Iconsax.clock, size: 30, color: Colors.white),
         Icon(Iconsax.activity, size: 30, color: Colors.white),
         Icon(Iconsax.notification, size: 30, color: Colors.white),
@@ -380,29 +379,34 @@ class Layout extends StatelessWidget {
         Icon(Iconsax.more, size: 30, color: Colors.white),
       ],
       color: ColorResources.appMainColor,
-      buttonBackgroundColor: ColorResources.appMainColor.withOpacity(0.8),
-      // Makes the notch background transparent
+      buttonBackgroundColor: ColorResources.appMainColor.withOpacity(
+        0.7,
+      ), // Increased opacity
       backgroundColor: Colors.transparent,
-      animationCurve: Curves.easeInOut,
-      animationDuration: Duration(milliseconds: 500),
+      animationCurve: Curves.easeOutCubic, // Smoother curve
+      animationDuration: const Duration(milliseconds: 300), // Adjusted duration
+      letIndexChange: (index) => true, // Ensure smooth transitions
       onTap: (index) {
-        switch (index) {
-          case 0:
-            Get.toNamed(HomeScreen.routeName);
-            break;
-          case 1:
-            Get.toNamed(LeaveHistoryPageScreen.routeName);
-            break;
-          case 2:
-            Get.offNamed(NotificationScreen.routeName);
-            break;
-          case 3:
-            Get.toNamed(ProfileViewScreen.routeName);
-            break;
-          case 4:
-            Get.toNamed(MenuScreen.routeName);
-            break;
-        }
+        // Add a slight delay to allow animation to complete
+        Future.delayed(const Duration(milliseconds: 150), () {
+          switch (index) {
+            case 0:
+              Get.toNamed(HomeScreen.routeName);
+              break;
+            case 1:
+              Get.toNamed(LeaveHistoryPageScreen.routeName);
+              break;
+            case 2:
+              Get.offNamed(NotificationScreen.routeName);
+              break;
+            case 3:
+              Get.toNamed(ProfileViewScreen.routeName);
+              break;
+            case 4:
+              Get.toNamed(MenuScreen.routeName);
+              break;
+          }
+        });
       },
     );
   }

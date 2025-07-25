@@ -43,6 +43,8 @@
 
 import 'dart:developer' as developer;
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/material.dart';
+import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
 
 class Network {
   static dio.Response? response;
@@ -153,5 +155,35 @@ class Network {
       developer.log('Unexpected PUT Error: $e');
       throw Exception('Unexpected error: $e');
     }
+  }
+}
+
+class NetworkAwareWidget extends StatelessWidget {
+  final bool isLoading;
+  final bool hasError;
+  final String errorMessage;
+  final VoidCallback onRetry;
+  final Widget child;
+
+  const NetworkAwareWidget({
+    super.key,
+    required this.isLoading,
+    required this.hasError,
+    required this.errorMessage,
+    required this.onRetry,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Apploader();
+    }
+
+    if (hasError) {
+      return RetryWidget(errorMessage: errorMessage, onRetry: onRetry);
+    }
+
+    return child;
   }
 }

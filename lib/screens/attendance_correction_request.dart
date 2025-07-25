@@ -22,7 +22,7 @@ class AttendanceCorrectionRequest extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 4,
         showAppBar: true,
@@ -59,12 +59,7 @@ class AttendanceCorrectionRequest extends StatelessWidget {
                           backgroundColor: Colors.transparent,
                           builder: (_) => CustomDatePicker(
                             initialDate: controller.selectedDate.value,
-                            firstDate: DateTime.now().subtract(
-                              const Duration(days: 365),
-                            ),
-                            lastDate: DateTime.now().add(
-                              const Duration(days: 365),
-                            ),
+                            allowFutureDates: false,
                             onDateSelected: (date) {
                               controller.setSelectedDate(date);
                             },

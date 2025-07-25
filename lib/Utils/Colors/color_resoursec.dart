@@ -41,13 +41,13 @@ class ColorResources {
     );
   }
 
-  static SystemUiOverlayStyle getSystemUiOverlayAllPages(bool isDark) {
+  static SystemUiOverlayStyle getSystemUiOverlayAllPages() {
     return SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light, // Explicitly set
       statusBarBrightness: Brightness.light,
       systemNavigationBarColor: backgroundWhiteColor,
-      systemNavigationBarDividerColor: Colors.white,
+      systemNavigationBarDividerColor: backgroundWhiteColor,
       systemNavigationBarIconBrightness: Brightness.light,
     );
   }

@@ -612,10 +612,13 @@ class HomeScreenController extends NetworkManager {
   final RxBool isSummaryLoading = false.obs;
   final RxString selectedDateRangeText = 'This Month'.obs;
   bool _hasFetchedOfficeLocations = false;
+  double? savedScrollPosition;
+  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() async {
     super.onInit();
+    savedScrollPosition = 0;
     await Future.wait([
       fetchUserName(),
       fetchHomeData(),
@@ -932,11 +935,11 @@ class HomeScreenController extends NetworkManager {
       );
 
       if (checkInResponse['status'] == 1) {
-        customSnackBar(
-          'Success',
-          checkInResponse['message'],
-          snackBarType: SnackBarType.success,
-        );
+        // customSnackBar(
+        //   'Success',
+        //   checkInResponse['message'],
+        //   snackBarType: SnackBarType.success,
+        // );
         await fetchHomeData();
       } else {
         errorMessage.value = checkInResponse['message'];
@@ -1002,11 +1005,11 @@ class HomeScreenController extends NetworkManager {
       );
 
       if (checkOutResponse['status'] == 1) {
-        customSnackBar(
-          'Success',
-          checkOutResponse['message'],
-          snackBarType: SnackBarType.success,
-        );
+        // customSnackBar(
+        //   'Success',
+        //   checkOutResponse['message'],
+        //   snackBarType: SnackBarType.success,
+        // );
         await fetchHomeData();
       } else {
         errorMessage.value = checkOutResponse['message'];
@@ -1133,6 +1136,12 @@ class HomeScreenController extends NetworkManager {
     timer?.cancel();
     Geolocator.getServiceStatusStream().drain();
     super.onClose();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 }
 

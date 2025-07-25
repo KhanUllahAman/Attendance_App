@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,22 +19,22 @@ class OtpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(OtpController());
     final mediaQuery = MediaQuery.of(context);
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) return;
-        if (controller.isLoading.value) {
-          customSnackBar(
-            "Please Wait",
-            "Operation in progress. Please wait until it completes.",
-            snackBarType: SnackBarType.info,
-          );
-          return;
-        }
-        Navigator.of(context).pop();
-      },
-      child: AnnotatedRegion(
-        value: ColorResources.getSystemUiOverlayAllPages(true),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: ColorResources.getSystemUiOverlayAllPages(),
+      child: PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) return;
+          if (controller.isLoading.value) {
+            customSnackBar(
+              "Please Wait",
+              "Operation in progress. Please wait until it completes.",
+              snackBarType: SnackBarType.info,
+            );
+            return;
+          }
+          Navigator.of(context).pop();
+        },
         child: Stack(
           children: [
             Scaffold(
@@ -51,6 +52,7 @@ class OtpScreen extends StatelessWidget {
                     ),
                     elevation: 5,
                     backgroundColor: ColorResources.backgroundWhiteColor,
+                    systemOverlayStyle: SystemUiOverlayStyle.light,
                     expandedHeight: mediaQuery.size.height * 0.20,
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:orioattendanceapp/Utils/AppWidget/App_widget.dart';
 import '../Controllers/daily_attendnce_record_controller.dart';
 import '../Utils/Colors/color_resoursec.dart';
@@ -19,7 +18,7 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 0,
         showAppBar: true,
@@ -45,104 +44,32 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
                   ),
                   SizedBox(height: mq.size.height * 0.02),
 
-                  // Date Selection Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.showDatePicker(
-                            context,
-                            isStartDate: true,
-                          ),
-                          child: Obx(
-                            () => _buildDateField(
-                              'Start Date',
-                              controller.startDate.value,
-                              mq,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.showDatePicker(
-                            context,
-                            isStartDate: false,
-                          ),
-                          child: Obx(
-                            () => _buildDateField(
-                              'End Date',
-                              controller.endDate.value,
-                              mq,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: mq.size.height * 0.02),
-
+                  // Date Range Selection Button
                   AppButton(
                     mediaQuery: mq,
-                    onPressed: controller.fetchAttendanceRecords,
                     isLoading: false,
-                    child: Obx(() {
-                      return controller.isLoading.value
-                          ? CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3.0,
-                              strokeCap: StrokeCap.square,
-                            )
-                          : Text(
-                              'View Attendance',
-                              style: GoogleFonts.sora(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                    }),
+                    onPressed: () => _openDateRangePicker(context, controller),
+                    child: Obx(
+                      () => Text(
+                        controller.selectedDateRangeText.value.isEmpty
+                            ? 'Last 15 Days'
+                            : controller.selectedDateRangeText.value,
+                        style: GoogleFonts.sora(color: Colors.white),
+                      ),
+                    ),
                   ),
-
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: ColorResources.appMainColor,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //       padding: EdgeInsets.symmetric(vertical: 15),
-                  //     ),
-                  //     onPressed: controller.fetchAttendanceRecords,
-                  //     child:
-                  //     Obx(() {
-                  //       return controller.isLoading.value
-                  //           ? CircularProgressIndicator(
-                  //               color: Colors.white,
-                  //               strokeWidth: 3.0,
-                  //               strokeCap: StrokeCap.square,
-                  //             )
-                  //           : Text(
-                  //               'View Attendance',
-                  //               style: GoogleFonts.sora(
-                  //                 color: Colors.white,
-                  //                 fontWeight: FontWeight.w500,
-                  //               ),
-                  //             );
-                  //     }),
-                  //   ),
-                  // ),
                   SizedBox(height: mq.size.height * 0.02),
+
                   Expanded(
                     child: Obx(() {
+                      if (controller.isLoading.value) {
+                        return Apploader();
+                      }
+
                       if (controller.attendanceRecords.isEmpty) {
                         return Center(
                           child: Text(
-                            controller.startDate.value == null ||
-                                    controller.endDate.value == null
-                                ? 'Select date range to view attendance'
-                                : 'No attendance records found',
+                            'No attendance records found',
                             style: GoogleFonts.sora(color: Colors.white70),
                           ),
                         );
@@ -166,34 +93,19 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateField(String label, DateTime? date, MediaQueryData mq) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-      decoration: BoxDecoration(
-        color: ColorResources.blackColor.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.sora(
-              fontSize: 12,
-              color: ColorResources.blackColor,
-            ),
-          ),
-          SizedBox(height: 5),
-          Text(
-            date != null
-                ? DateFormat('yyyy-MM-dd').format(date)
-                : 'Select date',
-            style: GoogleFonts.sora(
-              fontSize: 14,
-              color: ColorResources.blackColor,
-            ),
-          ),
-        ],
+  void _openDateRangePicker(
+    BuildContext context,
+    DailyAttendanceRecordController controller,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => CustomDateRangePicker(
+        onDateRangeSelected: (start, end) {
+          controller.setDateRange(start, end);
+          controller.fetchAttendanceRecords();
+        },
       ),
     );
   }

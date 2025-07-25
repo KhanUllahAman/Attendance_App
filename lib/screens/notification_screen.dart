@@ -19,7 +19,7 @@ class NotificationScreen extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 2,
         showAppBar: true,
@@ -62,8 +62,10 @@ class NotificationScreen extends StatelessWidget {
                           return false;
                         },
                         child: RefreshIndicator(
-                          color: ColorResources.secondryColor,
-                          backgroundColor: ColorResources.whiteColor,
+            elevation: 0.0,
+                          
+                          color: ColorResources.backgroundWhiteColor,
+                          backgroundColor: ColorResources.appMainColor,
                           onRefresh: () async {
                             await Future.delayed(Duration(milliseconds: 100));
                             await controller.fetchAllNotifications();

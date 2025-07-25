@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:orioattendanceapp/Utils/Snack%20Bar/custom_snack_bar.dart';
-
 import '../AuthServices/auth_service.dart';
 import '../Network/Network Manager/network_manager.dart';
 import '../Network/network.dart';
@@ -20,7 +18,6 @@ class LeaveHistoryController extends NetworkManager {
   void onInit() async {
     super.onInit();
     await fetchAllLeaveData();
-    // Add listener to search controller
     searchController.addListener(filterLeaveHistory);
   }
 
@@ -120,11 +117,11 @@ class LeaveHistoryController extends NetworkManager {
         leaveSummaryList.value = (response['payload'] as List)
             .map((e) => LeaveSummary.fromJson(e))
             .toList();
-        customSnackBar(
-          "Success",
-          response['message'],
-          snackBarType: SnackBarType.success,
-        );
+        // customSnackBar(
+        //   "Success",
+        //   response['message'],
+        //   snackBarType: SnackBarType.error,
+        // );
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch leave summary');
       }

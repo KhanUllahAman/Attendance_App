@@ -23,7 +23,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: AnnotatedRegion(
-        value: ColorResources.getSystemUiOverlayAllPages(false),
+        value: ColorResources.getSystemUiOverlayAllPages(),
         child: Layout(
           currentTab: 1,
           showAppBar: true,
@@ -119,8 +119,10 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                 // Scrollable List Section
                 Expanded(
                   child: RefreshIndicator(
-                    color: ColorResources.secondryColor,
-                    backgroundColor: ColorResources.whiteColor,
+            elevation: 0.0,
+                    
+                    color: ColorResources.backgroundWhiteColor,
+                    backgroundColor: ColorResources.appMainColor,
                     onRefresh: () async {
                       await controller.fetchAllLeaveData();
                     },

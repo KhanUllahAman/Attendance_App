@@ -38,7 +38,7 @@ class ApplyLeaveScreen extends StatelessWidget {
         Navigator.of(context).pop();
       },
       child: AnnotatedRegion(
-        value: ColorResources.getSystemUiOverlayAllPages(false),
+        value: ColorResources.getSystemUiOverlayAllPages(),
         child: Stack(
           children: [
             Layout(
@@ -219,6 +219,7 @@ class ApplyLeaveScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => CustomDateRangePicker(
+        allowFutureDates: true,
         onDateRangeSelected: (start, end) {
           controller.setDateRange(start, end);
         },

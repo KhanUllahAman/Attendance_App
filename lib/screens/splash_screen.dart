@@ -79,26 +79,6 @@ class SplashScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    SizedBox(height: spacing * 0.5),
-                    TweenAnimationBuilder(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeIn,
-                      builder: (context, opacity, child) {
-                        return Opacity(
-                          opacity: opacity,
-                          child: Text(
-                            'Empowering Your Workforce',
-                            style: GoogleFonts.sora(
-                              fontSize: subtitleFontSize.clamp(14.0, 18.0),
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white70,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
                     SizedBox(height: spacing * 1.5),
                     TweenAnimationBuilder(
                       tween: Tween<double>(begin: 0.0, end: 1.0),

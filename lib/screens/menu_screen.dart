@@ -1,11 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:orioattendanceapp/Controllers/home_screen_controller.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/my_correction_request_list.dart';
 import 'package:orioattendanceapp/screens/office_wifi_screen.dart';
@@ -18,26 +15,12 @@ import 'change_password_screen.dart';
 class MenuScreen extends StatelessWidget {
   static const String routeName = '/menuScreen';
   const MenuScreen({super.key});
-
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 17) {
-      return 'Good Afternoon';
-    } else {
-      return 'Good Evening';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final HomeScreenController homeScreenController =
-        Get.find<HomeScreenController>();
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         showAppBar: true,
         showLogo: true,
@@ -46,67 +29,6 @@ class MenuScreen extends StatelessWidget {
         body: SafeArea(
           child: Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: ColorResources.appMainColor,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: mq.size.width * 0.04,
-                  vertical: mq.size.height * 0.03,
-                ),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: mq.size.width * 0.06,
-                      backgroundImage: const AssetImage(
-                        "assets/images/profile.png",
-                      ),
-                      backgroundColor: ColorResources.whiteColor.withOpacity(
-                        0.2,
-                      ),
-                    ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.2),
-                    SizedBox(width: mq.size.width * 0.03),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Obx(
-                              () => Text(
-                                'Hi, ${homeScreenController.userName.value}',
-                                style: GoogleFonts.sora(
-                                  fontSize: mq.size.width * 0.040,
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorResources.whiteColor,
-                                ),
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(duration: 600.ms)
-                            .slideX(begin: -0.2),
-                        SizedBox(height: mq.size.height * 0.005),
-                        Obx(
-                              () => Text(
-                                homeScreenController.greeting.value,
-                                style: GoogleFonts.sora(
-                                  fontSize: mq.size.width * 0.035,
-                                  fontWeight: FontWeight.w400,
-                                  color: ColorResources.whiteColor.withOpacity(
-                                    0.8,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .animate()
-                            .fadeIn(duration: 600.ms)
-                            .slideX(begin: -0.2),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.symmetric(

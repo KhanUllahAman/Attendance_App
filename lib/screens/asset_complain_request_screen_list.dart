@@ -22,7 +22,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     final mq = MediaQuery.of(context);
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 4,
         showAppBar: true,
@@ -72,8 +72,10 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                     SizedBox(height: mq.size.height * 0.02),
                     Expanded(
                       child: RefreshIndicator(
-                        color: ColorResources.secondryColor,
-                        backgroundColor: ColorResources.whiteColor,
+            elevation: 0.0,
+                        
+                        color: ColorResources.backgroundWhiteColor,
+                        backgroundColor: ColorResources.appMainColor,
                         onRefresh: () => controller.fetchAssetComplaints(),
                         child: _buildComplaintsList(mq),
                       ),

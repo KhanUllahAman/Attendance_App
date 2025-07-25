@@ -475,9 +475,80 @@ class Apploader extends StatelessWidget {
   }
 }
 
+class RetryWidget extends StatelessWidget {
+  final String errorMessage;
+  final VoidCallback onRetry;
+  final String retryButtonText;
+  final Color? buttonColor;
+  final Color? textColor;
+
+  const RetryWidget({
+    super.key,
+    required this.errorMessage,
+    required this.onRetry,
+    this.retryButtonText = 'Retry',
+    this.buttonColor,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 50, color: Colors.red[400]),
+            const SizedBox(height: 20),
+            Text(
+              errorMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: textColor ?? Colors.black),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor ?? Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                retryButtonText,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor ?? Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class CustomDateRangePicker extends StatefulWidget {
   final Function(DateTime?, DateTime?) onDateRangeSelected;
-  const CustomDateRangePicker({super.key, required this.onDateRangeSelected});
+  final bool allowFutureDates; // New parameter to control future dates
+  final bool allowPastDates; // New parameter to control past dates
+  final DateTime? firstDate; // Optional custom first date
+  final DateTime? lastDate; // Optional custom last date
+
+  const CustomDateRangePicker({
+    super.key, 
+    required this.onDateRangeSelected,
+    this.allowFutureDates = false,
+    this.allowPastDates = true,
+    this.firstDate,
+    this.lastDate,
+  });
 
   @override
   State<CustomDateRangePicker> createState() => _CustomDateRangePickerState();
@@ -495,6 +566,18 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
+
+    // Calculate the date range constraints
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    DateTime firstDate = widget.firstDate ?? (widget.allowPastDates ? DateTime(1900) : today);
+    DateTime lastDate = widget.lastDate ?? (widget.allowFutureDates ? DateTime(2100) : today);
+
+    // Ensure firstDate is not after lastDate
+    if (firstDate.isAfter(lastDate)) {
+      firstDate = lastDate;
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -519,6 +602,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
+            
             // Buttons moved to the top
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -570,13 +654,14 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
+            
             // Calendar
             CalendarDatePicker2(
               config: CalendarDatePicker2Config(
                 calendarType: CalendarDatePicker2Type.range,
                 selectedDayHighlightColor: ColorResources.appMainColor,
-                selectedRangeHighlightColor: ColorResources.appMainColor
-                    .withOpacity(0.3),
+                selectedRangeHighlightColor: 
+                    ColorResources.appMainColor.withOpacity(0.3),
                 selectedDayTextStyle: TextStyle(
                   color: ColorResources.whiteColor,
                   fontSize: screenWidth * 0.032,
@@ -609,8 +694,12 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                   size: 15,
                   color: ColorResources.blackColor,
                 ),
-                firstDate: DateTime(1900),
-                lastDate: DateTime(2100),
+                firstDate: firstDate,
+                lastDate: lastDate,
+                disabledDayTextStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: screenWidth * 0.032,
+                ),
               ),
               value: selectedDateRange,
               onValueChanged: (values) {
@@ -622,16 +711,20 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 });
               },
             ),
+            
             // Selected date range text
             if (selectedDateRange.length == 2 &&
                 selectedDateRange[0] != null &&
                 selectedDateRange[1] != null)
-              Text(
-                "Selected: ${formatDate(selectedDateRange[0]!)} - ${formatDate(selectedDateRange[1]!)}",
-                style: GoogleFonts.sora(
-                  fontSize: screenWidth * 0.032,
-                  fontWeight: FontWeight.w500,
-                  color: ColorResources.whiteColor,
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                child: Text(
+                  "Selected: ${formatDate(selectedDateRange[0]!)} - ${formatDate(selectedDateRange[1]!)}",
+                  style: GoogleFonts.sora(
+                    fontSize: screenWidth * 0.032,
+                    fontWeight: FontWeight.w500,
+                    color: ColorResources.blackColor,
+                  ),
                 ),
               ),
             SizedBox(height: screenHeight * 0.02),
@@ -647,6 +740,7 @@ class CustomDatePicker extends StatelessWidget {
   final Function(DateTime) onDateSelected;
   final DateTime? firstDate;
   final DateTime? lastDate;
+  final bool allowFutureDates; 
 
   const CustomDatePicker({
     super.key,
@@ -654,6 +748,7 @@ class CustomDatePicker extends StatelessWidget {
     required this.onDateSelected,
     this.firstDate,
     this.lastDate,
+    this.allowFutureDates = false, 
   });
 
   @override
@@ -661,6 +756,13 @@ class CustomDatePicker extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    DateTime effectiveFirstDate = firstDate ?? DateTime(1900);
+    
+    DateTime effectiveLastDate = lastDate ?? (allowFutureDates ? DateTime(2100) : today);
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -676,7 +778,6 @@ class CustomDatePicker extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Title
             Text(
               'Select Date',
               style: GoogleFonts.sora(
@@ -686,8 +787,6 @@ class CustomDatePicker extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
-
-            // Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -708,7 +807,6 @@ class CustomDatePicker extends StatelessWidget {
                   child: AppButton(
                     mediaQuery: mediaQuery,
                     onPressed: () {
-                      // This will be handled by the calendar's onValueChanged
                       Navigator.pop(context);
                     },
                     isLoading: false,
@@ -763,12 +861,25 @@ class CustomDatePicker extends StatelessWidget {
                   size: 15,
                   color: ColorResources.blackColor,
                 ),
-                firstDate: firstDate ?? DateTime(1900),
-                lastDate: lastDate ?? DateTime(2100),
+                firstDate: effectiveFirstDate,
+                lastDate: effectiveLastDate,
+                disabledDayTextStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: screenWidth * 0.032,
+                ),
               ),
               value: initialDate != null ? [initialDate] : [],
               onValueChanged: (dates) {
                 if (dates.isNotEmpty && dates[0] != null) {
+                  // Additional check to prevent future dates if needed
+                  if (!allowFutureDates && dates[0]!.isAfter(today)) {
+                    customSnackBar(
+                      "Error",
+                      "Future dates are not allowed",
+                      snackBarType: SnackBarType.error,
+                    );
+                    return;
+                  }
                   onDateSelected(dates[0]!);
                 }
               },

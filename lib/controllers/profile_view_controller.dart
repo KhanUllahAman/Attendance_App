@@ -72,7 +72,7 @@ class ProfileViewController extends NetworkManager {
       }
     } catch (e) {
       print('Error fetching profile: $e');
-      customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
+      // customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
       _isFetching = false;
@@ -102,7 +102,7 @@ class ProfileViewController extends NetworkManager {
     if (digits.length == 13) {
       return '${digits.substring(0, 5)}-${digits.substring(5, 12)}-${digits.substring(12)}';
     }
-    return digits; 
+    return digits;
   }
 
   Future<void> showDatePicker(BuildContext context) async {

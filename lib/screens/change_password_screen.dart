@@ -18,7 +18,7 @@ class ChangePasswordScreen extends StatelessWidget {
     final controller = Get.put(ChangePasswordController());
 
     return AnnotatedRegion(
-      value: ColorResources.getSystemUiOverlayAllPages(false),
+      value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
         currentTab: 4,
         showAppBar: true,

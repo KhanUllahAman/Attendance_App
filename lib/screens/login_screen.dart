@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,36 +22,39 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final LoginController controller = Get.put(LoginController());
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (didPop) return;
-        if (controller.isLoading.value) {
-          customSnackBar(
-            "Please Wait",
-            "Operation in progress. Please wait until it completes.",
-            snackBarType: SnackBarType.info,
-          );
-          return;
-        }
-        Navigator.of(context).pop();
-      },
-      child: AnnotatedRegion(
-        value: ColorResources.getSystemUiOverlayAllPages(false),
-        child: Stack(
-          children: [
-            Scaffold(
-              backgroundColor: ColorResources.backgroundWhiteColor,
-              body: CustomScrollView(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: ColorResources.getSystemUiOverlayAllPages(),
+      child: 
+      PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (didPop) return;
+          if (controller.isLoading.value) {
+            customSnackBar(
+              "Please Wait",
+              "Operation in progress. Please wait until it completes.",
+              snackBarType: SnackBarType.info,
+            );
+            return;
+          }
+          Navigator.of(context).pop();
+        },
+        child: Scaffold(
+          backgroundColor: ColorResources.backgroundWhiteColor,
+          body: Stack(
+            children: [
+              CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   SliverAppBar(
                     elevation: 5,
                     backgroundColor: ColorResources.backgroundWhiteColor,
                     expandedHeight: mediaQuery.size.height * 0.20,
+                    systemOverlayStyle: SystemUiOverlayStyle.light,
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(
                         decoration: BoxDecoration(
@@ -196,25 +200,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ).noKeyboard(),
-            ),
-            Obx(
-              () => controller.isLoading.value
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: ColorResources.whiteColor,
-                          strokeWidth: 3.0,
-                          strokeCap: StrokeCap.square,
+              Obx(
+                () => controller.isLoading.value
+                    ? Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: ColorResources.whiteColor,
+                            strokeWidth: 3.0,
+                            strokeCap: StrokeCap.square,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );
