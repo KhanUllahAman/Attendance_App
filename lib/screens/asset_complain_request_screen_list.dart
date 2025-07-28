@@ -24,6 +24,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Asset Complaints",
         currentTab: 4,
         showAppBar: true,
         showLogo: true,
@@ -44,7 +45,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "My Asset Complaints",
+                          "My Asset Complaints Requests",
                           style: GoogleFonts.sora(
                             fontSize: mq.size.width * 0.040,
                             fontWeight: FontWeight.w600,
@@ -72,8 +73,8 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                     SizedBox(height: mq.size.height * 0.02),
                     Expanded(
                       child: RefreshIndicator(
-            elevation: 0.0,
-                        
+                        elevation: 0.0,
+
                         color: ColorResources.backgroundWhiteColor,
                         backgroundColor: ColorResources.appMainColor,
                         onRefresh: () => controller.fetchAssetComplaints(),

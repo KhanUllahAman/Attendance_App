@@ -58,20 +58,20 @@ import '../models/attendance_record_model.dart';
 //       if (token == null || employeeId == null) {
 //         throw Exception("Authentication failed");
 //       }
-      
+
 //       var headers = {
 //         'Authorization': 'Bearer $token',
 //         'Content-Type': 'application/json',
 //       };
-      
+
 //       var body = {
 //         "employee_id": employeeId,
 //         "start_date": DateFormat('yyyy-MM-dd').format(effectiveStartDate),
 //         "end_date": DateFormat('yyyy-MM-dd').format(effectiveEndDate),
 //       };
-      
+
 //       final response = await Network.postApi(null, dailyAttendanceRecordApi, body, headers);
-      
+
 //       if (response['status'] == 1) {
 //         final List<dynamic> data = response['payload'] ?? [];
 //         attendanceRecords.assignAll(
@@ -83,11 +83,10 @@ import '../models/attendance_record_model.dart';
 //     } catch (e) {
 //       customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
 //     } finally {
-//       isLoading.value = false; 
+//       isLoading.value = false;
 //     }
 //   }
 // }
-
 
 class DailyAttendanceRecordController extends NetworkManager {
   final isLoading = false.obs;
@@ -96,7 +95,7 @@ class DailyAttendanceRecordController extends NetworkManager {
   final errorMessage = ''.obs;
   final hasInitialLoad = false.obs;
   StreamSubscription? _connectivitySubscription;
-  
+
   DateTime? startDate;
   DateTime? endDate;
 
@@ -116,15 +115,17 @@ class DailyAttendanceRecordController extends NetworkManager {
 
   void _setupConnectivityListener() {
     _connectivitySubscription = connectionType.stream.listen((status) {
-      if (status != 0 && (!hasInitialLoad.value || errorMessage.value.isNotEmpty)) {
+      if (status != 0 &&
+          (!hasInitialLoad.value || errorMessage.value.isNotEmpty)) {
         fetchAttendanceRecords();
       }
     });
   }
 
   void setDefaultDateRange() {
-    endDate = DateTime.now();
-    startDate = endDate?.subtract(const Duration(days: 14));
+    final now = DateTime.now();
+    startDate = DateTime(now.year, now.month, 1);
+    endDate = now;
     updateDateRangeText();
   }
 
@@ -157,7 +158,8 @@ class DailyAttendanceRecordController extends NetworkManager {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final effectiveStartDate = startDate ?? DateTime.now().subtract(const Duration(days: 14));
+      final effectiveStartDate =
+          startDate ?? DateTime.now().subtract(const Duration(days: 14));
       final effectiveEndDate = endDate ?? DateTime.now();
 
       final token = await AuthService().getToken();
@@ -167,25 +169,25 @@ class DailyAttendanceRecordController extends NetworkManager {
         errorMessage.value = 'Authentication error. Please log in again.';
         return;
       }
-      
+
       final headers = {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       };
-      
+
       final body = {
         "employee_id": employeeId,
         "start_date": DateFormat('yyyy-MM-dd').format(effectiveStartDate),
         "end_date": DateFormat('yyyy-MM-dd').format(effectiveEndDate),
       };
-      
+
       final response = await Network.postApi(
-        null, 
-        dailyAttendanceRecordApi, 
-        body, 
+        null,
+        dailyAttendanceRecordApi,
+        body,
         headers,
       ).timeout(const Duration(seconds: 15));
-      
+
       if (response['status'] == 1) {
         final List<dynamic> data = response['payload'] ?? [];
         attendanceRecords.assignAll(
@@ -197,9 +199,13 @@ class DailyAttendanceRecordController extends NetworkManager {
       }
     } catch (e) {
       errorMessage.value = _getErrorMessage(e);
-      customSnackBar("Error", errorMessage.value, snackBarType: SnackBarType.error);
+      customSnackBar(
+        "Error",
+        errorMessage.value,
+        snackBarType: SnackBarType.error,
+      );
     } finally {
-      isLoading.value = false; 
+      isLoading.value = false;
     }
   }
 

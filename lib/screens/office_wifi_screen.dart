@@ -23,6 +23,7 @@ class OfficeWifiScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Office WiFi Details",
         currentTab: 4,
         showAppBar: true,
         showLogo: true,
@@ -62,16 +63,6 @@ class OfficeWifiScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Office WiFi Details",
-                      style: GoogleFonts.sora(
-                        fontSize: mq.size.width * 0.040,
-                        fontWeight: FontWeight.w600,
-                        color: ColorResources.blackColor,
-                      ),
-                    ),
-                    SizedBox(height: mq.size.height * 0.02),
-
                     if (controller.wifiNetworks.isEmpty)
                       Center(
                         child: Text(

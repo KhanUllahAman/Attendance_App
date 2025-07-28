@@ -21,6 +21,7 @@ class NotificationScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Notifications",
         currentTab: 2,
         showAppBar: true,
         showBackButton: true,
@@ -41,15 +42,6 @@ class NotificationScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Notifications",
-                  style: GoogleFonts.sora(
-                    fontSize: mq.size.width * 0.055,
-                    fontWeight: FontWeight.bold,
-                    color: ColorResources.blackColor,
-                  ),
-                ),
-                SizedBox(height: mq.size.height * 0.02),
                 Expanded(
                   child: Stack(
                     children: [
@@ -62,8 +54,8 @@ class NotificationScreen extends StatelessWidget {
                           return false;
                         },
                         child: RefreshIndicator(
-            elevation: 0.0,
-                          
+                          elevation: 0.0,
+
                           color: ColorResources.backgroundWhiteColor,
                           backgroundColor: ColorResources.appMainColor,
                           onRefresh: () async {

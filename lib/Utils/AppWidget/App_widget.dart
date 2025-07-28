@@ -542,7 +542,7 @@ class CustomDateRangePicker extends StatefulWidget {
   final DateTime? lastDate; // Optional custom last date
 
   const CustomDateRangePicker({
-    super.key, 
+    super.key,
     required this.onDateRangeSelected,
     this.allowFutureDates = false,
     this.allowPastDates = true,
@@ -570,9 +570,11 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
     // Calculate the date range constraints
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
-    DateTime firstDate = widget.firstDate ?? (widget.allowPastDates ? DateTime(1900) : today);
-    DateTime lastDate = widget.lastDate ?? (widget.allowFutureDates ? DateTime(2100) : today);
+
+    DateTime firstDate =
+        widget.firstDate ?? (widget.allowPastDates ? DateTime(1900) : today);
+    DateTime lastDate =
+        widget.lastDate ?? (widget.allowFutureDates ? DateTime(2100) : today);
 
     // Ensure firstDate is not after lastDate
     if (firstDate.isAfter(lastDate)) {
@@ -602,7 +604,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
-            
+
             // Buttons moved to the top
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -654,14 +656,14 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
-            
+
             // Calendar
             CalendarDatePicker2(
               config: CalendarDatePicker2Config(
                 calendarType: CalendarDatePicker2Type.range,
                 selectedDayHighlightColor: ColorResources.appMainColor,
-                selectedRangeHighlightColor: 
-                    ColorResources.appMainColor.withOpacity(0.3),
+                selectedRangeHighlightColor: ColorResources.appMainColor
+                    .withOpacity(0.3),
                 selectedDayTextStyle: TextStyle(
                   color: ColorResources.whiteColor,
                   fontSize: screenWidth * 0.032,
@@ -711,7 +713,7 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 });
               },
             ),
-            
+
             // Selected date range text
             if (selectedDateRange.length == 2 &&
                 selectedDateRange[0] != null &&
@@ -740,7 +742,7 @@ class CustomDatePicker extends StatelessWidget {
   final Function(DateTime) onDateSelected;
   final DateTime? firstDate;
   final DateTime? lastDate;
-  final bool allowFutureDates; 
+  final bool allowFutureDates;
 
   const CustomDatePicker({
     super.key,
@@ -748,7 +750,7 @@ class CustomDatePicker extends StatelessWidget {
     required this.onDateSelected,
     this.firstDate,
     this.lastDate,
-    this.allowFutureDates = false, 
+    this.allowFutureDates = false,
   });
 
   @override
@@ -759,10 +761,11 @@ class CustomDatePicker extends StatelessWidget {
 
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     DateTime effectiveFirstDate = firstDate ?? DateTime(1900);
-    
-    DateTime effectiveLastDate = lastDate ?? (allowFutureDates ? DateTime(2100) : today);
+
+    DateTime effectiveLastDate =
+        lastDate ?? (allowFutureDates ? DateTime(2100) : today);
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -1022,10 +1025,11 @@ class ShimmerHomeScreen extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            top: -(mediaQuery.size.height * 0.17 / 2),
+            top: -(mediaQuery.size.height * 0.14 / 2),
             left: mediaQuery.size.width * 0.05,
             right: mediaQuery.size.width * 0.05,
             child: Container(
+              height: mediaQuery.size.height * 0.50,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 248, 248, 248),
                 borderRadius: BorderRadius.circular(20),

@@ -42,6 +42,7 @@ class ApplyLeaveScreen extends StatelessWidget {
         child: Stack(
           children: [
             Layout(
+              title: "Apply Leave",
               showBackButton: true,
               currentTab: 1,
               showAppBar: true,
@@ -70,15 +71,6 @@ class ApplyLeaveScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Apply Leave",
-                          style: GoogleFonts.sora(
-                            fontSize: mq.size.width * 0.040,
-                            fontWeight: FontWeight.w600,
-                            color: ColorResources.blackColor,
-                          ),
-                        ),
-                        SizedBox(height: mq.size.height * 0.02),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: leavecontroller.leaveSummaryList

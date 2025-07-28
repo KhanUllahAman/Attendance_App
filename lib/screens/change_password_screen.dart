@@ -20,6 +20,8 @@ class ChangePasswordScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Change Password",
+
         currentTab: 4,
         showAppBar: true,
         showLogo: true,
@@ -34,16 +36,6 @@ class ChangePasswordScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Change Password',
-                  style: GoogleFonts.sora(
-                    fontSize: mq.size.width * 0.040,
-                    fontWeight: FontWeight.w600,
-                    color: ColorResources.blackColor,
-                  ),
-                ),
-                SizedBox(height: mq.size.height * 0.03),
-
                 // Old Password
                 CustomTextFeild(
                   controller: controller.oldPassController,

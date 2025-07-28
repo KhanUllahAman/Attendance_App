@@ -283,7 +283,6 @@ import 'package:orioattendanceapp/screens/notification_screen.dart';
 import 'package:orioattendanceapp/screens/profile_view_screen.dart';
 import '../../screens/menu_screen.dart';
 import '../Colors/color_resoursec.dart';
-import '../Constant/images_constant.dart';
 
 class Layout extends StatelessWidget {
   final Widget body;
@@ -294,6 +293,7 @@ class Layout extends StatelessWidget {
   final List<Widget> actionButtons;
   final double? appBarHeight;
   final bool showBackButton;
+  final String? title;
 
   const Layout({
     super.key,
@@ -305,6 +305,7 @@ class Layout extends StatelessWidget {
     this.actionButtons = const [],
     this.appBarHeight,
     this.showBackButton = false,
+    this.title,
   });
 
   @override
@@ -334,29 +335,26 @@ class Layout extends StatelessWidget {
                   ],
                 ),
                 child: SafeArea(
-                  child: Stack(
-                    alignment: Alignment.center,
+                  child: Row(
                     children: [
                       if (showBackButton)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios,
-                              color: ColorResources.whiteColor,
-                            ),
-                            onPressed: () => Navigator.pop(context),
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: ColorResources.whiteColor,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      Center(
+                        child: Text(
+                          title ?? 'App Title',
+                          style: GoogleFonts.sora(
+                            color: ColorResources.whiteColor,
+                            fontSize: mediaQuery.size.width * 0.04,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-
-                      // Logo (centered)
-                      if (showLogo)
-                        Image.asset(
-                          ImagesConstant.splashImages,
-                          width: mediaQuery.size.width * 0.2,
-                          height: mediaQuery.size.width * 0.2,
-                          fit: BoxFit.contain,
-                        ),
+                      ),
                     ],
                   ),
                 ),

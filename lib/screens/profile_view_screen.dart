@@ -419,6 +419,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Profile",
         currentTab: 3,
         showAppBar: true,
         showBackButton: true,

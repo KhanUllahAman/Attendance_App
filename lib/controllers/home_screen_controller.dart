@@ -649,7 +649,18 @@ class HomeScreenController extends NetworkManager {
 
   Future<void> fetchUserName() async {
     final username = await authService.getFullName();
-    userName.value = username ?? 'User';
+    if (username != null) {
+      final firstWord = username.contains(' ')
+          ? username.split(' ').first
+          : username;
+      userName.value = firstWord.length > 8
+          ? '${firstWord.substring(0, 8)}...'
+          : username.contains(' ')
+          ? '$firstWord...'
+          : firstWord;
+    } else {
+      userName.value = 'User';
+    }
   }
 
   void updateGreeting() {

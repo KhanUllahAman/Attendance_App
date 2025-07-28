@@ -25,6 +25,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
       child: AnnotatedRegion(
         value: ColorResources.getSystemUiOverlayAllPages(),
         child: Layout(
+          title: "Leave History",
           currentTab: 1,
           showAppBar: true,
           showLogo: true,
@@ -119,8 +120,8 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                 // Scrollable List Section
                 Expanded(
                   child: RefreshIndicator(
-            elevation: 0.0,
-                    
+                    elevation: 0.0,
+
                     color: ColorResources.backgroundWhiteColor,
                     backgroundColor: ColorResources.appMainColor,
                     onRefresh: () async {

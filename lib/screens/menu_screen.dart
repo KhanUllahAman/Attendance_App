@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/utils.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
+import 'package:orioattendanceapp/screens/leave_history_page_screen.dart';
 import 'package:orioattendanceapp/screens/my_correction_request_list.dart';
 import 'package:orioattendanceapp/screens/office_wifi_screen.dart';
 
@@ -22,9 +23,10 @@ class MenuScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Menu",
         showAppBar: true,
         showLogo: true,
-        showBackButton: false,
+        showBackButton: true,
         currentTab: 4,
         body: SafeArea(
           child: Column(
@@ -47,9 +49,17 @@ class MenuScreen extends StatelessWidget {
                     _buildMenuItem(
                       context,
                       icon: Iconsax.document,
-                      title: "My Correction Requests",
+                      title: "Attendance Correction Requests",
                       onTap: () {
                         Get.toNamed(MyCorrectionRequestList.routeName);
+                      },
+                    ),
+                    _buildMenuItem(
+                      context,
+                      icon: Iconsax.activity,
+                      title: "Leave Request",
+                      onTap: () {
+                        Get.toNamed(LeaveHistoryPageScreen.routeName);
                       },
                     ),
                     _buildMenuItem(

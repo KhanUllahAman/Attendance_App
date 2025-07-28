@@ -20,6 +20,8 @@ class AssetComplainRequestScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Asset Complaint New Request",
+
         currentTab: 4,
         showAppBar: true,
         showLogo: true,
@@ -35,15 +37,7 @@ class AssetComplainRequestScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Asset Complaint New Request",
-                      style: GoogleFonts.sora(
-                        fontSize: mq.size.width * 0.040,
-                        fontWeight: FontWeight.w600,
-                        color: ColorResources.blackColor,
-                      ),
-                    ),
-                    SizedBox(height: mq.size.height * 0.025),
+                    SizedBox(height: mq.size.height * 0.017),
 
                     SearchableDropdown(
                       hintText: "Select Request Type",

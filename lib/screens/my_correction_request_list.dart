@@ -25,6 +25,7 @@ class MyCorrectionRequestList extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Attendance Correction",
         currentTab: 4,
         showAppBar: true,
         showLogo: true,
@@ -45,7 +46,7 @@ class MyCorrectionRequestList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "My Correction Requests",
+                          "Attendance Correction Requests",
                           style: GoogleFonts.sora(
                             fontSize: mq.size.width * 0.040,
                             fontWeight: FontWeight.w600,
@@ -72,8 +73,8 @@ class MyCorrectionRequestList extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: RefreshIndicator(
-            elevation: 0.0,
-                        
+                        elevation: 0.0,
+
                         color: ColorResources.backgroundWhiteColor,
                         backgroundColor: ColorResources.appMainColor,
                         onRefresh: () => controller.fetchCorrectionRequests(),

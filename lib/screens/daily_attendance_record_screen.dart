@@ -20,6 +20,7 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(
+        title: "Attendance History",
         currentTab: 0,
         showAppBar: true,
         showLogo: true,
@@ -34,27 +35,32 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Attendance History',
-                    style: GoogleFonts.sora(
-                      fontSize: mq.size.width * 0.045,
-                      fontWeight: FontWeight.w600,
-                      color: ColorResources.blackColor,
-                    ),
-                  ),
-                  SizedBox(height: mq.size.height * 0.02),
-
                   // Date Range Selection Button
-                  AppButton(
-                    mediaQuery: mq,
-                    isLoading: false,
-                    onPressed: () => _openDateRangePicker(context, controller),
-                    child: Obx(
-                      () => Text(
-                        controller.selectedDateRangeText.value.isEmpty
-                            ? 'Last 15 Days'
-                            : controller.selectedDateRangeText.value,
-                        style: GoogleFonts.sora(color: Colors.white),
+                  GestureDetector(
+                    onTap: () => _openDateRangePicker(context, controller),
+                    child: Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: mq.size.width * 0.04,
+                        vertical: mq.size.height * 0.015,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorResources.blackColor.withOpacity(
+                          0.09,
+                        ), // आपका ग्रे कलर
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Obx(
+                        () => Center(
+                          child: Text(
+                            controller.selectedDateRangeText.value.isEmpty
+                                ? 'Last 15 Days'
+                                : controller.selectedDateRangeText.value,
+                            style: GoogleFonts.sora(
+                              color: ColorResources.blackColor,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -133,7 +139,7 @@ class _AttendanceCard extends StatelessWidget {
         margin: EdgeInsets.only(bottom: containerMargin),
         padding: EdgeInsets.all(containerPadding),
         decoration: BoxDecoration(
-          color: ColorResources.blackColor.withOpacity(0.05),
+          color: record.dayStatusColorValue.withOpacity(0.2),
           borderRadius: BorderRadius.circular(containerPadding * 0.833),
         ),
         child: Column(

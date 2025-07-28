@@ -26,18 +26,20 @@ class HomeScreen extends StatelessWidget {
         showLogo: false,
         currentTab: 0,
         body: Obx(() {
-          if (controller.isLoading.value && controller.connectionType.value == 0) {
+          if (controller.isLoading.value &&
+              controller.connectionType.value == 0) {
             return buildFullScreenOfflineUI(mediaQuery);
           }
           return NotificationListener<ScrollNotification>(
             onNotification: (scrollNotification) {
               if (scrollNotification is ScrollStartNotification) {
-                controller.savedScrollPosition = scrollNotification.metrics.pixels;
+                controller.savedScrollPosition =
+                    scrollNotification.metrics.pixels;
               }
               return false;
             },
             child: RefreshIndicator(
-              displacement: 40.0, 
+              displacement: 40.0,
               edgeOffset: 60.0,
               elevation: 0.0,
               onRefresh: () async {
@@ -60,7 +62,7 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Container(
-                          height: mediaQuery.size.height * 0.3,
+                          height: mediaQuery.size.height * 0.22,
                           decoration: BoxDecoration(
                             color: ColorResources.appMainColor,
                             borderRadius: BorderRadius.circular(20.0),
@@ -79,7 +81,8 @@ class HomeScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SizedBox(
-                                      height: controller.connectionType.value == 0
+                                      height:
+                                          controller.connectionType.value == 0
                                           ? mediaQuery.size.height * 0.04
                                           : 0,
                                     ),
@@ -93,7 +96,8 @@ class HomeScreen extends StatelessWidget {
                                             children: [
                                               CircleAvatar(
                                                 radius:
-                                                    mediaQuery.size.width * 0.06,
+                                                    mediaQuery.size.width *
+                                                    0.06,
                                                 backgroundImage: const AssetImage(
                                                   "assets/images/profile.png",
                                                 ),
@@ -112,7 +116,8 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                               SizedBox(
                                                 width:
-                                                    mediaQuery.size.width * 0.03,
+                                                    mediaQuery.size.width *
+                                                    0.03,
                                               ),
                                               Column(
                                                 mainAxisAlignment:
@@ -125,8 +130,10 @@ class HomeScreen extends StatelessWidget {
                                                       'Hi, ${controller.userName.value.capitalizeFirst}',
                                                       style: GoogleFonts.sora(
                                                         fontSize:
-                                                            mediaQuery.size.width *
-                                                                0.040,
+                                                            mediaQuery
+                                                                .size
+                                                                .width *
+                                                            0.040,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         color: ColorResources
@@ -137,15 +144,17 @@ class HomeScreen extends StatelessWidget {
                                                   SizedBox(
                                                     height:
                                                         mediaQuery.size.height *
-                                                            0.005,
+                                                        0.005,
                                                   ),
                                                   Obx(
                                                     () => Text(
                                                       controller.greeting.value,
                                                       style: GoogleFonts.sora(
                                                         fontSize:
-                                                            mediaQuery.size.width *
-                                                                0.035,
+                                                            mediaQuery
+                                                                .size
+                                                                .width *
+                                                            0.035,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         color: ColorResources
@@ -193,7 +202,8 @@ class HomeScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Attendance Summary',
@@ -236,13 +246,17 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                 ],
                               ),
-                              SizedBox(height: mediaQuery.size.height * 0.02),
+                              SizedBox(height: mediaQuery.size.height * 0.01),
                               Obx(() {
                                 if (controller.connectionType.value == 0) {
-                                  return _buildDisabledSummarySection(mediaQuery);
+                                  return _buildDisabledSummarySection(
+                                    mediaQuery,
+                                  );
                                 }
                                 if (controller.isSummaryLoading.value) {
-                                  return buildShimmerAttendanceBoxes(mediaQuery);
+                                  return buildShimmerAttendanceBoxes(
+                                    mediaQuery,
+                                  );
                                 }
                                 final summary =
                                     controller.attendanceSummary.value;
@@ -420,7 +434,7 @@ class HomeScreen extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            top: -(mediaQuery.size.height * 0.17 / 2),
+            top: -(mediaQuery.size.height * 0.14 / 2),
             left: mediaQuery.size.width * 0.05,
             right: mediaQuery.size.width * 0.05,
             child: Container(
