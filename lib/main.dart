@@ -8,18 +8,20 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/firebase_options.dart';
 import 'Controllers/backgroundNotification_controller.dart';
+import 'Controllers/splash_controller.dart';
 import 'Screens/splash_screen.dart';
 import 'Utils/AppWidget/App_widget.dart';
 import 'Utils/Routes/routes.dart';
 import 'Utils/Snack Bar/custom_snack_bar.dart';
 import 'Utils/theme/theme_data.dart';
-import 'screens/home_screen.dart';
+import 'screens/notification_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   debugPrint('Background message received: ${message.notification?.title}');
+  final notificationController = BackgroundnotificationController();
+  notificationController.newNotification();
 }
-
 Future<void> _setupFirebaseMessaging() async {
   final notificationController = Get.put(BackgroundnotificationController());
   
@@ -31,6 +33,7 @@ Future<void> _setupFirebaseMessaging() async {
     
     if (message.notification != null) {
       showNotificationSnackBar(
+        onTap: () => Get.toNamed(NotificationScreen.routeName),
         position: SnackPosition.TOP,
         message.notification!.title ?? 'Notification',
         message.notification!.body ?? '',
@@ -42,8 +45,12 @@ Future<void> _setupFirebaseMessaging() async {
 
   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
+    debugPrint('App opened from terminated state via notification');
     notificationController.newNotification();
-    _handleMessage(initialMessage);
+    
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _handleMessage(initialMessage);
+    });
   }
   
   FirebaseMessaging.onMessageOpenedApp.listen((message) {
@@ -54,7 +61,17 @@ Future<void> _setupFirebaseMessaging() async {
 
 void _handleMessage(RemoteMessage message) {
   debugPrint('Notification opened: ${message.notification?.title}');
-  Get.toNamed(HomeScreen.routeName); 
+  
+  Future.delayed(Duration.zero, () {
+    if (Get.currentRoute == SplashScreen.routeName) {
+      final controller = Get.find<SplashController>();
+      controller.checkAuthStatus().then((_) {
+        Get.toNamed(NotificationScreen.routeName);
+      });
+    } else {
+      Get.toNamed(NotificationScreen.routeName);
+    }
+  });
 }
 
 void main() async {

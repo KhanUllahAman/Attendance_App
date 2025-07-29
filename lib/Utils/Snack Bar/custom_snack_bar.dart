@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/Utils/Colors/color_resoursec.dart';
+import 'package:orioattendanceapp/screens/notification_screen.dart';
 
 enum SnackBarType { success, error, info }
 
@@ -56,13 +57,13 @@ void showNotificationSnackBar(
   int durationSeconds = 4,
   SnackPosition position = SnackPosition.TOP,
   bool showDismiss = true,
+  VoidCallback? onTap, // Add this parameter for tap callback
 }) {
   if (Get.context == null) return;
 
   // Custom notification styling
-  const backgroundColor =
-      ColorResources.backgroundWhiteColor; // Dark gray background
-  const iconColor = ColorResources.appMainColor; // Orange icon color
+  const backgroundColor = ColorResources.backgroundWhiteColor;
+  const iconColor = ColorResources.appMainColor;
   const textColor = ColorResources.blackColor;
 
   Get.rawSnackbar(
@@ -83,9 +84,9 @@ void showNotificationSnackBar(
     duration: Duration(seconds: durationSeconds),
     backgroundColor: backgroundColor,
     margin: const EdgeInsets.all(10),
-    borderRadius: 12, // Slightly more rounded
+    borderRadius: 12,
     icon: Icon(Icons.notifications_active, color: iconColor, size: 24),
-    shouldIconPulse: true, // Pulsing icon for notifications
+    shouldIconPulse: true,
     mainButton: showDismiss
         ? TextButton(
             child: const Text(
@@ -111,5 +112,13 @@ void showNotificationSnackBar(
     borderWidth: 1,
     borderColor: Colors.white.withOpacity(0.1),
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    onTap: (snack) {
+      // Add this onTap handler
+      if (onTap != null) {
+        onTap();
+      } else {
+        Get.toNamed(NotificationScreen.routeName);
+      }
+    },
   );
 }
