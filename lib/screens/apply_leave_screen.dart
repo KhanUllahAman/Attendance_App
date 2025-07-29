@@ -87,9 +87,11 @@ class ApplyLeaveScreen extends StatelessWidget {
                         Obx(() {
                           return SearchableDropdown(
                             hintText: "Select Leave Type",
-                            items: controller.leaveTypesList
-                                .map((type) => type.name)
-                                .toList(),
+                            items: controller.leaveTypesList.isNotEmpty
+                                ? controller.leaveTypesList
+                                      .map((type) => type.name)
+                                      .toList()
+                                : ["Loading..."],
                             onChange: controller.setLeaveType,
                             fillColor: ColorResources.blackColor.withOpacity(
                               0.05,

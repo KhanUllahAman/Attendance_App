@@ -118,7 +118,7 @@ class NotificationScreen extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(mq.size.width * 0.04),
             decoration: BoxDecoration(
-              color: ColorResources.blackColor.withOpacity(0.05),
+              color: notification.statusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.white12),
             ),
@@ -147,12 +147,12 @@ class NotificationScreen extends StatelessWidget {
                       notification.priorityColor,
                       mq,
                     ),
-                    SizedBox(width: 6),
-                    _buildTag(
-                      notification.status.capitalize.toString(),
-                      notification.statusColor,
-                      mq,
-                    ),
+                    // SizedBox(width: 6),
+                    // _buildTag(
+                    //   notification.status.capitalize.toString(),
+                    //   notification.statusColor,
+                    //   mq,
+                    // ),
                     Spacer(),
                     Text(
                       notification.formattedSentAt,

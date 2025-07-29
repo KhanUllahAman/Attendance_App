@@ -70,10 +70,10 @@ class ApplyLeaveController extends NetworkManager {
         headers: headers,
       ).timeout(const Duration(seconds: 15));
 
-      if (response['success'] == true) {
+      if (response['status'] == 1) {
         leaveTypesList.assignAll(
-          (response['data'] as List).map((e) => LeaveType.fromJson(e)).toList(),
-        );
+        (response['payload'] as List).map((e) => LeaveType.fromJson(e)).toList(),
+      );
 
         for (var type in leaveTypesList) {
           if (type.name.toLowerCase() == 'sick') {
