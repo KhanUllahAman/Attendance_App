@@ -8,6 +8,7 @@ void customSnackBar(
   String message, {
   SnackBarType snackBarType = SnackBarType.success,
   int durationSeconds = 4,
+  SnackPosition? position = SnackPosition.BOTTOM,
 }) {
   if (Get.context == null) return;
 
@@ -42,7 +43,7 @@ void customSnackBar(
       child: const Text('DISMISS', style: TextStyle(color: Colors.white)),
       onPressed: () => Get.back(),
     ),
-    snackPosition: SnackPosition.BOTTOM,
+    snackPosition: position ?? SnackPosition.BOTTOM,
     animationDuration: const Duration(milliseconds: 300),
     isDismissible: true,
   );

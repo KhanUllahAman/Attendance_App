@@ -63,4 +63,15 @@ class NotificationModel {
         return Colors.grey;
     }
   }
+
+  Color get statusColor {
+    switch (status.toLowerCase()) {
+      case 'unread':
+        return Colors.red;
+      case 'read':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
 }

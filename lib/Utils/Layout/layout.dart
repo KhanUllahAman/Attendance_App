@@ -368,6 +368,7 @@ class Layout extends StatelessWidget {
 
   Widget _buildCurvedNavigationBar() {
     return CurvedNavigationBar(
+      height: 75.0,
       index: currentTab,
       items: const <Widget>[
         Icon(Iconsax.clock, size: 30, color: Colors.white),

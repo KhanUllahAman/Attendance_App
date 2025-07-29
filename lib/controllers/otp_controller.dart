@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../AuthServices/auth_service.dart';
+import '../AuthServices/notification_services.dart';
 import '../Network/Network Manager/network_manager.dart';
 import '../Network/network.dart';
 import '../Utils/Constant/api_url_constant.dart';
@@ -11,8 +12,10 @@ import '../screens/home_screen.dart';
 
 class OtpController extends NetworkManager {
   final RxBool isLoading = false.obs;
-  final List<TextEditingController> otpControllers =
-      List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
   final List<FocusNode> focusNodes = List.generate(6, (index) => FocusNode());
   final RxString username = ''.obs;
   final RxString errorMessage = ''.obs;
@@ -41,21 +44,21 @@ class OtpController extends NetworkManager {
     isLoading.value = true;
     try {
       final otp = otpControllers.map((controller) => controller.text).join();
-      final data = {
-        'username': username.value,
-        'otp': int.parse(otp),
-      };
+      final data = {'username': username.value, 'otp': int.parse(otp)};
 
-      final response = await Network.postApi(
-        null,
-        verifyOtpApi, 
-        data,
-        {'Content-Type': 'application/json'},
-      );
+      final response = await Network.postApi(null, verifyOtpApi, data, {
+        'Content-Type': 'application/json',
+      });
 
       final otpResponse = OtpResponse.fromJson(response);
       if (otpResponse.status == 1 && otpResponse.payload.isNotEmpty) {
         await authService.saveAuthData(otpResponse.payload.first);
+        // Register FCM token after successful OTP verification
+        final employeeId = otpResponse
+            .payload
+            .first
+            .employeeId;
+        await NotificationService().registerFcmToken(employeeId);
         customSnackBar(
           'OTP Verified',
           otpResponse.message,

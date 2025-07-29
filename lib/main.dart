@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +10,41 @@ import 'package:orioattendanceapp/firebase_options.dart';
 import 'Screens/splash_screen.dart';
 import 'Utils/AppWidget/App_widget.dart';
 import 'Utils/Routes/routes.dart';
+import 'Utils/Snack Bar/custom_snack_bar.dart';
 import 'Utils/theme/theme_data.dart';
+import 'screens/home_screen.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint('Background message received: ${message.notification?.title}');
+}
+
+Future<void> _setupFirebaseMessaging() async {
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    log('Foreground message received: ${message.notification?.title}');
+    if (message.notification != null) {
+      customSnackBar(
+        position: SnackPosition.TOP,
+        message.notification!.title ?? 'Notification',
+        message.notification!.body ?? '',
+        snackBarType: SnackBarType.info,
+      );
+    }
+  });
+
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    _handleMessage(initialMessage);
+  }
+  FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+}
+
+void _handleMessage(RemoteMessage message) {
+  debugPrint('Notification opened: ${message.notification?.title}');
+  Get.toNamed(HomeScreen.routeName); 
+}
 
 void main() async {
   if (kDebugMode) {
@@ -15,6 +52,7 @@ void main() async {
   }
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _setupFirebaseMessaging(); // Initialize FCM handlers
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

@@ -147,6 +147,12 @@ class NotificationScreen extends StatelessWidget {
                       notification.priorityColor,
                       mq,
                     ),
+                    SizedBox(width: 6),
+                    _buildTag(
+                      notification.status.capitalize.toString(),
+                      notification.statusColor,
+                      mq,
+                    ),
                     Spacer(),
                     Text(
                       notification.formattedSentAt,
