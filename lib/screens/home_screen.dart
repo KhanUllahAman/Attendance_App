@@ -7,6 +7,7 @@ import 'package:orioattendanceapp/Utils/Colors/color_resoursec.dart';
 import 'package:orioattendanceapp/Utils/Constant/images_constant.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import 'package:orioattendanceapp/screens/daily_attendance_record_screen.dart';
+import 'package:orioattendanceapp/screens/profile_view_screen.dart';
 import '../Controllers/home_screen_controller.dart';
 import '../Utils/AppWidget/App_widget.dart';
 
@@ -91,7 +92,11 @@ class HomeScreen extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Get.toNamed(
+                                              ProfileViewScreen.routeName,
+                                            );
+                                          },
                                           child: Row(
                                             children: [
                                               CircleAvatar(

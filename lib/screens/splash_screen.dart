@@ -60,25 +60,6 @@ class SplashScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    TweenAnimationBuilder(
-                      tween: Tween<double>(begin: 0.0, end: 1.0),
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeIn,
-                      builder: (context, opacity, child) {
-                        return Opacity(
-                          opacity: opacity,
-                          child: Text(
-                            'Orio Attendance App',
-                            style: GoogleFonts.sora(
-                              fontSize: titleFontSize.clamp(20.0, 30.0),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
                     SizedBox(height: spacing * 1.5),
                     TweenAnimationBuilder(
                       tween: Tween<double>(begin: 0.0, end: 1.0),

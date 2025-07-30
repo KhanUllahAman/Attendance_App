@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:orioattendanceapp/Controllers/notification_controller.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Controllers/dropdown_controller.dart';
 import '../../Network/Network Manager/network_manager.dart';
@@ -22,6 +23,7 @@ extension AppWidgetExtension on Widget {
 class AppBindings extends Bindings {
   @override
   void dependencies() {
+    Get.put(NotificationController());
     Get.put(NetworkManager());
   }
 }
@@ -117,7 +119,7 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
         filled: true,
         fillColor: widget.readOnly
             ? ColorResources.blackColor.withOpacity(0.025)
-            : ColorResources.blackColor.withOpacity(0.05),
+            : ColorResources.blackColor.withOpacity(0.06),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
           borderSide: BorderSide.none,

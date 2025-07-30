@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/firebase_options.dart';
 import 'Controllers/backgroundNotification_controller.dart';
+import 'Controllers/notification_controller.dart';
 import 'Controllers/splash_controller.dart';
 import 'Screens/splash_screen.dart';
 import 'Utils/AppWidget/App_widget.dart';
@@ -22,15 +23,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final notificationController = BackgroundnotificationController();
   notificationController.newNotification();
 }
+
 Future<void> _setupFirebaseMessaging() async {
   final notificationController = Get.put(BackgroundnotificationController());
-  
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     log('Foreground message received: ${message.notification?.title}');
     notificationController.newNotification();
-    
+    if (Get.currentRoute == NotificationScreen.routeName) {
+      Get.find<NotificationController>().fetchAllNotifications();
+    }
+
     if (message.notification != null) {
       showNotificationSnackBar(
         onTap: () => Get.toNamed(NotificationScreen.routeName),
@@ -43,25 +48,29 @@ Future<void> _setupFirebaseMessaging() async {
     }
   });
 
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance
+      .getInitialMessage();
   if (initialMessage != null) {
     debugPrint('App opened from terminated state via notification');
     notificationController.newNotification();
-    
+
     Future.delayed(const Duration(milliseconds: 500), () {
       _handleMessage(initialMessage);
     });
   }
-  
+
   FirebaseMessaging.onMessageOpenedApp.listen((message) {
     notificationController.newNotification();
+    if (Get.currentRoute == NotificationScreen.routeName) {
+      Get.find<NotificationController>().fetchAllNotifications();
+    }
     _handleMessage(message);
   });
 }
 
 void _handleMessage(RemoteMessage message) {
   debugPrint('Notification opened: ${message.notification?.title}');
-  
+
   Future.delayed(Duration.zero, () {
     if (Get.currentRoute == SplashScreen.routeName) {
       final controller = Get.find<SplashController>();

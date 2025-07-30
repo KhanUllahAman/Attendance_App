@@ -72,8 +72,10 @@ class ApplyLeaveController extends NetworkManager {
 
       if (response['status'] == 1) {
         leaveTypesList.assignAll(
-        (response['payload'] as List).map((e) => LeaveType.fromJson(e)).toList(),
-      );
+          (response['payload'] as List)
+              .map((e) => LeaveType.fromJson(e))
+              .toList(),
+        );
 
         for (var type in leaveTypesList) {
           if (type.name.toLowerCase() == 'sick') {
@@ -99,19 +101,57 @@ class ApplyLeaveController extends NetworkManager {
 
   Future<void> submitLeaveApplication(BuildContext context) async {
     try {
-      if (leaveTypeController.value.selectedItem.isEmpty ||
-          startDate == null ||
-          endDate == null ||
-          reasonController.text.isEmpty) {
+      // Validate leave type selection
+      if (leaveTypeController.value.selectedItem.isEmpty) {
         customSnackBar(
-          "Missing Fields",
-          "Please fill all fields",
+          "Leave Type Required",
+          "Please select a leave type",
           snackBarType: SnackBarType.error,
         );
         return;
       }
 
-      isLoading.value = true; 
+      // Validate start date
+      if (startDate == null) {
+        customSnackBar(
+          "Start Date Required",
+          "Please select a start date",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Validate end date
+      if (endDate == null) {
+        customSnackBar(
+          "End Date Required",
+          "Please select an end date",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Validate reason
+      if (reasonController.text.isEmpty) {
+        customSnackBar(
+          "Reason Required",
+          "Please enter a reason for leave",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Check if end date is before start date
+      if (endDate!.isBefore(startDate!)) {
+        customSnackBar(
+          "Invalid Date Range",
+          "End date cannot be before start date",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      isLoading.value = true;
       update();
 
       final token = await _getToken();
@@ -162,12 +202,10 @@ class ApplyLeaveController extends NetworkManager {
           response['message'] ?? "Leave application submitted",
           snackBarType: SnackBarType.success,
         );
-        // Refresh leave history
         final leaveHistoryController = Get.find<LeaveHistoryController>();
         await leaveHistoryController.fetchAllLeaveData();
         await Future.delayed(const Duration(milliseconds: 1500));
         Navigator.pop(context);
-        
       } else {
         throw Exception(
           response['message'] ?? 'Failed to submit leave application',
@@ -193,7 +231,7 @@ class ApplyLeaveController extends NetworkManager {
     return await AuthService().getEmployeeId();
   }
 
-   void clearFormFields() {
+  void clearFormFields() {
     leaveTypeController.value.selectedItem;
     reasonController.clear();
     startDate = null;

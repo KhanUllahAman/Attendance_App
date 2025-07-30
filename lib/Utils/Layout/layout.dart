@@ -996,7 +996,7 @@ class Layout extends StatelessWidget {
                 break;
               case 2:
                 notificationController.clearNotification();
-                Get.offNamed(NotificationScreen.routeName);
+                Get.toNamed(NotificationScreen.routeName);
                 break;
               case 3:
                 Get.toNamed(ProfileViewScreen.routeName);

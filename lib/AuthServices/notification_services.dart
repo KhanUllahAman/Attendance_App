@@ -42,29 +42,29 @@ class NotificationService {
           );
         } else {
           developer.log('Failed to retrieve FCM token: Token is null');
-          customSnackBar(
-            'Error',
-            'Failed to retrieve FCM token.',
-            snackBarType: SnackBarType.error,
-          );
+          // customSnackBar(
+          //   'Error',
+          //   'Failed to retrieve FCM token.',
+          //   snackBarType: SnackBarType.error,
+          // );
         }
       } else {
         developer.log(
           'Notification permissions not granted: ${settings.authorizationStatus}',
         );
-        customSnackBar(
-          'Error',
-          'Notification permissions not granted.',
-          snackBarType: SnackBarType.error,
-        );
+        // customSnackBar(
+        //   'Error',
+        //   'Notification permissions not granted.',
+        //   snackBarType: SnackBarType.error,
+        // );
       }
     } catch (e, stackTrace) {
       developer.log('Error retrieving FCM token: $e', stackTrace: stackTrace);
-      customSnackBar(
-        'Error',
-        'Failed to register for notifications: $e',
-        snackBarType: SnackBarType.error,
-      );
+      // customSnackBar(
+      //   'Error',
+      //   'Failed to register for notifications: $e',
+      //   snackBarType: SnackBarType.error,
+      // );
     }
   }
 

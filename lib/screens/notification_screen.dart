@@ -10,9 +10,13 @@ import '../Utils/Colors/color_resoursec.dart';
 
 class NotificationScreen extends StatelessWidget {
   static const String routeName = '/notificationScreen';
-  final NotificationController controller = Get.put(NotificationController());
+  final NotificationController controller = Get.find<NotificationController>(); // Use Get.find to reuse existing controller
 
-  NotificationScreen({super.key});
+  NotificationScreen({super.key}) {
+    Future.delayed(Duration.zero, () {
+      controller.fetchAllNotifications();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +30,6 @@ class NotificationScreen extends StatelessWidget {
         showAppBar: true,
         showBackButton: true,
         showLogo: true,
-        actionButtons: [
-          IconButton(
-            icon: Icon(Iconsax.more, color: ColorResources.whiteColor),
-            onPressed: () {},
-          ),
-        ],
         body: Obx(() {
           if (controller.connectionType.value == 0) {
             return buildFullScreenOfflineUI(mq);
@@ -55,7 +53,6 @@ class NotificationScreen extends StatelessWidget {
                         },
                         child: RefreshIndicator(
                           elevation: 0.0,
-
                           color: ColorResources.backgroundWhiteColor,
                           backgroundColor: ColorResources.appMainColor,
                           onRefresh: () async {
@@ -118,7 +115,7 @@ class NotificationScreen extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(mq.size.width * 0.04),
             decoration: BoxDecoration(
-              color: notification.statusColor.withOpacity(0.1),
+              color: ColorResources.blackColor.withOpacity(0.05),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.white12),
             ),

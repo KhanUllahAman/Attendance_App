@@ -824,7 +824,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
             ],
           );
         }),
-      ),
+      ).noKeyboard(),
     );
   }
 
@@ -838,7 +838,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
             label,
             style: GoogleFonts.sora(
               color: ColorResources.blackColor,
-              fontSize: mq.size.width * 0.038, // Match CustomTextFeild style
+              fontSize: mq.size.width * 0.038,
             ),
           ),
           SizedBox(height: 4),
@@ -849,18 +849,30 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
               vertical: mq.size.height * 0.015,
             ),
             decoration: BoxDecoration(
-              color: ColorResources.blackColor.withOpacity(
-                0.05,
-              ), // Match CustomTextFeild
+              color: ColorResources.blackColor.withOpacity(0.02),
               borderRadius: BorderRadius.circular(mq.size.width * 0.03),
-            ),
-            child: Text(
-              value,
-              style: GoogleFonts.sora(
-                color: Colors.black54, // Match CustomTextFeild text color
-                fontSize:
-                    mq.size.width * 0.038, // Match CustomTextFeild font size
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.3), // Light grey border
+                width: 1,
               ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: GoogleFonts.sora(
+                      color: Colors.black54,
+                      fontSize: mq.size.width * 0.038,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.lock_outline, // Lock icon to indicate non-editable
+                  size: 16,
+                  color: Colors.grey.withOpacity(0.6),
+                ),
+              ],
             ),
           ),
         ],

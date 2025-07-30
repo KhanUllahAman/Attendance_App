@@ -267,13 +267,13 @@ class LeaveHistoryPageScreen extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: darkColor.withOpacity(0.3),
-              blurRadius: 6,
-              offset: const Offset(2, 4),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: darkColor.withOpacity(0.3),
+          //     blurRadius: 6,
+          //     offset: const Offset(2, 4),
+          //   ),
+          // ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,7 +405,11 @@ class LeaveHistoryPageScreen extends StatelessWidget {
               ),
               _buildDetailItem("Applied on", leave.formattedAppliedOn, mq),
               _buildDetailItem("Approved By", leave.formattedApprovedBy, mq),
-              _buildDetailItem("Approved On", leave.formattedApprovedOn, mq),
+              // if(leave.approvedOn != null)
+              //   _buildDetailItem("Approved on", leave.appliedOn, mq),
+              leave.approvedOn != null
+                  ? _buildDetailItem("Approved on", leave.approvedOn!, mq)
+                  : _buildDetailItem("Approved on", "--", mq),
               _buildDetailItem("Remarks", leave.remarks ?? "--", mq),
               SizedBox(height: mq.size.height * 0.02),
             ],

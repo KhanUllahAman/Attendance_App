@@ -103,25 +103,35 @@ class ApplyLeaveScreen extends StatelessWidget {
                           );
                         }),
                         SizedBox(height: mq.size.height * 0.02),
-
-                        // Date Range Picker Button
-                        AppButton(
-                          mediaQuery: mq,
-                          isLoading: false,
-                          onPressed: () =>
+                        GestureDetector(
+                          onTap: () =>
                               _openDateRangePicker(context, controller),
-                          child: Obx(
-                            () => Text(
-                              controller.selectedDateRangeText.value.isEmpty
-                                  ? 'Select Date Range'
-                                  : controller.selectedDateRangeText.value,
-                              style: GoogleFonts.sora(
-                                color: ColorResources.whiteColor,
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: mq.size.width * 0.04,
+                              vertical: mq.size.height * 0.015,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorResources.blackColor.withOpacity(
+                                0.05,
+                              ), // आपका ग्रे कलर
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Obx(
+                              () => Center(
+                                child: Text(
+                                  controller.selectedDateRangeText.value.isEmpty
+                                      ? 'Select Date Range'
+                                      : controller.selectedDateRangeText.value,
+                                  style: GoogleFonts.sora(
+                                    color: ColorResources.blackColor,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-
                         SizedBox(height: mq.size.height * 0.02),
                         // Reason Field
                         CustomTextFeild(
@@ -213,7 +223,9 @@ class ApplyLeaveScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => CustomDateRangePicker(
+        allowPastDates: false,
         allowFutureDates: true,
+        firstDate: DateTime.now(),
         onDateRangeSelected: (start, end) {
           controller.setDateRange(start, end);
         },

@@ -41,12 +41,31 @@ class AttendanceCorrectionController extends NetworkManager {
 
   Future<void> submitRequest(BuildContext context) async {
     try {
-      if (selectedDate.value == null ||
-          selectedRequestType.value == null ||
-          reasonController.text.isEmpty) {
+      // Validate date
+      if (selectedDate.value == null) {
         customSnackBar(
-          "Error",
-          "Please fill all required fields",
+          "Date Required",
+          "Please select a date for correction",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Validate request type
+      if (selectedRequestType.value == null) {
+        customSnackBar(
+          "Request Type Required",
+          "Please select a request type",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Validate reason
+      if (reasonController.text.isEmpty) {
+        customSnackBar(
+          "Reason Required",
+          "Please enter a reason for correction",
           snackBarType: SnackBarType.error,
         );
         return;
@@ -56,7 +75,7 @@ class AttendanceCorrectionController extends NetworkManager {
       final type = selectedRequestType.value!;
       if (type.requiresCheckIn && checkInTime.value == null) {
         customSnackBar(
-          "Error",
+          "Check-In Time Required",
           "Please select check-in time",
           snackBarType: SnackBarType.error,
         );
@@ -65,11 +84,42 @@ class AttendanceCorrectionController extends NetworkManager {
 
       if (type.requiresCheckOut && checkOutTime.value == null) {
         customSnackBar(
-          "Error",
+          "Check-Out Time Required",
           "Please select check-out time",
           snackBarType: SnackBarType.error,
         );
         return;
+      }
+
+      // Validate check-out time is after check-in time if both exist
+      if (type.requiresCheckIn && type.requiresCheckOut) {
+        final checkIn = checkInTime.value!;
+        final checkOut = checkOutTime.value!;
+
+        final checkInDateTime = DateTime(
+          selectedDate.value!.year,
+          selectedDate.value!.month,
+          selectedDate.value!.day,
+          checkIn.hour,
+          checkIn.minute,
+        );
+
+        final checkOutDateTime = DateTime(
+          selectedDate.value!.year,
+          selectedDate.value!.month,
+          selectedDate.value!.day,
+          checkOut.hour,
+          checkOut.minute,
+        );
+
+        if (checkOutDateTime.isBefore(checkInDateTime)) {
+          customSnackBar(
+            "Invalid Time Range",
+            "Check-out time cannot be before check-in time",
+            snackBarType: SnackBarType.error,
+          );
+          return;
+        }
       }
 
       isLoading.value = true;
@@ -104,6 +154,7 @@ class AttendanceCorrectionController extends NetworkManager {
             ? _formatTimeForApi(checkOutTime.value!)
             : null,
       };
+
       log("This is body $body");
       final response = await Network.postApi(
         null,
@@ -119,7 +170,8 @@ class AttendanceCorrectionController extends NetworkManager {
           snackBarType: SnackBarType.success,
         );
         clearForm();
-        final mycorrectionrequestlistController = Get.find<MyCorrectionRequestListController>();
+        final mycorrectionrequestlistController =
+            Get.find<MyCorrectionRequestListController>();
         await mycorrectionrequestlistController.fetchCorrectionRequests();
         await Future.delayed(const Duration(milliseconds: 1500));
         Navigator.pop(context);

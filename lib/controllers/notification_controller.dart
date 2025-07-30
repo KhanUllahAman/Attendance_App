@@ -16,6 +16,7 @@ class NotificationController extends NetworkManager {
   final RxString errorMessage = ''.obs;
   final RxBool hasInitialLoad = false.obs;
   StreamSubscription? _connectivitySubscription;
+  DateTime? _lastFetchTime;
 
   @override
   void onInit() {
@@ -48,6 +49,10 @@ class NotificationController extends NetworkManager {
   }
 
   Future<void> fetchAllNotifications() async {
+    if (_lastFetchTime != null &&
+        DateTime.now().difference(_lastFetchTime!).inSeconds < 30) {
+      return; // Skip fetching if recent fetch exists
+    }
     if (connectionType.value == 0) {
       errorMessage.value = 'No internet connection';
       isLoading.value = false;
@@ -92,6 +97,7 @@ class NotificationController extends NetworkManager {
         filteredNotifications.assignAll(notificationsList);
         errorMessage.value = '';
         hasInitialLoad.value = true;
+        _lastFetchTime = DateTime.now(); // Update last fetch time
       } else {
         throw Exception(response['message'] ?? 'Failed to fetch notifications');
       }
