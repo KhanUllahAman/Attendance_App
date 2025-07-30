@@ -891,6 +891,7 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final bottomPadding = mediaQuery.padding.bottom * 0.4;
     double defaultAppBarHeight = mediaQuery.size.height * 0.07;
 
     return Scaffold(
@@ -942,7 +943,10 @@ class Layout extends StatelessWidget {
             )
           : null,
       body: body,
-      bottomNavigationBar: _buildCurvedNavigationBar(),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: bottomPadding),
+        child: _buildCurvedNavigationBar(),
+      ),
     );
   }
 

@@ -53,11 +53,11 @@ class ColorResources {
       statusBarColor: statusBarColor ?? Colors.transparent,
       statusBarIconBrightness: statusBarIconBrightness ?? Brightness.light,
       statusBarBrightness: statusBarBrightness ?? Brightness.light,
-      systemNavigationBarColor: systemNavigationBarColor ?? Colors.transparent,
+      systemNavigationBarColor: systemNavigationBarColor ?? appMainColor,
       systemNavigationBarDividerColor:
           systemNavigationBarDividerColor ?? Colors.transparent,
       systemNavigationBarIconBrightness:
-          systemNavigationBarIconBrightness ?? Brightness.dark,
+          systemNavigationBarIconBrightness ?? Brightness.light,
     );
   }
 

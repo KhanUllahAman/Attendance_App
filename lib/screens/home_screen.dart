@@ -66,7 +66,10 @@ class HomeScreen extends StatelessWidget {
                           height: mediaQuery.size.height * 0.22,
                           decoration: BoxDecoration(
                             color: ColorResources.appMainColor,
-                            borderRadius: BorderRadius.circular(20.0),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            ),
                           ),
                           child: Stack(
                             children: [
