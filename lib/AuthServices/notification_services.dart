@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../Network/network.dart';
 import '../Utils/Constant/api_url_constant.dart';
-import '../Utils/Snack Bar/custom_snack_bar.dart';
 import '../models/fcm_model.dart';
 
 class NotificationService {
@@ -84,26 +83,26 @@ class NotificationService {
         developer.log(
           'FCM token registered successfully: ${fcmResponse.message}',
         );
-        customSnackBar(
-          'Success',
-          fcmResponse.message,
-          snackBarType: SnackBarType.success,
-        );
+        // customSnackBar(
+        //   'Success',
+        //   fcmResponse.message,
+        //   snackBarType: SnackBarType.success,
+        // );
       } else {
         developer.log('FCM token registration failed: ${fcmResponse.message}');
-        customSnackBar(
-          'Error',
-          'Failed to register FCM token: ${fcmResponse.message}',
-          snackBarType: SnackBarType.error,
-        );
+        // customSnackBar(
+        //   'Error',
+        //   'Failed to register FCM token: ${fcmResponse.message}',
+        //   snackBarType: SnackBarType.error,
+        // );
       }
     } catch (e, stackTrace) {
       developer.log('Error sending FCM token: $e', stackTrace: stackTrace);
-      customSnackBar(
-        'Error',
-        'Failed to register FCM token: $e',
-        snackBarType: SnackBarType.error,
-      );
+      // customSnackBar(
+      //   'Error',
+      //   'Failed to register FCM token: $e',
+      //   snackBarType: SnackBarType.error,
+      // );
     }
   }
 }

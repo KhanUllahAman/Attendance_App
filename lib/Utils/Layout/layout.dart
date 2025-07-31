@@ -970,7 +970,7 @@ class Layout extends StatelessWidget {
                   right: 0,
                   top: 0,
                   child: Container(
-                    width: 12, // Fixed small size for dot
+                    width: 12,
                     height: 12, // Fixed small size for dot
                     decoration: BoxDecoration(
                       color: Colors.red,
@@ -985,7 +985,7 @@ class Layout extends StatelessWidget {
         ],
         color: ColorResources.appMainColor,
         buttonBackgroundColor: ColorResources.appMainColor.withOpacity(0.7),
-        backgroundColor: Colors.transparent,
+        backgroundColor: ColorResources.backgroundWhiteColor,
         animationCurve: Curves.easeOutCubic,
         animationDuration: const Duration(milliseconds: 300),
         letIndexChange: (index) => true,

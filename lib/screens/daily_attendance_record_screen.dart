@@ -235,7 +235,6 @@ class _AttendanceCard extends StatelessWidget {
   }
 
   void _showDetailsBottomSheet(BuildContext context) {
-    // Get screen width and text scale factor for bottom sheet
     final double screenWidth = MediaQuery.of(context).size.width;
     final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
     final double titleFontSize = screenWidth * 0.045 * textScaleFactor;
@@ -248,45 +247,48 @@ class _AttendanceCard extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(padding),
-        decoration: BoxDecoration(
-          color: ColorResources
-              .backgroundWhiteColor, // Ensure ColorResources is defined
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(borderRadius),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: Container(
-                  width: handleWidth,
-                  height: handleHeight,
-                  decoration: BoxDecoration(
-                    color: ColorResources.greyColor,
-                    borderRadius: BorderRadius.circular(handleHeight * 0.5),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5, // Initial height
+        minChildSize: 0.3, // Minimum height when collapsed
+        maxChildSize: 0.9, // Maximum height when expanded
+        builder: (context, scrollController) {
+          return Container(
+            padding: EdgeInsets.all(padding),
+            decoration: BoxDecoration(
+              color: ColorResources.backgroundWhiteColor,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(borderRadius),
+              ),
+            ),
+            child: ListView(
+              controller: scrollController,
+              children: [
+                Center(
+                  child: Container(
+                    width: handleWidth,
+                    height: handleHeight,
+                    decoration: BoxDecoration(
+                      color: ColorResources.greyColor,
+                      borderRadius: BorderRadius.circular(handleHeight * 0.5),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: padding),
-              Text(
-                'Attendance Details',
-                style: GoogleFonts.sora(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: ColorResources.blackColor,
+                SizedBox(height: padding),
+                Text(
+                  'Attendance Details',
+                  style: GoogleFonts.sora(
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: ColorResources.blackColor,
+                  ),
                 ),
-              ),
-              SizedBox(height: padding),
-              _buildDetailTable(), // Ensure this method is responsive if needed
-              SizedBox(height: padding),
-            ],
-          ),
-        ),
+                SizedBox(height: padding),
+                _buildDetailTable(),
+                SizedBox(height: padding),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -73,131 +73,159 @@ class HomeScreen extends StatelessWidget {
                           ),
                           child: Stack(
                             children: [
-                              if (controller.connectionType.value == 0)
-                                _buildOfflineBanner(mediaQuery),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: mediaQuery.size.height * 0.02,
-                                  vertical: mediaQuery.size.width * 0.02,
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      height:
-                                          controller.connectionType.value == 0
-                                          ? mediaQuery.size.height * 0.04
-                                          : 0,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Get.toNamed(
-                                              ProfileViewScreen.routeName,
-                                            );
-                                          },
-                                          child: Row(
+                              controller.connectionType.value == 0
+                                  ? _buildOfflineBanner(mediaQuery)
+                                  : Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            mediaQuery.size.height * 0.02,
+                                        vertical: mediaQuery.size.width * 0.02,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                            height:
+                                                controller
+                                                        .connectionType
+                                                        .value ==
+                                                    0
+                                                ? mediaQuery.size.height * 0.04
+                                                : 0,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              CircleAvatar(
-                                                radius:
-                                                    mediaQuery.size.width *
-                                                    0.06,
-                                                backgroundImage:
-                                                    controller
-                                                        .profileImageUrl
-                                                        .value
-                                                        .isNotEmpty
-                                                    ? NetworkImage(
-                                                        controller
-                                                            .profileImageUrl
-                                                            .value,
-                                                      )
-                                                    : const AssetImage(
-                                                            "assets/images/profile.png",
-                                                          )
-                                                          as ImageProvider,
-                                                backgroundColor: ColorResources
-                                                    .backgroundWhiteColor,
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: ColorResources
-                                                          .backgroundWhiteColor,
-                                                      width: 1.5,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Get.toNamed(
+                                                    ProfileViewScreen.routeName,
+                                                  );
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      width:
+                                                          mediaQuery
+                                                              .size
+                                                              .width *
+                                                          0.12, // Double the radius
+                                                      height:
+                                                          mediaQuery
+                                                              .size
+                                                              .width *
+                                                          0.12,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color: ColorResources
+                                                              .backgroundWhiteColor,
+                                                          width: 1.5,
+                                                        ),
+                                                        image: DecorationImage(
+                                                          image:
+                                                              controller
+                                                                  .profileImageUrl
+                                                                  .value
+                                                                  .isNotEmpty
+                                                              ? NetworkImage(
+                                                                  controller
+                                                                      .profileImageUrl
+                                                                      .value,
+                                                                )
+                                                              : const AssetImage(
+                                                                      "assets/images/profile.png",
+                                                                    )
+                                                                    as ImageProvider,
+                                                          fit: BoxFit
+                                                              .contain, // This makes the image cover the circle
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    SizedBox(
+                                                      width:
+                                                          mediaQuery
+                                                              .size
+                                                              .width *
+                                                          0.03,
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Obx(
+                                                          () => Text(
+                                                            'Hi, ${controller.userName.value.capitalizeFirst}',
+                                                            style: GoogleFonts.sora(
+                                                              fontSize:
+                                                                  mediaQuery
+                                                                      .size
+                                                                      .width *
+                                                                  0.040,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color:
+                                                                  ColorResources
+                                                                      .whiteColor,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              mediaQuery
+                                                                  .size
+                                                                  .height *
+                                                              0.005,
+                                                        ),
+                                                        Obx(
+                                                          () => Text(
+                                                            controller
+                                                                .greeting
+                                                                .value,
+                                                            style: GoogleFonts.sora(
+                                                              fontSize:
+                                                                  mediaQuery
+                                                                      .size
+                                                                      .width *
+                                                                  0.035,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color: ColorResources
+                                                                  .whiteColor
+                                                                  .withOpacity(
+                                                                    0.8,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              SizedBox(
+                                              Image.asset(
+                                                ImagesConstant.splashImages,
                                                 width:
-                                                    mediaQuery.size.width *
-                                                    0.03,
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Obx(
-                                                    () => Text(
-                                                      'Hi, ${controller.userName.value.capitalizeFirst}',
-                                                      style: GoogleFonts.sora(
-                                                        fontSize:
-                                                            mediaQuery
-                                                                .size
-                                                                .width *
-                                                            0.040,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: ColorResources
-                                                            .whiteColor,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        mediaQuery.size.height *
-                                                        0.005,
-                                                  ),
-                                                  Obx(
-                                                    () => Text(
-                                                      controller.greeting.value,
-                                                      style: GoogleFonts.sora(
-                                                        fontSize:
-                                                            mediaQuery
-                                                                .size
-                                                                .width *
-                                                            0.035,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: ColorResources
-                                                            .whiteColor
-                                                            .withOpacity(0.8),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                    mediaQuery.size.width * 0.2,
+                                                height:
+                                                    mediaQuery.size.width * 0.2,
+                                                fit: BoxFit.contain,
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        Image.asset(
-                                          ImagesConstant.splashImages,
-                                          width: mediaQuery.size.width * 0.2,
-                                          height: mediaQuery.size.width * 0.2,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -375,7 +403,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildOfflineBanner(MediaQueryData mediaQuery) {
     return Positioned(
-      top: mediaQuery.size.height * 0.080, // Adjust this value as needed
+      top: mediaQuery.size.height * 0.080,
       left: 0,
       right: 0,
       child: Container(
@@ -709,7 +737,7 @@ class HomeScreen extends StatelessWidget {
           time,
           style: GoogleFonts.sora(
             fontSize: mediaQuery.size.width * 0.030,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w600,
             color: ColorResources.blackColor,
           ),
         ),
