@@ -24,7 +24,8 @@ class AuthService {
   static const String _userIdKey = 'user_id';
   static const String _employeeIdKey = 'employee_id';
   static const String _employeeCodeKey = 'employee_code';
-  static const String _fullNameKey = 'full_name';
+  static const String fullNameKey = 'full_name';
+  static const String profileImage = 'profile_image';
 
   Future<void> saveAuthData(OtpPayload payload) async {
     final prefs = await SharedPreferences.getInstance();
@@ -33,7 +34,8 @@ class AuthService {
     await prefs.setInt(_userIdKey, payload.id);
     await prefs.setInt(_employeeIdKey, payload.employeeId);
     await prefs.setString(_employeeCodeKey, payload.employee.employeeCode);
-    await prefs.setString(_fullNameKey, payload.employee.fullName);
+    await prefs.setString(fullNameKey, payload.employee.fullName);
+    await prefs.setString(profileImage, payload.employee.profilePicture);
   }
 
   Future<Map<String, dynamic>?> getAuthData() async {
@@ -47,7 +49,7 @@ class AuthService {
       'userId': prefs.getInt(_userIdKey) ?? 0,
       'employeeId': prefs.getInt(_employeeIdKey) ?? 0,
       'employeeCode': prefs.getString(_employeeCodeKey) ?? '',
-      'fullName': prefs.getString(_fullNameKey) ?? '',
+      'fullName': prefs.getString(fullNameKey) ?? '',
     };
   }
 
@@ -63,7 +65,7 @@ class AuthService {
 
   Future<String?> getFullName() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_fullNameKey);
+    return prefs.getString(fullNameKey);
   }
 
   Future<int?> getUserId() async {
@@ -79,6 +81,11 @@ class AuthService {
   Future<String?> getEmployeeCode() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_employeeCodeKey);
+  }
+
+  Future<String?> getProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(profileImage);
   }
 
   // Clear all authentication data

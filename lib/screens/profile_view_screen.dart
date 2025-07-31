@@ -396,6 +396,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:orioattendanceapp/Utils/Layout/layout.dart';
 import '../Controllers/profile_view_controller.dart';
 import '../Utils/AppWidget/App_widget.dart';
@@ -471,26 +472,58 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                   }
                   return Form(
                     key: formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Profile Picture
                         Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              gradient: ColorResources.appBarGradient,
-                              shape: BoxShape.circle,
-                            ),
-                            child: CircleAvatar(
-                              radius: mq.size.width * 0.16,
-                              backgroundImage: AssetImage(
-                                "assets/images/profile.png",
+                          child: Stack(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(7),
+                                decoration: BoxDecoration(
+                                  gradient: ColorResources.appBarGradient,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: CircleAvatar(
+                                  radius: mq.size.width * 0.16,
+                                  backgroundImage: AssetImage(
+                                    "assets/images/profile.png",
+                                  ),
+                                  backgroundColor: ColorResources.whiteColor,
+                                  onBackgroundImageError: (_, __) =>
+                                      const AssetImage(
+                                        'assets/images/profile.png',
+                                      ),
+                                ),
                               ),
-                              backgroundColor: ColorResources.whiteColor,
-                              onBackgroundImageError: (_, __) =>
-                                  const AssetImage('assets/images/profile.png'),
-                            ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _showImagePickerBottomSheet(context),
+                                  child: Container(
+                                    padding: EdgeInsets.all(
+                                      mq.size.width * 0.02,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: ColorResources.appMainColor,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: ColorResources.whiteColor,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Iconsax.camera,
+                                      size: mq.size.width * 0.05,
+                                      color: ColorResources.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         SizedBox(height: mq.size.height * 0.03),
@@ -787,33 +820,38 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                           ),
                         ),
                         SizedBox(height: mq.size.height * 0.03),
-                        AppButton(
-                          mediaQuery: mq,
-                          isLoading: controller.isLoading.value,
-                          onPressed: () {
-                            controller.updateEmployeeProfile({
-                              'full_name': controller.fullNameController.text,
-                              'father_name':
-                                  controller.fatherNameController.text,
-                              'dob': controller.dobController.text,
-                              'email': controller.emailController.text,
-                              'phone': controller.phoneController.text,
-                              'cnic': controller.cnicController.text,
-                              'address': controller.addressController.text,
-                            });
-                          },
-                          child: controller.isLoading.value
-                              ? const CircularProgressIndicator(
-                                  color: ColorResources.appMainColor,
-                                  strokeWidth: 2,
-                                )
-                              : Text(
-                                  'Update Profile',
-                                  style: GoogleFonts.sora(
-                                    color: ColorResources.whiteColor,
-                                    fontSize: mq.size.width * 0.04,
-                                  ),
-                                ),
+                        Obx(
+                          () => AppButton(
+                            mediaQuery: mq,
+                            isLoading: controller.isLoading.value,
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                final updatedData = {
+                                  "employee_id": controller
+                                      .employeeProfile
+                                      .value!
+                                      .employeeId,
+                                  "fullname":
+                                      controller.fullNameController.text,
+                                  "father_name":
+                                      controller.fatherNameController.text,
+                                  "dob": controller.dobController.text,
+                                  "email": controller.emailController.text,
+                                  "phone": controller.phoneController.text,
+                                  "cnic": controller.cnicController.text,
+                                  "address": controller.addressController.text,
+                                };
+                                controller.updateEmployeeProfile(updatedData);
+                              }
+                            },
+                            child: Text(
+                              'Update Profile',
+                              style: GoogleFonts.sora(
+                                color: ColorResources.whiteColor,
+                                fontSize: mq.size.width * 0.04,
+                              ),
+                            ),
+                          ),
                         ),
                         SizedBox(height: mq.size.height * 0.03),
                       ],
@@ -891,6 +929,32 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+
+  void _showImagePickerBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: ColorResources.backgroundWhiteColor,
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Iconsax.gallery),
+                title: Text('Choose from Gallery'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(Iconsax.camera),
+                title: Text('Take a Photo'),
+                onTap: () {},
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

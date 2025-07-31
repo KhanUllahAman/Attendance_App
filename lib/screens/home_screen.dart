@@ -106,9 +106,20 @@ class HomeScreen extends StatelessWidget {
                                                 radius:
                                                     mediaQuery.size.width *
                                                     0.06,
-                                                backgroundImage: const AssetImage(
-                                                  "assets/images/profile.png",
-                                                ),
+                                                backgroundImage:
+                                                    controller
+                                                        .profileImageUrl
+                                                        .value
+                                                        .isNotEmpty
+                                                    ? NetworkImage(
+                                                        controller
+                                                            .profileImageUrl
+                                                            .value,
+                                                      )
+                                                    : const AssetImage(
+                                                            "assets/images/profile.png",
+                                                          )
+                                                          as ImageProvider,
                                                 backgroundColor: ColorResources
                                                     .backgroundWhiteColor,
                                                 child: Container(

@@ -602,6 +602,8 @@ class HomeScreenController extends NetworkManager {
   final RxString greeting = ''.obs;
   final RxString currentTime = ''.obs;
   final RxString currentDate = ''.obs;
+  final RxString profileImageUrl = ''.obs;
+
   Timer? timer;
   final RxBool isProcessingCheckIn = false.obs;
   final RxBool isProcessingCheckOut = false.obs;
@@ -621,6 +623,7 @@ class HomeScreenController extends NetworkManager {
     savedScrollPosition = 0;
     await Future.wait([
       fetchUserName(),
+      fetchProfileImage(),
       fetchHomeData(),
       fetchAttendanceSummary(),
     ]);
@@ -645,6 +648,16 @@ class HomeScreenController extends NetworkManager {
     currentDate.value = DateFormat(
       'MMMM dd, yyyy - EEEE',
     ).format(DateTime.now());
+  }
+
+  Future<void> fetchProfileImage() async {
+    final imageName = await authService.getProfileImage();
+    if (imageName != null && imageName.isNotEmpty) {
+      profileImageUrl.value =
+          'http://162.211.84.202:3001/uploads/users/$imageName';
+    } else {
+      profileImageUrl.value = '';
+    }
   }
 
   Future<void> fetchUserName() async {

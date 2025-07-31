@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:orioattendanceapp/Network/Network%20Manager/network_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../AuthServices/auth_service.dart';
 import '../Network/network.dart';
 import '../Utils/AppWidget/App_widget.dart';
 import '../Utils/Constant/api_url_constant.dart';
 import '../Utils/Snack Bar/custom_snack_bar.dart';
 import '../models/profile_screen_model.dart';
+import 'home_screen_controller.dart';
 
 class ProfileViewController extends NetworkManager {
   final isLoading = false.obs;
@@ -146,7 +148,17 @@ class ProfileViewController extends NetworkManager {
         'Content-Type': 'application/json',
       };
 
-      final body = {'employee_id': employeeId, ...profileData};
+      final body = {
+        'employee_id': employeeId,
+        'fullname': profileData['fullname'] ?? fullNameController.text,
+        'fathername': profileData['fathername'] ?? fatherNameController.text,
+        'dob': profileData['dob'] ?? dobController.text,
+        'email': profileData['email'] ?? emailController.text,
+        'phone': profileData['phone'] ?? phoneController.text,
+        'cnic': profileData['cnic'] ?? cnicController.text.replaceAll('-', ''),
+        'address': profileData['address'] ?? addressController.text,
+      };
+
       log('Sending update request with body: $body');
 
       final response = await Network.putApi(
@@ -156,21 +168,26 @@ class ProfileViewController extends NetworkManager {
         header,
       ).timeout(const Duration(seconds: 15));
 
-      print('Update API response: $response');
+      log('Update API response: $response');
 
       if (response['status'] == 1) {
+        // Update SharedPreferences with new full name
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(AuthService.fullNameKey, fullNameController.text);
+        final homeController = Get.find<HomeScreenController>();
+        homeController.fetchUserName(); // Refresh the username
         customSnackBar(
           "Success",
           "Profile updated successfully",
           snackBarType: SnackBarType.success,
         );
-        // Refresh profile data
+        employeeProfile.value = null;
         await fetchEmployeeProfile();
       } else {
         throw Exception(response['message'] ?? "Failed to update profile");
       }
     } catch (e) {
-      print('Error updating profile: $e');
+      log('Error updating profile: $e');
       customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
