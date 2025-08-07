@@ -1147,10 +1147,20 @@ class HomeScreenController extends NetworkManager {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => CustomDateRangePicker(
-        onDateRangeSelected: (start, end) {
-          setDateRange(start, end);
-        },
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: ColorResources.backgroundWhiteColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.65,
+          minHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        child: CustomDateRangePicker(
+          onDateRangeSelected: (start, end) {
+            setDateRange(start, end);
+          },
+        ),
       ),
     );
   }

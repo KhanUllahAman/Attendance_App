@@ -48,7 +48,13 @@ class NotificationModel {
   }
 
   String get formattedSentAt {
-    return DateFormat('MMM dd, hh:mm a').format(sentAt);
+    try {
+      final sentAtDateUtc = DateTime.parse(sentAt.toString());
+      final sentAtDatePst = sentAtDateUtc.toLocal();
+      return DateFormat('dd-MM-yyyy hh:mm a').format(sentAtDatePst);
+    } catch (e) {
+      return 'Date not available';
+    }
   }
 
   Color get priorityColor {

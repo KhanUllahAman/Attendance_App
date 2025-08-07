@@ -62,110 +62,145 @@ class ApplyLeaveScreen extends StatelessWidget {
                 if (controller.connectionType.value == 0) {
                   return buildFullScreenOfflineUI(mq);
                 }
+
+                // Show loading indicator while fetching leave types
+                if (controller.isLoading.value) {
+                  return Apploader();
+                }
+
                 return Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: mq.size.width * 0.03,
                     vertical: mq.size.width * 0.04,
                   ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: leavecontroller.leaveSummaryList
-                              .map(
-                                (summary) => _buildQuotaBox(
-                                  summary.leaveType,
-                                  "${summary.remaining.toString()} / ${summary.totalQuota}",
-                                  mq,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        SizedBox(height: mq.size.height * 0.02),
-                        Obx(() {
-                          return SearchableDropdown(
-                            hintText: "Select Leave Type",
-                            items: controller.leaveTypesList.isNotEmpty
-                                ? controller.leaveTypesList
-                                      .map((type) => type.name)
-                                      .toList()
-                                : ["Loading..."],
-                            onChange: controller.setLeaveType,
-                            fillColor: ColorResources.blackColor.withOpacity(
-                              0.05,
+                  child: RefreshIndicator(
+                    elevation: 0.0,
+                    color: ColorResources.backgroundWhiteColor,
+                    backgroundColor: ColorResources.appMainColor,
+                    onRefresh: () async {
+                      await controller.fetchLeaveTypes();
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Only show content if leave types are loaded
+                          if (controller.leaveTypesList.isNotEmpty) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: leavecontroller.leaveSummaryList
+                                  .map(
+                                    (summary) => _buildQuotaBox(
+                                      summary.leaveType,
+                                      "${summary.remaining.toString()} / ${summary.totalQuota}",
+                                      mq,
+                                    ),
+                                  )
+                                  .toList(),
                             ),
-                            hintColor: Colors.black38,
-                            textColor: Colors.black54,
-                            dropdownController:
-                                controller.leaveTypeController.value,
-                          );
-                        }),
-                        SizedBox(height: mq.size.height * 0.02),
-                        GestureDetector(
-                          onTap: () =>
-                              _openDateRangePicker(context, controller),
-                          child: Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: mq.size.width * 0.04,
-                              vertical: mq.size.height * 0.015,
-                            ),
-                            decoration: BoxDecoration(
-                              color: ColorResources.blackColor.withOpacity(
+                            SizedBox(height: mq.size.height * 0.02),
+                            SearchableDropdown(
+                              hintText: "Select Leave Type",
+                              items: controller.leaveTypesList
+                                  .map((type) => type.name)
+                                  .toList(),
+                              onChange: controller.setLeaveType,
+                              fillColor: ColorResources.blackColor.withOpacity(
                                 0.05,
-                              ), // आपका ग्रे कलर
-                              borderRadius: BorderRadius.circular(8),
+                              ),
+                              hintColor: Colors.black38,
+                              textColor: Colors.black54,
+                              dropdownController:
+                                  controller.leaveTypeController.value,
+                              isEnabled: !controller.isLoading.value,
                             ),
-                            child: Obx(
-                              () => Center(
-                                child: Text(
-                                  controller.selectedDateRangeText.value.isEmpty
-                                      ? 'Select Date Range'
-                                      : controller.selectedDateRangeText.value,
-                                  style: GoogleFonts.sora(
-                                    color: ColorResources.blackColor,
+                            SizedBox(height: mq.size.height * 0.02),
+                            AbsorbPointer(
+                              absorbing: controller.isLoading.value,
+                              child: GestureDetector(
+                                onTap: () =>
+                                    _openDateRangePicker(context, controller),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: mq.size.width * 0.04,
+                                    vertical: mq.size.height * 0.015,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: ColorResources.blackColor
+                                        .withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Obx(
+                                    () => Center(
+                                      child: Text(
+                                        controller
+                                                .selectedDateRangeText
+                                                .value
+                                                .isEmpty
+                                            ? 'Select Date Range'
+                                            : controller
+                                                  .selectedDateRangeText
+                                                  .value,
+                                        style: GoogleFonts.sora(
+                                          color: controller.isLoading.value
+                                              ? Colors.grey
+                                              : ColorResources.blackColor,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        SizedBox(height: mq.size.height * 0.02),
-                        // Reason Field
-                        CustomTextFeild(
-                          controller: controller.reasonController,
-                          mediaQuery: mq,
-                          hintText: "Reason",
-                          keyboardType: TextInputType.text,
-                          maxLines: 3,
-                        ),
-
-                        SizedBox(height: mq.size.height * 0.02),
-                        // Submit Button
-                        Obx(
-                          () => AppButton(
-                            mediaQuery: mq,
-                            onPressed: () async {
-                              if (controller.leaveTypesList.isEmpty) {
-                                customSnackBar(
-                                  "Error",
-                                  "Leave types not loaded yet",
-                                  snackBarType: SnackBarType.error,
-                                );
-                                return;
-                              }
-                              await controller.submitLeaveApplication(context);
-                            },
-                            isLoading: controller.isLoading.value,
-                            child: Text(
-                              "Submit",
-                              style: GoogleFonts.sora(color: Colors.white),
+                            SizedBox(height: mq.size.height * 0.02),
+                            AbsorbPointer(
+                              absorbing: controller.isLoading.value,
+                              child: CustomTextFeild(
+                                controller: controller.reasonController,
+                                mediaQuery: mq,
+                                hintText: "Reason",
+                                keyboardType: TextInputType.text,
+                                maxLines: 3,
+                                enabled: !controller.isLoading.value,
+                              ),
                             ),
-                          ),
-                        ),
-                      ],
+                            SizedBox(height: mq.size.height * 0.02),
+                            Obx(
+                              () => AppButton(
+                                mediaQuery: mq,
+                                onPressed: () {
+                                  if (!controller.isLoading.value) {
+                                    controller.submitLeaveApplication(context);
+                                  }
+                                },
+                                isLoading: controller.isLoading.value,
+                                child: Text(
+                                  "Submit",
+                                  style: GoogleFonts.sora(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ] else ...[
+                            // Show message if no leave types available
+                            Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  top: mq.size.height * 0.3,
+                                ),
+                                child: Text(
+                                  "No leave types available",
+                                  style: GoogleFonts.sora(
+                                    color: ColorResources.blackColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -173,7 +208,7 @@ class ApplyLeaveScreen extends StatelessWidget {
             ),
             Obx(
               () => controller.isLoading.value
-                  ? Apploader()
+                  ? Text('')
                   : const SizedBox.shrink(),
             ),
           ],
@@ -183,33 +218,43 @@ class ApplyLeaveScreen extends StatelessWidget {
   }
 
   Widget _buildQuotaBox(String title, String count, MediaQueryData mq) {
-    return Container(
-      width: mq.size.width * 0.28,
-      padding: EdgeInsets.symmetric(
-        vertical: mq.size.height * 0.015,
-        horizontal: mq.size.width * 0.02,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: ColorResources.blackColor.withOpacity(0.05),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Column(
-        children: [
-          Text(
-            count,
-            style: TextStyle(
-              color: ColorResources.blackColor,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return AbsorbPointer(
+      absorbing: Get.find<ApplyLeaveController>().isLoading.value,
+      child: Container(
+        width: mq.size.width * 0.28,
+        padding: EdgeInsets.symmetric(
+          vertical: mq.size.height * 0.015,
+          horizontal: mq.size.width * 0.02,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: ColorResources.blackColor.withOpacity(0.05),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          children: [
+            Text(
+              count,
+              style: TextStyle(
+                color: Get.find<ApplyLeaveController>().isLoading.value
+                    ? Colors.grey
+                    : ColorResources.blackColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(color: ColorResources.blackColor, fontSize: 12),
-          ),
-        ],
+            SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                color: Get.find<ApplyLeaveController>().isLoading.value
+                    ? Colors.grey
+                    : ColorResources.blackColor,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -218,17 +263,29 @@ class ApplyLeaveScreen extends StatelessWidget {
     BuildContext context,
     ApplyLeaveController controller,
   ) {
+    if (controller.isLoading.value) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => CustomDateRangePicker(
-        allowPastDates: false,
-        allowFutureDates: true,
-        firstDate: DateTime.now(),
-        onDateRangeSelected: (start, end) {
-          controller.setDateRange(start, end);
-        },
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: ColorResources.backgroundWhiteColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.65,
+          minHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        child: CustomDateRangePicker(
+          allowPastDates: false,
+          allowFutureDates: true,
+          firstDate: DateTime.now(),
+          onDateRangeSelected: (start, end) {
+            controller.setDateRange(start, end);
+          },
+        ),
       ),
     );
   }

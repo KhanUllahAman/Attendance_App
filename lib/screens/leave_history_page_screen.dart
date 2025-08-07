@@ -144,7 +144,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                         );
                       }
                       return ListView.separated(
-                        physics: const BouncingScrollPhysics(),
+                        physics: const AlwaysScrollableScrollPhysics(),
                         padding: EdgeInsets.only(
                           left: mq.size.width * 0.04,
                           right: mq.size.width * 0.04,
@@ -345,6 +345,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
     LeaveHistory leave,
   ) {
     showModalBottomSheet(
+      useSafeArea: true,
       context: context,
       backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
@@ -380,11 +381,7 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    leave.leaveTypeId == 1
-                        ? "Sick Leave"
-                        : leave.leaveTypeId == 2
-                        ? "Casual Leave"
-                        : "Annual Leave",
+                    leave.leaveTypeName,
                     style: GoogleFonts.sora(
                       fontSize: mq.size.width * 0.045,
                       fontWeight: FontWeight.bold,
@@ -404,11 +401,13 @@ class LeaveHistoryPageScreen extends StatelessWidget {
                 color: leave.statusColor,
               ),
               _buildDetailItem("Applied on", leave.formattedAppliedOn, mq),
-              _buildDetailItem("Approved By", leave.formattedApprovedBy, mq),
-              // if(leave.approvedOn != null)
-              //   _buildDetailItem("Approved on", leave.appliedOn, mq),
+              _buildDetailItem("Approved By", leave.approver ?? '--', mq),
               leave.approvedOn != null
-                  ? _buildDetailItem("Approved on", leave.approvedOn!, mq)
+                  ? _buildDetailItem(
+                      "Approved on",
+                      leave.formattedApprovedOn!,
+                      mq,
+                    )
                   : _buildDetailItem("Approved on", "--", mq),
               _buildDetailItem("Remarks", leave.remarks ?? "--", mq),
               SizedBox(height: mq.size.height * 0.02),

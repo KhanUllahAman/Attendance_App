@@ -44,7 +44,10 @@ class HomeScreen extends StatelessWidget {
               edgeOffset: 60.0,
               elevation: 0.0,
               onRefresh: () async {
-                await controller.fetchHomeData();
+                await Future.wait([
+                  controller.fetchHomeData(),
+                  controller.fetchAttendanceSummary(),
+                ]);
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (controller.scrollController.hasClients) {
                     controller.scrollController.jumpTo(

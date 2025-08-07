@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LeaveHistory {
-  final int leaveId;  // Changed from 'id' to 'leave_id' to match response
+  final int leaveId; // Changed from 'id' to 'leave_id' to match response
   final int employeeId;
   final int leaveTypeId;
-  final String leaveTypeName;  // Added this new field from response
+  final String leaveTypeName; // Added this new field from response
   final String startDate;
   final String endDate;
   final int totalDays;
   final String reason;
-  final String status;  // Note: response has 'STATUS' in uppercase
+  final String status; // Note: response has 'STATUS' in uppercase
   final String appliedOn;
   final int? approvedBy;
   final String? approvedOn;
@@ -19,6 +19,7 @@ class LeaveHistory {
   final bool isDeleted;
   final String createdAt;
   final String updatedAt;
+  final String? approver;
 
   LeaveHistory({
     required this.leaveId,
@@ -32,6 +33,7 @@ class LeaveHistory {
     required this.status,
     required this.appliedOn,
     this.approvedBy,
+    this.approver,
     this.approvedOn,
     this.remarks,
     required this.isActive,
@@ -42,21 +44,24 @@ class LeaveHistory {
 
   factory LeaveHistory.fromJson(Map<String, dynamic> json) {
     return LeaveHistory(
-      leaveId: json['leave_id'] ?? 0,  // Changed from 'id' to 'leave_id'
+      leaveId: json['leave_id'] ?? 0, // Changed from 'id' to 'leave_id'
       employeeId: json['employee_id'] ?? 0,
       leaveTypeId: json['leave_type_id'] ?? 0,
-      leaveTypeName: json['leave_type_name'] ?? '',  // Added this new field
+      leaveTypeName: json['leave_type_name'] ?? '', // Added this new field
       startDate: json['start_date'] ?? '',
       endDate: json['end_date'] ?? '',
       totalDays: json['total_days'] ?? 0,
       reason: json['reason'] ?? '',
-      status: json['STATUS']?.toLowerCase() ?? 'pending',  // Note uppercase in response
+      status:
+          json['STATUS']?.toLowerCase() ??
+          'pending', // Note uppercase in response
       appliedOn: json['applied_on'] ?? '',
       approvedBy: json['approved_by'],
+      approver: json['approver'], // Added this new field
       approvedOn: json['approved_on'],
       remarks: json['remarks'],
-      isActive: (json['is_active'] ?? 0) == 1,  // Convert int to bool
-      isDeleted: (json['is_deleted'] ?? 0) == 1,  // Convert int to bool
+      isActive: (json['is_active'] ?? 0) == 1, // Convert int to bool
+      isDeleted: (json['is_deleted'] ?? 0) == 1, // Convert int to bool
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );
@@ -71,8 +76,9 @@ class LeaveHistory {
 
   String get formattedAppliedOn {
     try {
-      final appliedOnDate = DateTime.parse(appliedOn);
-      return '${DateFormat('MMM d, y').format(appliedOnDate)} at ${DateFormat('h:mm a').format(appliedOnDate)}';
+      final appliedOnDateUtc = DateTime.parse(appliedOn);
+      final appliedOnDatePst = appliedOnDateUtc.toLocal();
+      return DateFormat('dd-MM-yyyy hh:mm a').format(appliedOnDatePst);
     } catch (e) {
       return 'Date not available';
     }
@@ -80,8 +86,9 @@ class LeaveHistory {
 
   String get formattedApprovedOn {
     try {
-      final appliedOnDate = DateTime.parse(approvedOn.toString());
-      return '${DateFormat('MMM d, y').format(appliedOnDate)} at ${DateFormat('h:mm a').format(appliedOnDate)}';
+      final approvedOnDateUtc = DateTime.parse(approvedOn.toString());
+      final approvedOnDatePst = approvedOnDateUtc.toLocal();
+      return DateFormat('dd-MM-yyyy hh:mm a').format(approvedOnDatePst);
     } catch (e) {
       return 'Date not available';
     }

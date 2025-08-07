@@ -54,6 +54,126 @@ class CnicInputFormatter extends TextInputFormatter {
   }
 }
 
+// class CustomTextFeild extends StatefulWidget {
+//   const CustomTextFeild({
+//     super.key,
+//     this.controller,
+//     required this.mediaQuery,
+//     this.hintText,
+//     this.validator,
+//     this.isPassword = false,
+//     this.readOnly = false,
+//     this.keyboardType,
+//     this.inputFormatters,
+//     this.maxLines = 1,
+//     this.onTap,
+    
+//   });
+
+//   final TextEditingController? controller;
+//   final MediaQueryData mediaQuery;
+//   final String? hintText;
+//   final String? Function(String?)? validator;
+//   final bool isPassword;
+//   final bool readOnly;
+//   final TextInputType? keyboardType;
+//   final List<TextInputFormatter>? inputFormatters;
+//   final int maxLines;
+//   final VoidCallback? onTap;
+
+//   @override
+//   State<CustomTextFeild> createState() => _CustomTextFeildState();
+// }
+
+// class _CustomTextFeildState extends State<CustomTextFeild> {
+//   bool _obscureText = true;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final mq = widget.mediaQuery;
+
+//     return TextFormField(
+//       controller: widget.controller,
+//       keyboardType: widget.keyboardType ?? TextInputType.text,
+//       obscureText: widget.isPassword ? _obscureText : false,
+//       inputFormatters: widget.inputFormatters,
+//       maxLines: widget.maxLines,
+//       style: GoogleFonts.sora(
+//         color: Colors.black54,
+//         fontSize: mq.size.width * 0.038,
+//       ),
+//       cursorColor: widget.readOnly
+//           ? Colors.transparent
+//           : ColorResources.appMainColor,
+//       readOnly: widget.readOnly,
+//       onTap: widget.onTap,
+//       decoration: InputDecoration(
+//         contentPadding: EdgeInsets.symmetric(
+//           horizontal: mq.size.width * 0.04,
+//           vertical: mq.size.height * 0.015,
+//         ),
+//         hintText: widget.hintText,
+//         hintStyle: GoogleFonts.sora(
+//           color: Colors.black38,
+//           fontSize: mq.size.width * 0.030,
+//         ),
+//         filled: true,
+//         fillColor: widget.readOnly
+//             ? ColorResources.blackColor.withOpacity(0.025)
+//             : ColorResources.blackColor.withOpacity(0.06),
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//           borderSide: BorderSide.none,
+//         ),
+//         enabledBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//           borderSide: const BorderSide(color: Colors.white10),
+//         ),
+//         focusedBorder: widget.readOnly
+//             ? OutlineInputBorder(
+//                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//                 borderSide: const BorderSide(color: Colors.transparent),
+//               )
+//             : OutlineInputBorder(
+//                 borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//                 borderSide: BorderSide(
+//                   color: ColorResources.appMainColor,
+//                   width: 2,
+//                 ),
+//               ),
+//         errorBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//           borderSide: const BorderSide(color: Colors.red, width: 2),
+//         ),
+//         focusedErrorBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
+//           borderSide: const BorderSide(color: Colors.red, width: 2),
+//         ),
+//         errorStyle: GoogleFonts.sora(
+//           color: Colors.red,
+//           fontSize: mq.size.width * 0.030,
+//         ),
+//         suffixIcon: widget.isPassword
+//             ? IconButton(
+//                 icon: Icon(
+//                   _obscureText ? Iconsax.eye_slash : Iconsax.eye,
+//                   color: ColorResources.blackColor,
+//                   size: mq.size.width * 0.055,
+//                 ),
+//                 onPressed: () {
+//                   setState(() {
+//                     _obscureText = !_obscureText;
+//                   });
+//                 },
+//               )
+//             : null,
+//       ),
+//       validator: widget.validator,
+//     );
+//   }
+// }
+
+
 class CustomTextFeild extends StatefulWidget {
   const CustomTextFeild({
     super.key,
@@ -67,6 +187,7 @@ class CustomTextFeild extends StatefulWidget {
     this.inputFormatters,
     this.maxLines = 1,
     this.onTap,
+    this.enabled = true,
   });
 
   final TextEditingController? controller;
@@ -79,6 +200,7 @@ class CustomTextFeild extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int maxLines;
   final VoidCallback? onTap;
+  final bool enabled;
 
   @override
   State<CustomTextFeild> createState() => _CustomTextFeildState();
@@ -92,18 +214,19 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
     final mq = widget.mediaQuery;
 
     return TextFormField(
+      enabled: widget.enabled,
       controller: widget.controller,
       keyboardType: widget.keyboardType ?? TextInputType.text,
       obscureText: widget.isPassword ? _obscureText : false,
       inputFormatters: widget.inputFormatters,
       maxLines: widget.maxLines,
       style: GoogleFonts.sora(
-        color: Colors.black54,
+        color: widget.enabled ? Colors.black54 : Colors.grey,
         fontSize: mq.size.width * 0.038,
       ),
-      cursorColor: widget.readOnly
+      cursorColor: !widget.enabled || widget.readOnly
           ? Colors.transparent
-          : ColorResources.appMainColor,
+          : ColorResources.appMainColor, // Modify this line
       readOnly: widget.readOnly,
       onTap: widget.onTap,
       decoration: InputDecoration(
@@ -113,13 +236,17 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
         ),
         hintText: widget.hintText,
         hintStyle: GoogleFonts.sora(
-          color: Colors.black38,
+          color: !widget.enabled
+              ? Colors.grey
+              : Colors.black38, // Modify this line
           fontSize: mq.size.width * 0.030,
         ),
         filled: true,
-        fillColor: widget.readOnly
+        fillColor: !widget.enabled
             ? ColorResources.blackColor.withOpacity(0.025)
-            : ColorResources.blackColor.withOpacity(0.06),
+            : widget.readOnly
+            ? ColorResources.blackColor.withOpacity(0.025)
+            : ColorResources.blackColor.withOpacity(0.06), // Modify this line
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(mq.size.width * 0.03),
           borderSide: BorderSide.none,
@@ -152,22 +279,31 @@ class _CustomTextFeildState extends State<CustomTextFeild> {
           color: Colors.red,
           fontSize: mq.size.width * 0.030,
         ),
-        suffixIcon: widget.isPassword
+        suffixIcon:
+            widget.isPassword &&
+                widget
+                    .enabled // Modify this line
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Iconsax.eye_slash : Iconsax.eye,
-                  color: ColorResources.blackColor,
+                  color: !widget.enabled
+                      ? Colors.grey
+                      : ColorResources.blackColor, // Modify this line
                   size: mq.size.width * 0.055,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
+                onPressed:
+                    widget
+                        .enabled // Modify this line
+                    ? () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      }
+                    : null,
               )
             : null,
       ),
-      validator: widget.validator,
+      validator: widget.enabled ? widget.validator : null, // Modify this line
     );
   }
 }
@@ -583,18 +719,22 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
       firstDate = lastDate;
     }
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.05,
-        vertical: screenHeight * 0.02,
-      ),
-      decoration: const BoxDecoration(
-        color: ColorResources.backgroundWhiteColor,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+    return SafeArea(
+      child: Container(
+        constraints: BoxConstraints(maxHeight: screenHeight * 0.85),
+        padding: EdgeInsets.only(
+          left: screenWidth * 0.05,
+          right: screenWidth * 0.05,
+          top: screenHeight * 0.02,
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom + screenHeight * 0.02,
+        ),
+        decoration: const BoxDecoration(
+          color: ColorResources.backgroundWhiteColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Title
             Text(
@@ -660,60 +800,62 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
             SizedBox(height: screenHeight * 0.02),
 
             // Calendar
-            CalendarDatePicker2(
-              config: CalendarDatePicker2Config(
-                calendarType: CalendarDatePicker2Type.range,
-                selectedDayHighlightColor: ColorResources.appMainColor,
-                selectedRangeHighlightColor: ColorResources.appMainColor
-                    .withOpacity(0.3),
-                selectedDayTextStyle: TextStyle(
-                  color: ColorResources.whiteColor,
-                  fontSize: screenWidth * 0.032,
+            Expanded(
+              child: CalendarDatePicker2(
+                config: CalendarDatePicker2Config(
+                  calendarType: CalendarDatePicker2Type.range,
+                  selectedDayHighlightColor: ColorResources.appMainColor,
+                  selectedRangeHighlightColor: ColorResources.appMainColor
+                      .withOpacity(0.3),
+                  selectedDayTextStyle: TextStyle(
+                    color: ColorResources.whiteColor,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                  todayTextStyle: TextStyle(
+                    color: ColorResources.appMainColor,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                  weekdayLabelTextStyle: TextStyle(
+                    color: ColorResources.blackColor,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                  dayTextStyle: TextStyle(
+                    color: ColorResources.blackColor,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                  controlsTextStyle: TextStyle(
+                    color: ColorResources.appMainColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: screenWidth * 0.025,
+                  ),
+                  disableModePicker: true,
+                  lastMonthIcon: const Icon(
+                    Icons.chevron_left,
+                    size: 15,
+                    color: ColorResources.blackColor,
+                  ),
+                  nextMonthIcon: const Icon(
+                    Icons.chevron_right,
+                    size: 15,
+                    color: ColorResources.blackColor,
+                  ),
+                  firstDate: firstDate,
+                  lastDate: lastDate,
+                  disabledDayTextStyle: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: screenWidth * 0.032,
+                  ),
                 ),
-                todayTextStyle: TextStyle(
-                  color: ColorResources.appMainColor,
-                  fontSize: screenWidth * 0.032,
-                ),
-                weekdayLabelTextStyle: TextStyle(
-                  color: ColorResources.blackColor,
-                  fontSize: screenWidth * 0.032,
-                ),
-                dayTextStyle: TextStyle(
-                  color: ColorResources.blackColor,
-                  fontSize: screenWidth * 0.032,
-                ),
-                controlsTextStyle: TextStyle(
-                  color: ColorResources.appMainColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: screenWidth * 0.025,
-                ),
-                disableModePicker: true,
-                lastMonthIcon: const Icon(
-                  Icons.chevron_left,
-                  size: 15,
-                  color: ColorResources.blackColor,
-                ),
-                nextMonthIcon: const Icon(
-                  Icons.chevron_right,
-                  size: 15,
-                  color: ColorResources.blackColor,
-                ),
-                firstDate: firstDate,
-                lastDate: lastDate,
-                disabledDayTextStyle: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: screenWidth * 0.032,
-                ),
+                value: selectedDateRange,
+                onValueChanged: (values) {
+                  setState(() {
+                    selectedDateRange = [
+                      if (values.isNotEmpty) values[0] else null,
+                      if (values.length > 1) values[1] else null,
+                    ];
+                  });
+                },
               ),
-              value: selectedDateRange,
-              onValueChanged: (values) {
-                setState(() {
-                  selectedDateRange = [
-                    if (values.isNotEmpty) values[0] else null,
-                    if (values.length > 1) values[1] else null,
-                  ];
-                });
-              },
             ),
 
             // Selected date range text

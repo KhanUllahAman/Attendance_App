@@ -107,11 +107,21 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => CustomDateRangePicker(
-        onDateRangeSelected: (start, end) {
-          controller.setDateRange(start, end);
-          controller.fetchAttendanceRecords();
-        },
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: ColorResources.backgroundWhiteColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.65,
+          minHeight: MediaQuery.of(context).size.height * 0.5,
+        ),
+        child: CustomDateRangePicker(
+          onDateRangeSelected: (start, end) {
+            controller.setDateRange(start, end);
+            controller.fetchAttendanceRecords();
+          },
+        ),
       ),
     );
   }
