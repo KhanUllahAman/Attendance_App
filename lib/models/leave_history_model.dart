@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LeaveHistory {
-  final int leaveId; // Changed from 'id' to 'leave_id' to match response
+  final int leaveId;
   final int employeeId;
   final int leaveTypeId;
-  final String leaveTypeName; // Added this new field from response
+  final String leaveTypeName;
   final String startDate;
   final String endDate;
   final int totalDays;
   final String reason;
-  final String status; // Note: response has 'STATUS' in uppercase
+  final String status; 
   final String appliedOn;
   final int? approvedBy;
   final String? approvedOn;

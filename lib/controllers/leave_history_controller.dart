@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -141,6 +142,7 @@ class LeaveHistoryController extends NetworkManager {
         body,
         headers,
       ).timeout(const Duration(seconds: 15));
+        log("Leave summary loaded: $response");
 
       if (response['status'] == 1) {
         leaveSummaryList.value = (response['payload'] as List)

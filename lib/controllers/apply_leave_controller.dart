@@ -8,6 +8,7 @@ import '../Network/Network Manager/network_manager.dart';
 import '../Network/network.dart';
 import '../Utils/Constant/api_url_constant.dart';
 import '../Utils/Snack Bar/custom_snack_bar.dart';
+import '../models/leave_history_model.dart';
 import '../models/leave_type_model.dart';
 import 'dropdown_controller.dart';
 
@@ -101,6 +102,22 @@ class ApplyLeaveController extends NetworkManager {
 
   Future<void> submitLeaveApplication(BuildContext context) async {
     try {
+      final leaveHistoryController = Get.find<LeaveHistoryController>();
+
+      // Check if all quotas are exhausted
+      bool allQuotasExhausted = leaveHistoryController.leaveSummaryList.every(
+        (summary) => summary.remaining <= 0,
+      );
+
+      if (allQuotasExhausted) {
+        customSnackBar(
+          "No Leave Available",
+          "Your Annual, Sick, and Casual leaves are all exhausted. You cannot apply for leave.",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
       // Validate leave type selection
       if (leaveTypeController.value.selectedItem.isEmpty) {
         customSnackBar(
@@ -131,6 +148,9 @@ class ApplyLeaveController extends NetworkManager {
         return;
       }
 
+      // Calculate total days requested
+      final totalDaysRequested = endDate!.difference(startDate!).inDays + 1;
+
       // Validate reason
       if (reasonController.text.isEmpty) {
         customSnackBar(
@@ -146,6 +166,40 @@ class ApplyLeaveController extends NetworkManager {
         customSnackBar(
           "Invalid Date Range",
           "End date cannot be before start date",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Get selected leave type details
+      final selectedTypeName = leaveTypeController.value.selectedItem
+          .toLowerCase();
+      final selectedSummary = leaveHistoryController.leaveSummaryList
+          .firstWhere(
+            (summary) => summary.leaveType.toLowerCase() == selectedTypeName,
+            orElse: () => LeaveSummary(
+              leaveType: '',
+              usedDays: 0,
+              totalQuota: 0,
+              remaining: 0,
+            ),
+          );
+
+      // Check if leave type has any remaining days
+      if (selectedSummary.remaining <= 0) {
+        customSnackBar(
+          "No Leave Available",
+          "Your ${selectedTypeName} leave quota is exhausted. Please select another leave type.",
+          snackBarType: SnackBarType.error,
+        );
+        return;
+      }
+
+      // Check if requested days exceed remaining quota
+      if (totalDaysRequested > selectedSummary.remaining) {
+        customSnackBar(
+          "Insufficient Leave Balance",
+          "You have only ${selectedSummary.remaining} ${selectedSummary.remaining == 1 ? 'day' : 'days'} remaining in your ${selectedTypeName} leave. You cannot apply for $totalDaysRequested days.",
           snackBarType: SnackBarType.error,
         );
         return;
@@ -202,7 +256,6 @@ class ApplyLeaveController extends NetworkManager {
           response['message'] ?? "Leave application submitted",
           snackBarType: SnackBarType.success,
         );
-        final leaveHistoryController = Get.find<LeaveHistoryController>();
         await leaveHistoryController.fetchAllLeaveData();
         await Future.delayed(const Duration(milliseconds: 1500));
         Navigator.pop(context);
