@@ -33,7 +33,6 @@ class AssetComplainRequestScreenList extends StatelessWidget {
           if (controller.connectionType.value == 0) {
             return buildFullScreenOfflineUI(mq);
           }
-
           return Stack(
             children: [
               Padding(
@@ -73,12 +72,18 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                     SizedBox(height: mq.size.height * 0.02),
                     Expanded(
                       child: RefreshIndicator(
-                        elevation: 0.0,
-
+                        onRefresh: () async {
+                          await controller.fetchAssetComplaints();
+                        },
                         color: ColorResources.backgroundWhiteColor,
                         backgroundColor: ColorResources.appMainColor,
-                        onRefresh: () => controller.fetchAssetComplaints(),
-                        child: _buildComplaintsList(mq),
+                        elevation: 0.0,
+                        displacement: 40, // Adjust this as needed
+                        edgeOffset: 20, // Adjust this as needed
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: _buildComplaintsList(mq),
+                        ),
                       ),
                     ),
                   ],
@@ -113,7 +118,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     }
 
     return ListView.builder(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: controller.filteredComplaints.length,
       itemBuilder: (context, index) {
         final complaint = controller.filteredComplaints[index];

@@ -67,28 +67,36 @@ class DailyAttendanceRecordScreen extends StatelessWidget {
                   SizedBox(height: mq.size.height * 0.02),
 
                   Expanded(
-                    child: Obx(() {
-                      if (controller.isLoading.value) {
-                        return Apploader();
-                      }
-
-                      if (controller.attendanceRecords.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'No attendance records found',
-                            style: GoogleFonts.sora(color: Colors.white70),
-                          ),
+                    child: RefreshIndicator(
+                      elevation: 0.0,
+                      onRefresh: () async {
+                        await controller.fetchAttendanceRecords();
+                      },
+                      color: ColorResources.appMainColor, // Your app's main color
+                      backgroundColor: Colors.white,
+                      child: Obx(() {
+                        if (controller.isLoading.value) {
+                          return Apploader();
+                        }
+                      
+                        if (controller.attendanceRecords.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'No attendance records found',
+                              style: GoogleFonts.sora(color: Colors.white70),
+                            ),
+                          );
+                        }
+                      
+                        return ListView.builder(
+                          itemCount: controller.attendanceRecords.length,
+                          itemBuilder: (context, index) {
+                            final record = controller.attendanceRecords[index];
+                            return _AttendanceCard(record: record);
+                          },
                         );
-                      }
-
-                      return ListView.builder(
-                        itemCount: controller.attendanceRecords.length,
-                        itemBuilder: (context, index) {
-                          final record = controller.attendanceRecords[index];
-                          return _AttendanceCard(record: record);
-                        },
-                      );
-                    }),
+                      }),
+                    ),
                   ),
                 ],
               ),

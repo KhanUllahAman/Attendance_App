@@ -49,8 +49,8 @@ class OfficeWifiScreen extends StatelessWidget {
 
           return RefreshIndicator(
             elevation: 0.0,
-            backgroundColor: ColorResources.backgroundWhiteColor,
-            color: ColorResources.appMainColor,
+            backgroundColor: ColorResources.appMainColor,
+            color: ColorResources.backgroundWhiteColor,
             onRefresh: () async {
               await controller.fetchWifiNetworks();
             },

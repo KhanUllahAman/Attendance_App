@@ -1143,6 +1143,9 @@ class HomeScreenController extends NetworkManager {
   }
 
   void openDateRangePicker(BuildContext context) {
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1157,6 +1160,8 @@ class HomeScreenController extends NetworkManager {
           minHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         child: CustomDateRangePicker(
+          firstDate: firstDayOfMonth,
+          lastDate: now,
           onDateRangeSelected: (start, end) {
             setDateRange(start, end);
           },

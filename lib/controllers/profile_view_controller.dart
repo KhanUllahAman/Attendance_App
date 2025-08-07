@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,18 +32,32 @@ class ProfileViewController extends NetworkManager {
   final Rx<XFile?> selectedImage = Rxn<XFile>();
   final RxString dob = ''.obs; // Added to make DOB reactive
 
+  final RxString errorMessage = ''.obs;
+  final RxBool hasInitialLoad = false.obs;
+  StreamSubscription? _connectivitySubscription;
+
   Future<void> fetchEmployeeProfile() async {
+    // Don't proceed if there's no internet
+    if (connectionType.value == 0) {
+      errorMessage.value = 'No internet connection';
+      isLoading.value = false;
+      return;
+    }
+
     if (_isFetching) return;
     _isFetching = true;
+
     try {
       log('Fetching profile...');
       isLoading.value = true;
+      errorMessage.value = '';
 
       final token = await AuthService().getToken();
       final employeeId = await AuthService().getEmployeeId();
 
       if (token == null || employeeId == null) {
-        throw Exception("Authentication failed");
+        errorMessage.value = "Authentication failed";
+        return;
       }
 
       final header = {
@@ -61,23 +77,21 @@ class ProfileViewController extends NetworkManager {
 
       if (response['status'] == 1) {
         Map<String, dynamic> payload;
-        if (response['payload'] is List && (response['payload'] as List).isNotEmpty) {
-          if (response['payload'][0] is Map) {
-            payload = (response['payload'][0] as Map).cast<String, dynamic>();
-          } else {
-            throw Exception("Invalid payload format: Expected a Map in payload list");
-          }
+        if (response['payload'] is List &&
+            (response['payload'] as List).isNotEmpty) {
+          payload = (response['payload'][0] as Map).cast<String, dynamic>();
         } else if (response['payload'] is Map) {
           payload = (response['payload'] as Map).cast<String, dynamic>();
         } else {
-          throw Exception("Invalid payload format: Expected a List or Map");
+          errorMessage.value = "Invalid payload format";
+          return;
         }
 
         employeeProfile.value = EmployeeProfile.fromJson(payload);
         fullNameController.text = employeeProfile.value!.fullName;
         fatherNameController.text = employeeProfile.value!.fatherName ?? '';
         dobController.text = _formatDob(employeeProfile.value!.dob);
-        dob.value = dobController.text; // Update reactive DOB
+        dob.value = dobController.text;
         emailController.text = employeeProfile.value!.email ?? '';
         phoneController.text = employeeProfile.value!.phone ?? '';
         cnicController.text = _formatCnic(employeeProfile.value!.cnic);
@@ -85,13 +99,18 @@ class ProfileViewController extends NetworkManager {
         selectedImageBase64.value = '';
         selectedImage.value = null;
 
+        hasInitialLoad.value = true;
         log('Profile data loaded successfully');
       } else {
-        throw Exception(response['message'] ?? "Failed to fetch profile");
+        errorMessage.value = response['message'] ?? "Failed to fetch profile";
       }
+    } on TimeoutException {
+      errorMessage.value = 'Request timed out. Please try again.';
+    } on SocketException {
+      errorMessage.value = 'No internet connection';
     } catch (e) {
+      errorMessage.value = 'Failed to load profile: ${e.toString()}';
       log('Error fetching profile: $e');
-      customSnackBar("Error", e.toString(), snackBarType: SnackBarType.error);
     } finally {
       isLoading.value = false;
       _isFetching = false;
@@ -166,11 +185,16 @@ class ProfileViewController extends NetworkManager {
         if (image.path.toLowerCase().endsWith('.png')) {
           mimeType = 'image/png';
         }
-        selectedImageBase64.value = 'data:$mimeType;base64,${base64Encode(bytes)}';
+        selectedImageBase64.value =
+            'data:$mimeType;base64,${base64Encode(bytes)}';
       }
     } catch (e) {
       log('Error picking image: $e');
-      customSnackBar("Error", "Failed to pick image", snackBarType: SnackBarType.error);
+      customSnackBar(
+        "Error",
+        "Failed to pick image",
+        snackBarType: SnackBarType.error,
+      );
     }
   }
 
@@ -199,9 +223,9 @@ class ProfileViewController extends NetworkManager {
         'phone': profileData['phone'] ?? phoneController.text,
         'cnic': profileData['cnic'] ?? cnicController.text.replaceAll('-', ''),
         'address': profileData['address'] ?? addressController.text,
-        'profile_picture': selectedImageBase64.value.isNotEmpty 
-            ? selectedImageBase64.value 
-            : profileData['profile_picture'] ?? employeeProfile.value?.profilePicture,
+        'profile_picture': selectedImageBase64.value.isNotEmpty
+            ? selectedImageBase64.value
+            : null ?? null,
       };
       final response = await Network.putApi(
         null,
@@ -214,9 +238,11 @@ class ProfileViewController extends NetworkManager {
         await prefs.setString(AuthService.fullNameKey, fullNameController.text);
         if (selectedImageBase64.value.isNotEmpty) {
           String? profilePicture;
-          if (response['payload'] is List && (response['payload'] as List).isNotEmpty) {
+          if (response['payload'] is List &&
+              (response['payload'] as List).isNotEmpty) {
             if (response['payload'][0] is Map) {
-              profilePicture = response['payload'][0]['profile_picture']?.toString();
+              profilePicture = response['payload'][0]['profile_picture']
+                  ?.toString();
             }
           } else if (response['payload'] is Map) {
             profilePicture = response['payload']['profile_picture']?.toString();
@@ -247,13 +273,22 @@ class ProfileViewController extends NetworkManager {
   }
 
   @override
-  void onInit() {
-    fetchEmployeeProfile();
+  void onInit() async {
     super.onInit();
+    _connectivitySubscription = connectionType.stream.listen((status) {
+      if (status != 0 && !hasInitialLoad.value) {
+        fetchEmployeeProfile();
+      } else if (status != 0 && errorMessage.value.isNotEmpty) {
+        fetchEmployeeProfile();
+      }
+    });
+
+    await fetchEmployeeProfile();
   }
 
   @override
   void onClose() {
+    _connectivitySubscription?.cancel();
     fullNameController.dispose();
     fatherNameController.dispose();
     dobController.dispose();
