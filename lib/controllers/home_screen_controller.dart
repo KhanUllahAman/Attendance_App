@@ -1090,16 +1090,17 @@ class HomeScreenController extends NetworkManager {
 
       final now = DateTime.now();
       final firstDayOfMonth = DateTime(now.year, now.month, 1);
-      final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+
+      final endDateToUse = endDate ?? now;
 
       final body = {
         'employee_id': employeeId,
         'start_date':
             startDate?.toIso8601String().split('T')[0] ??
             DateFormat('yyyy-MM-dd').format(firstDayOfMonth),
-        'end_date':
-            endDate?.toIso8601String().split('T')[0] ??
-            DateFormat('yyyy-MM-dd').format(lastDayOfMonth),
+        'end_date': endDateToUse.toIso8601String().split(
+          'T',
+        )[0], // Use current date
       };
 
       final headers = {
@@ -1109,15 +1110,19 @@ class HomeScreenController extends NetworkManager {
 
       final response = await Network.postApi(
         null,
-        fetchAttendanceSummaryApi,
+        fetchAttendanceSummaryApiV2,
         body,
         headers,
       );
 
+      developer.log("This is Response: ${response.toString()}");
+      developer.log("This is Body: ${body.toString()}");
+
       if (response['status'] == 1) {
-        attendanceSummary.value = AttendanceSummary.fromJson(
-          response['payload'][0],
-        );
+        final payload = response['payload'] as List;
+        if (payload.isNotEmpty) {
+          attendanceSummary.value = AttendanceSummary.fromJson(payload[0]);
+        }
       } else {
         errorMessage.value =
             response['message'] ?? 'Failed to fetch attendance summary';
@@ -1137,7 +1142,10 @@ class HomeScreenController extends NetworkManager {
       selectedDateRangeText.value =
           '${DateFormat('MMM d').format(start)} - ${DateFormat('MMM d, y').format(end)} ($diff days)';
     } else {
-      selectedDateRangeText.value = 'This Month';
+      final now = DateTime.now();
+      final firstDayOfMonth = DateTime(now.year, now.month, 1);
+      selectedDateRangeText.value =
+          '${DateFormat('MMM d').format(firstDayOfMonth)} - ${DateFormat('MMM d, y').format(now)}';
     }
     fetchAttendanceSummary();
   }
@@ -1160,8 +1168,14 @@ class HomeScreenController extends NetworkManager {
           minHeight: MediaQuery.of(context).size.height * 0.5,
         ),
         child: CustomDateRangePicker(
-          firstDate: firstDayOfMonth,
+          firstDate: DateTime(
+            now.year - 1,
+            now.month,
+            1,
+          ), // Allow going back 1 year
           lastDate: now,
+          initialStartDate: firstDayOfMonth,
+      initialEndDate: now,
           onDateRangeSelected: (start, end) {
             setDateRange(start, end);
           },

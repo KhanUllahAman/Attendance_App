@@ -67,7 +67,7 @@ class CnicInputFormatter extends TextInputFormatter {
 //     this.inputFormatters,
 //     this.maxLines = 1,
 //     this.onTap,
-    
+
 //   });
 
 //   final TextEditingController? controller;
@@ -172,7 +172,6 @@ class CnicInputFormatter extends TextInputFormatter {
 //     );
 //   }
 // }
-
 
 class CustomTextFeild extends StatefulWidget {
   const CustomTextFeild({
@@ -672,12 +671,224 @@ class RetryWidget extends StatelessWidget {
   }
 }
 
+// class CustomDateRangePicker extends StatefulWidget {
+//   final Function(DateTime?, DateTime?) onDateRangeSelected;
+//   final bool allowFutureDates; // New parameter to control future dates
+//   final bool allowPastDates; // New parameter to control past dates
+//   final DateTime? firstDate; // Optional custom first date
+//   final DateTime? lastDate; // Optional custom last date
+
+//   const CustomDateRangePicker({
+//     super.key,
+//     required this.onDateRangeSelected,
+//     this.allowFutureDates = false,
+//     this.allowPastDates = true,
+//     this.firstDate,
+//     this.lastDate,
+//   });
+
+//   @override
+//   State<CustomDateRangePicker> createState() => _CustomDateRangePickerState();
+// }
+
+// class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
+//   List<DateTime?> selectedDateRange = [null, null];
+
+//   String formatDate(DateTime date) {
+//     return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final mediaQuery = MediaQuery.of(context);
+//     final screenHeight = mediaQuery.size.height;
+//     final screenWidth = mediaQuery.size.width;
+
+//     // Calculate the date range constraints
+//     final now = DateTime.now();
+//     final today = DateTime(now.year, now.month, now.day);
+
+//     DateTime firstDate =
+//         widget.firstDate ?? (widget.allowPastDates ? DateTime(1900) : today);
+//     DateTime lastDate =
+//         widget.lastDate ?? (widget.allowFutureDates ? DateTime(2100) : today);
+
+//     // Ensure firstDate is not after lastDate
+//     if (firstDate.isAfter(lastDate)) {
+//       firstDate = lastDate;
+//     }
+
+//     return SafeArea(
+//       child: Container(
+//         constraints: BoxConstraints(maxHeight: screenHeight * 0.85),
+//         padding: EdgeInsets.only(
+//           left: screenWidth * 0.05,
+//           right: screenWidth * 0.05,
+//           top: screenHeight * 0.02,
+//           bottom:
+//               MediaQuery.of(context).viewInsets.bottom + screenHeight * 0.02,
+//         ),
+//         decoration: const BoxDecoration(
+//           color: ColorResources.backgroundWhiteColor,
+//           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//         ),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             // Title
+//             Text(
+//               'Select Date Range',
+//               style: GoogleFonts.sora(
+//                 fontSize: screenHeight * 0.02,
+//                 fontWeight: FontWeight.w600,
+//                 color: ColorResources.blackColor,
+//               ),
+//             ),
+//             SizedBox(height: screenHeight * 0.02),
+
+//             // Buttons moved to the top
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Expanded(
+//                   child: AppButton(
+//                     backgroundColor: ColorResources.containerColor,
+//                     onPressed: () => Navigator.pop(context),
+//                     mediaQuery: mediaQuery,
+//                     isLoading: false,
+//                     child: Text(
+//                       'Cancel',
+//                       style: GoogleFonts.sora(color: Colors.black),
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(width: screenWidth * 0.03),
+//                 Expanded(
+//                   child: AppButton(
+//                     mediaQuery: mediaQuery,
+//                     onPressed: () {
+//                       if (selectedDateRange.length == 2 &&
+//                           selectedDateRange[0] != null &&
+//                           selectedDateRange[1] != null) {
+//                         widget.onDateRangeSelected(
+//                           selectedDateRange[0],
+//                           selectedDateRange[1],
+//                         );
+//                         Navigator.pop(context);
+//                       } else {
+//                         customSnackBar(
+//                           "Error",
+//                           "Please select a valid date range",
+//                           snackBarType: SnackBarType.error,
+//                         );
+//                       }
+//                     },
+//                     isLoading: false,
+//                     child: Text(
+//                       'Apply',
+//                       style: GoogleFonts.sora(
+//                         color: ColorResources.whiteColor,
+//                         fontWeight: FontWeight.w400,
+//                         fontSize: screenHeight * 0.015,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             SizedBox(height: screenHeight * 0.02),
+
+//             // Calendar
+//             Expanded(
+//               child: CalendarDatePicker2(
+//                 config: CalendarDatePicker2Config(
+//                   calendarType: CalendarDatePicker2Type.range,
+//                   selectedDayHighlightColor: ColorResources.appMainColor,
+//                   selectedRangeHighlightColor: ColorResources.appMainColor
+//                       .withOpacity(0.3),
+//                   selectedDayTextStyle: TextStyle(
+//                     color: ColorResources.whiteColor,
+//                     fontSize: screenWidth * 0.032,
+//                   ),
+//                   todayTextStyle: TextStyle(
+//                     color: ColorResources.appMainColor,
+//                     fontSize: screenWidth * 0.032,
+//                   ),
+//                   weekdayLabelTextStyle: TextStyle(
+//                     color: ColorResources.blackColor,
+//                     fontSize: screenWidth * 0.032,
+//                   ),
+//                   dayTextStyle: TextStyle(
+//                     color: ColorResources.blackColor,
+//                     fontSize: screenWidth * 0.032,
+//                   ),
+//                   controlsTextStyle: TextStyle(
+//                     color: ColorResources.appMainColor,
+//                     fontWeight: FontWeight.w500,
+//                     fontSize: screenWidth * 0.025,
+//                   ),
+//                   disableModePicker: true,
+//                   lastMonthIcon: const Icon(
+//                     Icons.chevron_left,
+//                     size: 15,
+//                     color: ColorResources.blackColor,
+//                   ),
+//                   nextMonthIcon: const Icon(
+//                     Icons.chevron_right,
+//                     size: 15,
+//                     color: ColorResources.blackColor,
+//                   ),
+//                   firstDate: firstDate,
+//                   lastDate: lastDate,
+//                   disabledDayTextStyle: TextStyle(
+//                     color: Colors.grey[400],
+//                     fontSize: screenWidth * 0.032,
+//                   ),
+//                 ),
+//                 value: selectedDateRange,
+//                 onValueChanged: (values) {
+//                   setState(() {
+//                     selectedDateRange = [
+//                       if (values.isNotEmpty) values[0] else null,
+//                       if (values.length > 1) values[1] else null,
+//                     ];
+//                   });
+//                 },
+//               ),
+//             ),
+
+//             // Selected date range text
+//             if (selectedDateRange.length == 2 &&
+//                 selectedDateRange[0] != null &&
+//                 selectedDateRange[1] != null)
+//               Padding(
+//                 padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+//                 child: Text(
+//                   "Selected: ${formatDate(selectedDateRange[0]!)} - ${formatDate(selectedDateRange[1]!)}",
+//                   style: GoogleFonts.sora(
+//                     fontSize: screenWidth * 0.032,
+//                     fontWeight: FontWeight.w500,
+//                     color: ColorResources.blackColor,
+//                   ),
+//                 ),
+//               ),
+//             SizedBox(height: screenHeight * 0.02),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class CustomDateRangePicker extends StatefulWidget {
   final Function(DateTime?, DateTime?) onDateRangeSelected;
-  final bool allowFutureDates; // New parameter to control future dates
-  final bool allowPastDates; // New parameter to control past dates
-  final DateTime? firstDate; // Optional custom first date
-  final DateTime? lastDate; // Optional custom last date
+  final bool allowFutureDates;
+  final bool allowPastDates;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
+  final String? title;
 
   const CustomDateRangePicker({
     super.key,
@@ -686,6 +897,9 @@ class CustomDateRangePicker extends StatefulWidget {
     this.allowPastDates = true,
     this.firstDate,
     this.lastDate,
+    this.initialStartDate,
+    this.initialEndDate,
+    this.title,
   });
 
   @override
@@ -693,10 +907,20 @@ class CustomDateRangePicker extends StatefulWidget {
 }
 
 class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
-  List<DateTime?> selectedDateRange = [null, null];
+  List<DateTime?> selectedDateRange = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with provided dates or null
+    selectedDateRange = [
+      if (widget.initialStartDate != null) widget.initialStartDate,
+      if (widget.initialEndDate != null) widget.initialEndDate,
+    ];
+  }
 
   String formatDate(DateTime date) {
-    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+    return DateFormat('MMM d, yyyy').format(date);
   }
 
   @override
@@ -705,19 +929,16 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
 
-    // Calculate the date range constraints
+    // Calculate date constraints
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     DateTime firstDate =
-        widget.firstDate ?? (widget.allowPastDates ? DateTime(1900) : today);
+        widget.firstDate ??
+        (widget.allowPastDates ? DateTime(now.year - 1) : today);
     DateTime lastDate =
-        widget.lastDate ?? (widget.allowFutureDates ? DateTime(2100) : today);
-
-    // Ensure firstDate is not after lastDate
-    if (firstDate.isAfter(lastDate)) {
-      firstDate = lastDate;
-    }
+        widget.lastDate ??
+        (widget.allowFutureDates ? DateTime(now.year + 1) : today);
 
     return SafeArea(
       child: Container(
@@ -729,47 +950,63 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
           bottom:
               MediaQuery.of(context).viewInsets.bottom + screenHeight * 0.02,
         ),
-        decoration: const BoxDecoration(
-          color: ColorResources.backgroundWhiteColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Title
             Text(
-              'Select Date Range',
+              widget.title ?? 'Select Date Range',
               style: GoogleFonts.sora(
-                fontSize: screenHeight * 0.02,
+                fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: ColorResources.blackColor,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
 
-            // Buttons moved to the top
+            // Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: AppButton(
-                    backgroundColor: ColorResources.containerColor,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey[200],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.015,
+                      ),
+                    ),
                     onPressed: () => Navigator.pop(context),
-                    mediaQuery: mediaQuery,
-                    isLoading: false,
                     child: Text(
                       'Cancel',
-                      style: GoogleFonts.sora(color: Colors.black),
+                      style: GoogleFonts.sora(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(width: screenWidth * 0.03),
                 Expanded(
-                  child: AppButton(
-                    mediaQuery: mediaQuery,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: ColorResources.appMainColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: screenHeight * 0.015,
+                      ),
+                    ),
                     onPressed: () {
-                      if (selectedDateRange.length == 2 &&
-                          selectedDateRange[0] != null &&
+                      if (selectedDateRange[0] != null &&
                           selectedDateRange[1] != null) {
                         widget.onDateRangeSelected(
                           selectedDateRange[0],
@@ -777,20 +1014,18 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                         );
                         Navigator.pop(context);
                       } else {
-                        customSnackBar(
-                          "Error",
-                          "Please select a valid date range",
-                          snackBarType: SnackBarType.error,
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please select a valid date range'),
+                          ),
                         );
                       }
                     },
-                    isLoading: false,
                     child: Text(
                       'Apply',
                       style: GoogleFonts.sora(
-                        color: ColorResources.whiteColor,
-                        fontWeight: FontWeight.w400,
-                        fontSize: screenHeight * 0.015,
+                        color: Colors.white,
+                        fontSize: 16,
                       ),
                     ),
                   ),
@@ -807,59 +1042,53 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                   selectedDayHighlightColor: ColorResources.appMainColor,
                   selectedRangeHighlightColor: ColorResources.appMainColor
                       .withOpacity(0.3),
-                  selectedDayTextStyle: TextStyle(
-                    color: ColorResources.whiteColor,
-                    fontSize: screenWidth * 0.032,
+                  selectedDayTextStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                  todayTextStyle: TextStyle(
+                  todayTextStyle: const TextStyle(
                     color: ColorResources.appMainColor,
-                    fontSize: screenWidth * 0.032,
+                    fontWeight: FontWeight.bold,
                   ),
-                  weekdayLabelTextStyle: TextStyle(
-                    color: ColorResources.blackColor,
-                    fontSize: screenWidth * 0.032,
+                  controlsTextStyle: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                   ),
-                  dayTextStyle: TextStyle(
-                    color: ColorResources.blackColor,
-                    fontSize: screenWidth * 0.032,
+                  dayTextStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
                   ),
-                  controlsTextStyle: TextStyle(
-                    color: ColorResources.appMainColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: screenWidth * 0.025,
-                  ),
-                  disableModePicker: true,
-                  lastMonthIcon: const Icon(
-                    Icons.chevron_left,
-                    size: 15,
-                    color: ColorResources.blackColor,
-                  ),
-                  nextMonthIcon: const Icon(
-                    Icons.chevron_right,
-                    size: 15,
-                    color: ColorResources.blackColor,
+                  disabledDayTextStyle: const TextStyle(color: Colors.grey),
+                  weekdayLabelTextStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
                   ),
                   firstDate: firstDate,
                   lastDate: lastDate,
-                  disabledDayTextStyle: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: screenWidth * 0.032,
-                  ),
+                  currentDate: now,
+                  disableModePicker: true,
+                  lastMonthIcon: const Icon(Icons.chevron_left),
+                  nextMonthIcon: const Icon(Icons.chevron_right),
+                  centerAlignModePicker: true,
                 ),
                 value: selectedDateRange,
-                onValueChanged: (values) {
+                onValueChanged: (List<DateTime?> values) {
                   setState(() {
-                    selectedDateRange = [
-                      if (values.isNotEmpty) values[0] else null,
-                      if (values.length > 1) values[1] else null,
-                    ];
+                    if (values.length >= 2) {
+                      selectedDateRange = [values[0], values[1]];
+                    } else if (values.length == 1) {
+                      selectedDateRange = [values[0], null];
+                    } else {
+                      selectedDateRange = [null, null];
+                    }
                   });
                 },
               ),
             ),
 
-            // Selected date range text
-            if (selectedDateRange.length == 2 &&
+            // Selected date range display
+            if (selectedDateRange.length >= 2 &&
                 selectedDateRange[0] != null &&
                 selectedDateRange[1] != null)
               Padding(
@@ -867,9 +1096,9 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 child: Text(
                   "Selected: ${formatDate(selectedDateRange[0]!)} - ${formatDate(selectedDateRange[1]!)}",
                   style: GoogleFonts.sora(
-                    fontSize: screenWidth * 0.032,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: ColorResources.blackColor,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -1369,12 +1598,33 @@ Widget buildShimmerAttendanceBoxes(MediaQueryData mediaQuery) {
   return Wrap(
     spacing: mediaQuery.size.width * 0.04,
     runSpacing: mediaQuery.size.height * 0.02,
-    children: List.generate(8, (index) {
+    children: List.generate(9, (index) {
       return Shimmer.fromColors(
         baseColor: Colors.grey[400]!,
         highlightColor: Colors.grey[300]!,
         child: Container(
           width: mediaQuery.size.width * 0.26,
+          height: mediaQuery.size.height * 0.12,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      );
+    }),
+  );
+}
+
+Widget buildShimmerAttendanceBoxesWidth(MediaQueryData mediaQuery) {
+  return Wrap(
+    spacing: mediaQuery.size.width * 0.15,
+    runSpacing: mediaQuery.size.height * 0.06,
+    children: List.generate(2, (index) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[400]!,
+        highlightColor: Colors.grey[300]!,
+        child: Container(
+          width: mediaQuery.size.width * 0.35,
           height: mediaQuery.size.height * 0.12,
           decoration: BoxDecoration(
             color: Colors.grey,

@@ -1,4 +1,7 @@
 const baseUrl = 'http://162.211.84.202:3001/api/v1';
+const baseUrlV2 = 'http://162.211.84.202:3001/api/v2';
+const fetchAttendanceSummaryApiV2 = '$baseUrlV2/attendances/summary';
+
 const loginUrl = '$baseUrl/auth/login';
 const sendOtp = '$baseUrl/auth/send-otp';
 const verifyOtpApi = '$baseUrl/auth/verify-otp';

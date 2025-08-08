@@ -133,50 +133,86 @@ class HomeScreenResponse {
 
 class AttendanceSummary {
   final int employeeId;
+  final String employeeName;
+  final String departmentName;
+  final String designationTitle;
   final String totalDays;
   final String workingDays;
   final String presentDays;
   final String absentDays;
   final String leaveDays;
   final String weekendDays;
+  final String weekendAttendanceDays;
   final String holidayDays;
-  final String manualPresentDays;
   final String workFromHomeDays;
+  final String onTimeCheckIns;
   final String lateCheckIns;
-  final String halfDayCheckOuts;
+  final String manualCheckIns;
+  final String onTimeCheckOuts;
   final String earlyLeaveCheckOuts;
+  final String earlyGoCheckOuts;
+  final String overtimeCheckOuts;
+  final String halfDayCheckOuts;
+  final String manualCheckOuts;
+  final String actualWorkSeconds;
+  final String expectedWorkHours;
+  final String actualWorkHours;
 
   AttendanceSummary({
     required this.employeeId,
+    required this.employeeName,
+    required this.departmentName,
+    required this.designationTitle,
     required this.totalDays,
     required this.workingDays,
     required this.presentDays,
     required this.absentDays,
     required this.leaveDays,
     required this.weekendDays,
+    required this.weekendAttendanceDays,
     required this.holidayDays,
-    required this.manualPresentDays,
     required this.workFromHomeDays,
+    required this.onTimeCheckIns,
     required this.lateCheckIns,
-    required this.halfDayCheckOuts,
+    required this.manualCheckIns,
+    required this.onTimeCheckOuts,
     required this.earlyLeaveCheckOuts,
+    required this.earlyGoCheckOuts,
+    required this.overtimeCheckOuts,
+    required this.halfDayCheckOuts,
+    required this.manualCheckOuts,
+    required this.actualWorkSeconds,
+    required this.expectedWorkHours,
+    required this.actualWorkHours,
   });
 
   factory AttendanceSummary.fromJson(Map<String, dynamic> json) {
     return AttendanceSummary(
       employeeId: json['employee_id'] ?? 0,
+      employeeName: json['employee_name'] ?? '',
+      departmentName: json['department_name'] ?? '',
+      designationTitle: json['designation_title'] ?? '',
       totalDays: json['total_days'] ?? '0',
       workingDays: json['working_days'] ?? '0',
       presentDays: json['present_days'] ?? '0',
       absentDays: json['absent_days'] ?? '0',
       leaveDays: json['leave_days'] ?? '0',
       weekendDays: json['weekend_days'] ?? '0',
+      weekendAttendanceDays: json['weekend_attendance_days'] ?? '0',
       holidayDays: json['holiday_days'] ?? '0',
-      manualPresentDays: json['manual_present_days'] ?? '0',
       workFromHomeDays: json['work_from_home_days'] ?? '0',
+      onTimeCheckIns: json['on_time_check_ins'] ?? '0',
       lateCheckIns: json['late_check_ins'] ?? '0',
-      halfDayCheckOuts: json['half_day_check_outs'] ?? '0',
+      manualCheckIns: json['manual_check_ins'] ?? '0',
+      onTimeCheckOuts: json['on_time_check_outs'] ?? '0',
       earlyLeaveCheckOuts: json['early_leave_check_outs'] ?? '0',
+      earlyGoCheckOuts: json['early_go_check_outs'] ?? '0',
+      overtimeCheckOuts: json['overtime_check_outs'] ?? '0',
+      halfDayCheckOuts: json['half_day_check_outs'] ?? '0',
+      manualCheckOuts: json['manual_check_outs'] ?? '0',
+      actualWorkSeconds: json['actual_work_seconds'] ?? '0',
+      expectedWorkHours: json['expected_work_hours'] ?? '0',
+      actualWorkHours: json['actual_work_hours'] ?? '0',
     );
   }
 }

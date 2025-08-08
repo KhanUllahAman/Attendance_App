@@ -323,67 +323,124 @@ class HomeScreen extends StatelessWidget {
                                   runSpacing: mediaQuery.size.height * 0.02,
                                   children: [
                                     _buildAttendanceBox(
+                                      summary.totalDays,
+                                      "Total Days",
+                                      Colors.blueGrey.shade600,
+                                      Colors.blueGrey.shade100,
+                                      mediaQuery,
+                                    ),
+                                    _buildAttendanceBox(
                                       summary.workingDays,
                                       "Working Days",
-                                      Colors.green,
-                                      Colors.green.shade100,
+                                      Colors.blueGrey.shade400,
+                                      Colors.blueGrey.shade100,
                                       mediaQuery,
                                     ),
                                     _buildAttendanceBox(
                                       summary.presentDays,
                                       "Present",
-                                      Colors.blue.shade700,
-                                      Colors.blue.shade100,
+                                      Colors.green.shade600,
+                                      Colors.green.shade100,
                                       mediaQuery,
                                     ),
                                     _buildAttendanceBox(
                                       summary.absentDays,
                                       "Absent",
-                                      Colors.orange.shade700,
-                                      Colors.orange.shade100,
-                                      mediaQuery,
-                                    ),
-                                    _buildAttendanceBox(
-                                      summary.holidayDays,
-                                      "Holiday",
-                                      Colors.teal.shade700,
-                                      Colors.teal.shade100,
-                                      mediaQuery,
-                                    ),
-                                    _buildAttendanceBox(
-                                      summary.halfDayCheckOuts,
-                                      "Half Day",
-                                      Colors.purple.shade700,
-                                      Colors.purple.shade100,
-                                      mediaQuery,
-                                    ),
-                                    _buildAttendanceBox(
-                                      summary.weekendDays,
-                                      "Week Off",
-                                      Colors.indigo.shade700,
-                                      Colors.indigo.shade100,
+                                      Colors.red.shade600,
+                                      Colors.red.shade50,
                                       mediaQuery,
                                     ),
                                     _buildAttendanceBox(
                                       summary.leaveDays,
                                       "Leave",
-                                      Colors.red.shade700,
-                                      Colors.red.shade100,
+                                      Colors.orange.shade600,
+                                      Colors.orange.shade50,
+                                      mediaQuery,
+                                    ),
+                                    _buildAttendanceBox(
+                                      summary.weekendAttendanceDays,
+                                      "Weekend Days",
+                                      Colors.purple.shade600,
+                                      Colors.purple.shade50,
+                                      mediaQuery,
+                                    ),
+                                    _buildAttendanceBox(
+                                      summary.onTimeCheckIns,
+                                      "On Time",
+                                      Colors.green.shade800,
+                                      Colors.green.shade100,
                                       mediaQuery,
                                     ),
                                     _buildAttendanceBox(
                                       summary.lateCheckIns,
                                       "Late In",
                                       Colors.amber.shade700,
-                                      Colors.amber.shade100,
+                                      Colors.amber.shade50,
                                       mediaQuery,
                                     ),
                                     _buildAttendanceBox(
-                                      summary.earlyLeaveCheckOuts,
-                                      "Early Out",
-                                      Colors.deepOrange.shade700,
-                                      Colors.deepOrange.shade100,
+                                      summary.overtimeCheckOuts,
+                                      "Overtime Out",
+                                      Colors.indigo.shade600,
+                                      Colors.indigo.shade50,
                                       mediaQuery,
+                                    ),
+                                  ],
+                                );
+                              }),
+                              SizedBox(height: mediaQuery.size.height * 0.02),
+                              Obx(() {
+                                if (controller.connectionType.value == 0) {
+                                  return _buildDisabledSummarySectionWidth(
+                                    mediaQuery,
+                                  );
+                                }
+                                if (controller.isSummaryLoading.value) {
+                                  return buildShimmerAttendanceBoxesWidth(
+                                    mediaQuery,
+                                  );
+                                }
+                                final summary =
+                                    controller.attendanceSummary.value;
+                                if (summary == null) {
+                                  return Text(
+                                    '',
+                                    style: GoogleFonts.sora(
+                                      color: ColorResources.blackColor,
+                                    ),
+                                  );
+                                }
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              mediaQuery.size.width * 0.02,
+                                        ),
+                                        child: _buildAttendanceBox1(
+                                          summary.expectedWorkHours,
+                                          "Expected Hours",
+                                          Colors.cyan.shade600,
+                                          Colors.cyan.shade50,
+                                          mediaQuery,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              mediaQuery.size.width * 0.02,
+                                        ),
+                                        child: _buildAttendanceBox1(
+                                          summary.actualWorkHours,
+                                          "Actual Hours",
+                                          Colors.blue.shade600,
+                                          Colors.blue.shade50,
+                                          mediaQuery,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 );
@@ -471,6 +528,10 @@ class HomeScreen extends StatelessWidget {
         buildShimmerAttendanceBoxes(mediaQuery),
       ],
     );
+  }
+
+  Widget _buildDisabledSummarySectionWidth(MediaQueryData mediaQuery) {
+    return buildShimmerAttendanceBoxesWidth(mediaQuery);
   }
 
   Widget _buildMainContent(
@@ -801,7 +862,72 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     count,
                     style: GoogleFonts.sora(
-                      fontSize: mediaQuery.size.width * 0.045,
+                      fontSize: mediaQuery.size.width * 0.035,
+                      fontWeight: FontWeight.bold,
+                      color: backgroundColor,
+                    ),
+                  ),
+                  SizedBox(height: mediaQuery.size.height * 0.005),
+                  Text(
+                    label,
+                    style: GoogleFonts.sora(
+                      fontSize: mediaQuery.size.width * 0.03,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAttendanceBox1(
+    String count,
+    String label,
+    Color backgroundColor,
+    Color foregroundColor,
+    MediaQueryData mediaQuery,
+  ) {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: mediaQuery.size.height * 0.12,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        Positioned(
+          top: 15,
+          left: 0,
+          right: 0,
+          child: Container(
+            width: mediaQuery.size.width * 0.26,
+            height: mediaQuery.size.height * 0.11,
+            decoration: BoxDecoration(
+              color: foregroundColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: const Offset(2, 2),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(mediaQuery.size.width * 0.04),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    count,
+                    style: GoogleFonts.sora(
+                      fontSize: mediaQuery.size.width * 0.035,
                       fontWeight: FontWeight.bold,
                       color: backgroundColor,
                     ),
