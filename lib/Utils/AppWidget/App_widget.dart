@@ -912,11 +912,11 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
   @override
   void initState() {
     super.initState();
-    // Initialize with provided dates or null
+    // Initialize with provided dates or empty
     selectedDateRange = [
-      if (widget.initialStartDate != null) widget.initialStartDate,
-      if (widget.initialEndDate != null) widget.initialEndDate,
-    ];
+      widget.initialStartDate,
+      widget.initialEndDate,
+    ].where((date) => date != null).toList();
   }
 
   String formatDate(DateTime date) {
@@ -1006,16 +1006,20 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                       ),
                     ),
                     onPressed: () {
-                      if (selectedDateRange[0] != null &&
-                          selectedDateRange[1] != null) {
-                        widget.onDateRangeSelected(
-                          selectedDateRange[0],
-                          selectedDateRange[1],
-                        );
+                      // Ensure we have exactly 2 dates (start and end)
+                      final start = selectedDateRange.isNotEmpty
+                          ? selectedDateRange[0]
+                          : null;
+                      final end = selectedDateRange.length > 1
+                          ? selectedDateRange[1]
+                          : null;
+
+                      if (start != null && end != null) {
+                        widget.onDateRangeSelected(start, end);
                         Navigator.pop(context);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Please select a valid date range'),
                           ),
                         );
@@ -1075,12 +1079,14 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                 value: selectedDateRange,
                 onValueChanged: (List<DateTime?> values) {
                   setState(() {
-                    if (values.length >= 2) {
-                      selectedDateRange = [values[0], values[1]];
+                    // Always maintain exactly 2 items in the list
+                    if (values.isEmpty) {
+                      selectedDateRange = [null, null];
                     } else if (values.length == 1) {
                       selectedDateRange = [values[0], null];
                     } else {
-                      selectedDateRange = [null, null];
+                      // Take the first two dates if more than 2 are selected
+                      selectedDateRange = [values[0], values[1]];
                     }
                   });
                 },

@@ -1157,7 +1157,7 @@ class HomeScreenController extends NetworkManager {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color.fromARGB(0, 5, 5, 5),
       builder: (_) => Container(
         decoration: const BoxDecoration(
           color: ColorResources.backgroundWhiteColor,
@@ -1174,8 +1174,9 @@ class HomeScreenController extends NetworkManager {
             1,
           ), // Allow going back 1 year
           lastDate: now,
-          initialStartDate: firstDayOfMonth,
-      initialEndDate: now,
+          initialStartDate:
+              startDate ?? firstDayOfMonth, // Use current startDate if exists
+          initialEndDate: endDate ?? now, // Use current endDate if exists
           onDateRangeSelected: (start, end) {
             setDateRange(start, end);
           },
