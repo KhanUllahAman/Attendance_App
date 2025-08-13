@@ -40,6 +40,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -64,26 +65,25 @@ class AssetComplainRequestScreenList extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: mq.size.height * 0.010),
+
+                    // Search Field
                     CustomSearchField(
                       controller: controller.searchController,
                       hintText: "Search by type, category or status",
                       onChanged: (value) => controller.filterComplaints(),
                     ),
                     SizedBox(height: mq.size.height * 0.02),
+
+                    // Complaints List
                     Expanded(
                       child: RefreshIndicator(
                         onRefresh: () async {
                           await controller.fetchAssetComplaints();
                         },
+                        elevation: 0.0,
                         color: ColorResources.backgroundWhiteColor,
                         backgroundColor: ColorResources.appMainColor,
-                        elevation: 0.0,
-                        displacement: 40, // Adjust this as needed
-                        edgeOffset: 20, // Adjust this as needed
-                        child: SingleChildScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          child: _buildComplaintsList(mq),
-                        ),
+                        child: _buildComplaintsList(mq),
                       ),
                     ),
                   ],
@@ -229,6 +229,7 @@ class AssetComplainRequestScreenList extends StatelessWidget {
     );
   }
 
+  // DRAGGABLE Bottom Sheet for Request Details
   void _showRequestDetailBottomSheet(
     BuildContext context,
     MediaQueryData mq,
@@ -241,74 +242,84 @@ class AssetComplainRequestScreenList extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          left: mq.size.width * 0.05,
-          right: mq.size.width * 0.05,
-          top: mq.size.height * 0.025,
-          bottom: mq.viewInsets.bottom + 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 50,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: ColorResources.greyColor,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+      builder: (_) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.5,
+          minChildSize: 0.4,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: EdgeInsets.only(
+                left: mq.size.width * 0.05,
+                right: mq.size.width * 0.05,
+                top: mq.size.height * 0.025,
+                bottom: mq.viewInsets.bottom + 20,
               ),
-            ),
-            SizedBox(height: mq.size.height * 0.02),
-            Center(
-              child: Text(
-                "Request Details",
-                style: GoogleFonts.sora(
-                  fontSize: mq.size.width * 0.045,
-                  fontWeight: FontWeight.bold,
-                  color: ColorResources.blackColor,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: ColorResources.greyColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: mq.size.height * 0.02),
+                  Center(
+                    child: Text(
+                      "Request Details",
+                      style: GoogleFonts.sora(
+                        fontSize: mq.size.width * 0.045,
+                        fontWeight: FontWeight.bold,
+                        color: ColorResources.blackColor,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: mq.size.height * 0.025),
+                  _bottomSheetDetail(
+                    "Request Type",
+                    complaint.requestType.capitalizeFirst.toString(),
+                    mq,
+                  ),
+                  _bottomSheetDetail(
+                    "Category & Asset",
+                    "${complaint.category.capitalizeFirst} - ${complaint.assetType.capitalizeFirst}",
+                    mq,
+                  ),
+                  _bottomSheetDetail("Reason", complaint.reason, mq),
+                  _bottomSheetDetail(
+                    "Requested Date",
+                    complaint.formattedRequestedAt,
+                    mq,
+                  ),
+                  _bottomSheetDetail(
+                    "Status",
+                    complaint.statusText,
+                    mq,
+                    color: complaint.statusColor,
+                  ),
+                  _bottomSheetDetail(
+                    "Resolution Remarks",
+                    complaint.resolutionRemarks ?? "No remarks yet",
+                    mq,
+                  ),
+                  _bottomSheetDetail(
+                    "Reviewed By",
+                    complaint.reviewedBy?.toString() ?? "Not reviewed yet",
+                    mq,
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: mq.size.height * 0.025),
-            _bottomSheetDetail(
-              "Request Type",
-              complaint.requestType.capitalizeFirst.toString(),
-              mq,
-            ),
-            _bottomSheetDetail(
-              "Category & Asset",
-              "${complaint.category.capitalizeFirst} - ${complaint.assetType.capitalizeFirst}",
-              mq,
-            ),
-            _bottomSheetDetail("Reason", complaint.reason, mq),
-            _bottomSheetDetail(
-              "Requested Date",
-              complaint.formattedRequestedAt,
-              mq,
-            ),
-            _bottomSheetDetail(
-              "Status",
-              complaint.statusText,
-              mq,
-              color: complaint.statusColor,
-            ),
-            _bottomSheetDetail(
-              "Resolution Remarks",
-              complaint.resolutionRemarks ?? "No remarks yet",
-              mq,
-            ),
-            _bottomSheetDetail(
-              "Reviewed By",
-              complaint.reviewedBy?.toString() ?? "Not reviewed yet",
-              mq,
-            ),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

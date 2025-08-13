@@ -1,5 +1,6 @@
 // asset_complaint_controller.dart
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -102,7 +103,6 @@ import '../models/asset_complian_request_model.dart';
 //   }
 // }
 
-
 class AssetComplainRequestListController extends NetworkManager {
   final searchController = TextEditingController();
   final RxList<AssetComplaint> complaintsList = <AssetComplaint>[].obs;
@@ -111,7 +111,6 @@ class AssetComplainRequestListController extends NetworkManager {
   final RxString errorMessage = ''.obs;
   final RxBool hasInitialLoad = false.obs;
   StreamSubscription? _connectivitySubscription;
-
 
   @override
   void onInit() {
@@ -128,9 +127,10 @@ class AssetComplainRequestListController extends NetworkManager {
     super.onClose();
   }
 
-    void _setupConnectivityListener() {
+  void _setupConnectivityListener() {
     _connectivitySubscription = connectionType.stream.listen((status) {
-      if (status != 0 && (!hasInitialLoad.value || errorMessage.value.isNotEmpty)) {
+      if (status != 0 &&
+          (!hasInitialLoad.value || errorMessage.value.isNotEmpty)) {
         fetchAssetComplaints();
       }
     });
@@ -179,7 +179,8 @@ class AssetComplainRequestListController extends NetworkManager {
         body,
         headers,
       ).timeout(const Duration(seconds: 15));
-
+      log("Assets Complian List $response");
+      log("Yai body hai $body");
       if (response['status'] == 1) {
         complaintsList.assignAll(
           (response['payload'] as List)

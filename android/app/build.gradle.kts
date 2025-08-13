@@ -33,8 +33,8 @@ android {
         applicationId = "com.orio.orioattendanceapp"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 2
-        versionName = "1.0.1"  // यहां String के रूप में
+        versionCode = 4
+        versionName = "1.0.3"  // यहां String के रूप में
     }
 
     signingConfigs {

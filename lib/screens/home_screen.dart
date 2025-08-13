@@ -19,7 +19,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final controller = Get.put(HomeScreenController());
-
     return AnnotatedRegion(
       value: ColorResources.getSystemUiOverlayAllPages(),
       child: Layout(

@@ -219,105 +219,114 @@ class MyCorrectionRequestList extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          left: mq.size.width * 0.05,
-          right: mq.size.width * 0.05,
-          top: mq.size.height * 0.025,
-          bottom: mq.viewInsets.bottom + 20,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 50,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: ColorResources.greyColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+      builder: (_) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.6, // Shuru mein 60% screen height
+          minChildSize: 0.4, // Minimum 40% screen height
+          maxChildSize: 0.95, // Maximum 95% screen height
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: EdgeInsets.only(
+                left: mq.size.width * 0.05,
+                right: mq.size.width * 0.05,
+                top: mq.size.height * 0.025,
+                bottom: mq.viewInsets.bottom + 20,
               ),
-              Center(
-                child: Text(
-                  "Correction Request Detail",
-                  style: GoogleFonts.sora(
-                    fontSize: mq.size.width * 0.05,
-                    fontWeight: FontWeight.w700,
-                    color: ColorResources.blackColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 50,
+                      height: 5,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: ColorResources.greyColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Divider(color: Colors.white12),
-              const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      "Correction Request Detail",
+                      style: GoogleFonts.sora(
+                        fontSize: mq.size.width * 0.05,
+                        fontWeight: FontWeight.w700,
+                        color: ColorResources.blackColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Divider(color: Colors.white12),
+                  const SizedBox(height: 12),
 
-              // DETAILS LIST
-              _buildDetailItem(
-                Icons.calendar_today,
-                "Attendance Date",
-                correction.formattedAttendanceDate,
+                  // DETAILS LIST
+                  _buildDetailItem(
+                    Icons.calendar_today,
+                    "Attendance Date",
+                    correction.formattedAttendanceDate,
+                  ),
+                  _buildDetailItem(
+                    Icons.access_time,
+                    "Original Check-In",
+                    correction.originalCheckIn != null
+                        ? _formatTime(correction.originalCheckIn!)
+                        : "—",
+                  ),
+                  _buildDetailItem(
+                    Icons.access_time_outlined,
+                    "Original Check-Out",
+                    correction.originalCheckOut != null
+                        ? _formatTime(correction.originalCheckOut!)
+                        : "—",
+                  ),
+                  if (correction.requestedCheckIn != null)
+                    _buildDetailItem(
+                      Icons.login,
+                      "Requested Check-In",
+                      _formatTime(correction.requestedCheckIn!),
+                    ),
+                  if (correction.requestedCheckOut != null)
+                    _buildDetailItem(
+                      Icons.logout,
+                      "Requested Check-Out",
+                      _formatTime(correction.requestedCheckOut!),
+                    ),
+                  _buildDetailItem(
+                    Icons.label_outline,
+                    "Request Type",
+                    correction.requestTypeDisplay,
+                  ),
+                  _buildDetailItem(
+                    Icons.message_outlined,
+                    "Reason",
+                    correction.reason,
+                  ),
+                  _buildDetailItem(
+                    Icons.info_outline,
+                    "Status",
+                    correction.statusText,
+                    color: correction.statusColor,
+                  ),
+                  _buildDetailItem(
+                    Icons.verified_user_outlined,
+                    "Manager/HR Remarks",
+                    correction.remarks ?? "—",
+                  ),
+                  _buildDetailItem(
+                    Icons.date_range,
+                    "Submitted On",
+                    correction.formattedCreatedAt,
+                  ),
+                  const SizedBox(height: 24),
+                ],
               ),
-              _buildDetailItem(
-                Icons.access_time,
-                "Original Check-In",
-                correction.originalCheckIn != null
-                    ? _formatTime(correction.originalCheckIn!)
-                    : "—",
-              ),
-              _buildDetailItem(
-                Icons.access_time_outlined,
-                "Original Check-Out",
-                correction.originalCheckOut != null
-                    ? _formatTime(correction.originalCheckOut!)
-                    : "—",
-              ),
-              if (correction.requestedCheckIn != null)
-                _buildDetailItem(
-                  Icons.login,
-                  "Requested Check-In",
-                  _formatTime(correction.requestedCheckIn!),
-                ),
-              if (correction.requestedCheckOut != null)
-                _buildDetailItem(
-                  Icons.logout,
-                  "Requested Check-Out",
-                  _formatTime(correction.requestedCheckOut!),
-                ),
-              _buildDetailItem(
-                Icons.label_outline,
-                "Request Type",
-                correction.requestTypeDisplay,
-              ),
-              _buildDetailItem(
-                Icons.message_outlined,
-                "Reason",
-                correction.reason,
-              ),
-              _buildDetailItem(
-                Icons.info_outline,
-                "Status",
-                correction.statusText,
-                color: correction.statusColor,
-              ),
-              _buildDetailItem(
-                Icons.verified_user_outlined,
-                "Manager/HR Remarks",
-                correction.remarks ?? "—",
-              ),
-              _buildDetailItem(
-                Icons.date_range,
-                "Submitted On",
-                correction.formattedCreatedAt,
-              ),
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

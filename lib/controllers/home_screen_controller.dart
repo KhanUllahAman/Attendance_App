@@ -17,577 +17,6 @@ import '../Utils/Constant/api_url_constant.dart';
 import '../models/home_model.dart';
 import 'package:geolocator/geolocator.dart';
 
-// class HomeScreenController extends NetworkManager {
-//   final AuthService authService = AuthService();
-
-//   final RxBool isLoading = true.obs;
-//   final RxBool isLocationMatched = false.obs;
-//   final Rx<HomeScreenResponse> homeScreenData = HomeScreenResponse().obs;
-//   final RxString errorMessage = ''.obs;
-//   final RxInt matchedOfficeId = 0.obs;
-//   final RxString userName = ''.obs;
-//   final RxString greeting = ''.obs;
-//   final RxString currentTime = ''.obs;
-//   final RxString currentDate = ''.obs;
-//   Timer? timer;
-//   final RxBool isProcessingCheckIn = false.obs;
-//   final RxBool isProcessingCheckOut = false.obs;
-//   final RxString currentButtonState = 'check_in'.obs;
-//   DateTime? startDate;
-//   DateTime? endDate;
-//   final Rx<AttendanceSummary?> attendanceSummary = Rx<AttendanceSummary?>(null);
-//   final RxBool isSummaryLoading = false.obs;
-//   final RxString selectedDateRangeText = 'This Month'.obs;
-//   final RxBool isLocationEnabled = false.obs;
-//   bool _hasFetchedOfficeLocations = false;
-
-//   @override
-//   void onInit() async {
-//     super.onInit();
-//     await Future.wait([
-//       fetchUserName(),
-//       fetchHomeData(),
-//       fetchAttendanceSummary(),
-//     ]);
-//     updateGreeting();
-//     startTimeUpdates();
-//     updateButtonState();
-//     developer.log('HomeScreenController initialized');
-//   }
-
-//   Future<void> checkLocationServiceStatus() async {
-//     try {
-//       isLocationEnabled.value = await Geolocator.isLocationServiceEnabled();
-//     } catch (e) {
-//       isLocationEnabled.value = false;
-//     }
-//   }
-
-//   void startTimeUpdates() {
-//     updateTimeAndDate();
-//     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       updateTimeAndDate();
-//     });
-//     developer.log('Started time update timer');
-//   }
-
-//   void updateTimeAndDate() {
-//     currentTime.value = DateFormat('hh:mm a').format(DateTime.now());
-//     currentDate.value = DateFormat(
-//       'MMMM dd, yyyy - EEEE',
-//     ).format(DateTime.now());
-//   }
-
-//   Future<void> fetchUserName() async {
-//     final username = await authService.getUsername();
-//     userName.value = username ?? 'User';
-//   }
-
-//   void updateGreeting() {
-//     final hour = DateTime.now().hour;
-//     if (hour < 12) {
-//       greeting.value = 'Good Morning';
-//     } else if (hour < 17) {
-//       greeting.value = 'Good Afternoon';
-//     } else {
-//       greeting.value = 'Good Evening';
-//     }
-//   }
-
-//   void updateButtonState() {
-//     if (homeScreenData.value.singleAttendance?.isNotEmpty == true) {
-//       final attendance = homeScreenData.value.singleAttendance![0];
-//       if (attendance.checkInTime != null) {
-//         // Always show check-out button if checked in, regardless of check-out status
-//         currentButtonState.value = 'check_out';
-//       } else {
-//         currentButtonState.value = 'check_in';
-//       }
-//     } else {
-//       currentButtonState.value = 'check_in';
-//     }
-//   }
-
-//   Future<String?> _getToken() async {
-//     return await authService.getToken();
-//   }
-
-//   Future<int?> _getEmployeeId() async {
-//     return await authService.getEmployeeId();
-//   }
-
-//   String getCurrentDate() {
-//     return DateFormat('yyyy-MM-dd').format(DateTime.now());
-//   }
-
-//   String _getCurrentTime() {
-//     return DateFormat('HH:mm:ss').format(DateTime.now());
-//   }
-
-//   Future<int?> _getMatchedOfficeId(List<OfficeLocation> officeLocations) async {
-//     await checkLocationServiceStatus();
-//     if (!isLocationEnabled.value) {
-//       customSnackBar(
-//         'Error',
-//         'Location services are disabled. Please enable them.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       return null;
-//     }
-//     try {
-//       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//       if (!serviceEnabled) {
-//         customSnackBar(
-//           'Error',
-//           'Location services are disabled. Please enable them.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         return null;
-//       }
-
-//       LocationPermission permission = await Geolocator.checkPermission();
-//       if (permission == LocationPermission.denied) {
-//         permission = await Geolocator.requestPermission();
-//         if (permission == LocationPermission.denied) {
-//           customSnackBar(
-//             'Error',
-//             'Location permissions are denied.',
-//             snackBarType: SnackBarType.error,
-//           );
-//           return null;
-//         }
-//       }
-
-//       if (permission == LocationPermission.deniedForever) {
-//         customSnackBar(
-//           'Error',
-//           'Location permissions are permanently denied. Please enable them in settings.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         return null;
-//       }
-
-//       Position position = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
-//       );
-
-//       for (var office in officeLocations) {
-//         double distance = Geolocator.distanceBetween(
-//           double.parse(office.latitude),
-//           double.parse(office.longitude),
-//           position.latitude,
-//           position.longitude,
-//         );
-//         if (distance <= office.radiusMeters) {
-//           return office.id;
-//         }
-//       }
-
-//       customSnackBar(
-//         'Error',
-//         'You are not within any office location range.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       return null;
-//     } catch (e) {
-//       developer.log('Location Error: $e');
-//       customSnackBar(
-//         'Error',
-//         'Failed to fetch location. Please try again.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       return null;
-//     }
-//   }
-
-//   Future<void> fetchHomeData() async {
-//     isLoading.value = true;
-//     isLocationMatched.value = false;
-
-//     try {
-//       final connectivityResult = await Connectivity().checkConnectivity();
-//       if (connectivityResult == ConnectivityResult.none) {
-//         errorMessage.value = 'No internet connection available';
-//         isLoading.value = false;
-//         return;
-//       }
-
-//       final token = await _getToken();
-//       if (token == null) {
-//         errorMessage.value = 'No token found. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'No token found. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         await authService.clearAuthData();
-//         isLoading.value = false;
-//         return;
-//       }
-
-//       final headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       };
-
-//       // Fetch office locations
-//       final officeResponse = await Network.getApi(
-//         getOfficeLocations,
-//         headers: headers,
-//       ).timeout(const Duration(seconds: 15));
-
-//       if (officeResponse['status'] != 1) {
-//         errorMessage.value =
-//             officeResponse['message'] ?? 'Failed to fetch office locations';
-//         isLoading.value = false;
-//         return;
-//       }
-
-//       final officeLocations = (officeResponse['payload'] as List)
-//           .map((e) => OfficeLocation.fromJson(e))
-//           .toList();
-
-//       homeScreenData.value = HomeScreenResponse(
-//         officeLocations: officeLocations,
-//       );
-
-//       // Find matched office ID
-//       final officeId = await _getMatchedOfficeId(officeLocations);
-//       if (officeId == null) {
-//         isLoading.value = false;
-//         return;
-//       }
-
-//       matchedOfficeId.value = officeId;
-//       isLocationMatched.value = true;
-
-//       // Fetch single attendance
-//       final employeeId = await _getEmployeeId();
-//       if (employeeId == null) {
-//         errorMessage.value = 'Employee ID not found.';
-//         customSnackBar(
-//           'Error',
-//           'Employee ID not found.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         isLoading.value = false;
-//         return;
-//       }
-
-//       final attendanceBody = {
-//         'employee_id': employeeId,
-//         'attendance_date': getCurrentDate(),
-//       };
-
-//       final attendanceResponse = await Network.postApi(
-//         token,
-//         getSingleAttendanceUrl,
-//         attendanceBody,
-//         headers,
-//       ).timeout(const Duration(seconds: 15));
-
-//       if (attendanceResponse['status'] == 1) {
-//         homeScreenData.value = HomeScreenResponse(
-//           officeLocations: homeScreenData.value.officeLocations,
-//           singleAttendance: (attendanceResponse['payload'] as List)
-//               .map((e) => Attendance.fromJson(e))
-//               .toList(),
-//         );
-//       } else {
-//         errorMessage.value =
-//             attendanceResponse['message'] ?? 'Failed to fetch attendance data';
-//       }
-//     } on TimeoutException catch (_) {
-//       errorMessage.value = 'Request timed out. Please try again.';
-//     } on SocketException catch (_) {
-//       errorMessage.value = 'No internet connection';
-//     } catch (e) {
-//       errorMessage.value = 'Failed to load data: ${e.toString()}';
-//     } finally {
-//       updateButtonState();
-//       isLoading.value = false;
-//     }
-//   }
-
-//   Future<void> checkIn() async {
-//     if (connectionType.value == 0 || !isLocationMatched.value) {
-//       customSnackBar(
-//         'Error',
-//         connectionType.value == 0
-//             ? 'No internet connection available.'
-//             : 'You are not within any office location range.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       return;
-//     }
-
-//     if (currentButtonState.value != 'check_in') {
-//       customSnackBar(
-//         'Info',
-//         'You cannot check in at this time.',
-//         snackBarType: SnackBarType.info,
-//       );
-//       return;
-//     }
-
-//     isProcessingCheckIn.value = true;
-//     try {
-//       final token = await _getToken();
-//       final employeeId = await _getEmployeeId();
-//       if (token == null || employeeId == null) {
-//         errorMessage.value = 'Authentication error. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'Authentication error. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         await authService.clearAuthData();
-//         return;
-//       }
-
-//       final checkInBody = {
-//         'employee_id': employeeId,
-//         'attendance_date': getCurrentDate(),
-//         'check_in_time': _getCurrentTime(),
-//         'check_in_office_location': matchedOfficeId.value,
-//       };
-
-//       final headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       };
-
-//       final checkInResponse = await Network.postApi(
-//         token,
-//         checkInUrl,
-//         checkInBody,
-//         headers,
-//       );
-
-//       if (checkInResponse['status'] == 1) {
-//         customSnackBar(
-//           'Success',
-//           checkInResponse['message'],
-//           snackBarType: SnackBarType.success,
-//         );
-//         await fetchHomeData();
-//       } else {
-//         errorMessage.value = checkInResponse['message'];
-//         customSnackBar(
-//           'Error',
-//           checkInResponse['message'],
-//           snackBarType: SnackBarType.error,
-//         );
-//       }
-//     } catch (e) {
-//       errorMessage.value = 'Failed to check in. Please try again.';
-//       customSnackBar(
-//         'Error',
-//         'Failed to check in. Please try again.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       developer.log('Check In Error: $e');
-//     } finally {
-//       isProcessingCheckIn.value = false;
-//     }
-//   }
-
-//   Future<void> checkOut() async {
-//     if (connectionType.value == 0 || !isLocationMatched.value) {
-//       customSnackBar(
-//         'Error',
-//         connectionType.value == 0
-//             ? 'No internet connection available.'
-//             : 'You are not within any office location range.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       return;
-//     }
-
-//     isProcessingCheckOut.value = true;
-//     try {
-//       final token = await _getToken();
-//       final employeeId = await _getEmployeeId();
-//       if (token == null || employeeId == null) {
-//         errorMessage.value = 'Authentication error. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'Authentication error. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
-//         await authService.clearAuthData();
-//         return;
-//       }
-
-//       final checkOutBody = {
-//         'employee_id': employeeId,
-//         'attendance_date': getCurrentDate(),
-//         'check_out_time': _getCurrentTime(),
-//         'check_out_office_location': matchedOfficeId.value,
-//       };
-
-//       final headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       };
-
-//       final checkOutResponse = await Network.postApi(
-//         token,
-//         checkOutUrl,
-//         checkOutBody,
-//         headers,
-//       );
-
-//       if (checkOutResponse['status'] == 1) {
-//         customSnackBar(
-//           'Success',
-//           checkOutResponse['message'],
-//           snackBarType: SnackBarType.success,
-//         );
-//         await fetchHomeData();
-//       } else {
-//         errorMessage.value = checkOutResponse['message'];
-//         customSnackBar(
-//           'Error',
-//           checkOutResponse['message'],
-//           snackBarType: SnackBarType.error,
-//         );
-//       }
-//     } catch (e) {
-//       errorMessage.value = 'Failed to check out. Please try again.';
-//       customSnackBar(
-//         'Error',
-//         'Failed to check out. Please try again.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       developer.log('Check Out Error: $e');
-//     } finally {
-//       isProcessingCheckOut.value = false;
-//     }
-//   }
-
-//   // Button state methods
-//   Color getButtonColor() {
-//     if (!isLocationEnabled.value) return Colors.grey;
-//     if (!isLocationMatched.value) return Colors.grey;
-//     return currentButtonState.value == 'check_in'
-//         ? ColorResources.appMainColor
-//         : Colors.orange.shade700;
-//   }
-
-//   Color getGlowColor() {
-//     if (!isLocationMatched.value) return Colors.grey.withOpacity(0.5);
-
-//     return currentButtonState.value == 'check_in'
-//         ? ColorResources.appMainColor.withOpacity(0.5)
-//         : Colors.orange.shade700.withOpacity(0.5);
-//   }
-
-//   IconData getButtonIcon() {
-//     return currentButtonState.value == 'check_in'
-//         ? Iconsax.login
-//         : Iconsax.logout;
-//   }
-
-//   String getButtonText() {
-//     if (!isLocationEnabled.value) return 'Enable Location';
-//     if (!isLocationMatched.value) return 'Not in Office';
-//     return currentButtonState.value == 'check_in' ? 'Check In' : 'Check Out';
-//   }
-
-//   Future<void> fetchAttendanceSummary() async {
-//     isSummaryLoading.value = true;
-
-//     try {
-//       final token = await _getToken();
-//       final employeeId = await _getEmployeeId();
-
-//       if (token == null || employeeId == null) {
-//         errorMessage.value = 'Authentication error. Please log in again.';
-//         return;
-//       }
-//       final now = DateTime.now();
-//       final firstDayOfMonth = DateTime(now.year, now.month, 1);
-//       final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
-//       final body = {
-//         // 'employee_id': employeeId,
-//         'employee_id': 2,
-//         'start_date':
-//             startDate?.toIso8601String().split('T')[0] ??
-//             DateFormat('yyyy-MM-dd').format(firstDayOfMonth),
-//         'end_date':
-//             endDate?.toIso8601String().split('T')[0] ??
-//             DateFormat('yyyy-MM-dd').format(lastDayOfMonth),
-//       };
-//       final headers = {
-//         'Content-Type': 'application/json',
-//         'Authorization': 'Bearer $token',
-//       };
-//       developer.log("This is Header ${headers.toString()}");
-//       developer.log("This is Body ${body.toString()}");
-//       final response = await Network.postApi(
-//         null,
-//         fetchAttendanceSummaryApi,
-//         body,
-//         headers,
-//       );
-//       developer.log("THis is Resposne ${response.toString()}");
-//       if (response['status'] == 1) {
-//         attendanceSummary.value = AttendanceSummary.fromJson(
-//           response['payload'][0],
-//         );
-//       } else {
-//         errorMessage.value =
-//             response['message'] ?? 'Failed to fetch attendance summary';
-//       }
-//     } catch (e) {
-//       errorMessage.value = 'Failed to load attendance summary: ${e.toString()}';
-//     } finally {
-//       isSummaryLoading.value = false;
-//     }
-//   }
-
-//   void setDateRange(DateTime? start, DateTime? end) {
-//     startDate = start;
-//     endDate = end;
-//     if (start != null && end != null) {
-//       final diff = end.difference(start).inDays + 1;
-//       selectedDateRangeText.value =
-//           '${DateFormat('MMM d').format(start)} - ${DateFormat('MMM d, y').format(end)} ($diff days)';
-//     } else {
-//       selectedDateRangeText.value = 'This Month';
-//     }
-//     fetchAttendanceSummary();
-//   }
-
-//   void openDateRangePicker(BuildContext context) {
-//     showModalBottomSheet(
-//       context: context,
-//       isScrollControlled: true,
-//       backgroundColor: Colors.transparent,
-//       builder: (_) => CustomDateRangePicker(
-//         onDateRangeSelected: (start, end) {
-//           setDateRange(start, end);
-//         },
-//       ),
-//     );
-//   }
-
-//   @override
-//   void onClose() {
-//     timer?.cancel();
-//     isLoading.value = true;
-//     isLocationMatched.value = false;
-//     homeScreenData.value = HomeScreenResponse();
-//     matchedOfficeId.value = 0;
-//     errorMessage.value = '';
-//     isProcessingCheckIn.value = false;
-//     isProcessingCheckOut.value = false;
-//     developer.log('HomeScreenController disposed');
-//     super.onClose();
-//   }
-// }
-
 class HomeScreenController extends NetworkManager {
   final AuthService authService = AuthService();
 
@@ -654,7 +83,7 @@ class HomeScreenController extends NetworkManager {
     final imageName = await authService.getProfileImage();
     if (imageName != null && imageName.isNotEmpty) {
       profileImageUrl.value =
-          'http://162.211.84.202:3001/uploads/users/$imageName';
+          'http://98.81.213.32:3001/uploads/users/$imageName';
     } else {
       profileImageUrl.value = '';
     }
@@ -1029,12 +458,7 @@ class HomeScreenController extends NetworkManager {
       );
 
       if (checkOutResponse['status'] == 1) {
-        // customSnackBar(
-        //   'Success',
-        //   checkOutResponse['message'],
-        //   snackBarType: SnackBarType.success,
-        // );
-        await fetchHomeData();
+        await Future.wait([fetchHomeData(), fetchAttendanceSummary()]);
       } else {
         errorMessage.value = checkOutResponse['message'];
         customSnackBar(
@@ -1199,12 +623,8 @@ class HomeScreenController extends NetworkManager {
   }
 }
 
-////// AUTO REFRESH WORK ////
-////////////////////////////
-
 // import 'dart:async';
 // import 'dart:io';
-
 // import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
@@ -1216,16 +636,19 @@ class HomeScreenController extends NetworkManager {
 // import '../AuthServices/auth_service.dart';
 // import '../Network/Network Manager/network_manager.dart';
 // import '../Network/network.dart';
+// import '../Utils/AppWidget/App_widget.dart';
 // import '../Utils/Colors/color_resoursec.dart';
 // import '../Utils/Constant/api_url_constant.dart';
 // import '../models/home_model.dart';
 // import 'package:geolocator/geolocator.dart';
 
-// class HomeScreenController extends NetworkManager with WidgetsBindingObserver {
+// class HomeScreenController extends NetworkManager {
 //   final AuthService authService = AuthService();
 
+//   // State variables
 //   final RxBool isLoading = true.obs;
 //   final RxBool isLocationMatched = false.obs;
+//   final RxBool isLocationEnabled = false.obs;
 //   final Rx<HomeScreenResponse> homeScreenData = HomeScreenResponse().obs;
 //   final RxString errorMessage = ''.obs;
 //   final RxInt matchedOfficeId = 0.obs;
@@ -1233,30 +656,47 @@ class HomeScreenController extends NetworkManager {
 //   final RxString greeting = ''.obs;
 //   final RxString currentTime = ''.obs;
 //   final RxString currentDate = ''.obs;
+//   final RxString profileImageUrl = ''.obs;
+
 //   Timer? timer;
-//   Timer? refreshTimer;
 //   final RxBool isProcessingCheckIn = false.obs;
 //   final RxBool isProcessingCheckOut = false.obs;
 //   final RxString currentButtonState = 'check_in'.obs;
+//   DateTime? startDate;
+//   DateTime? endDate;
+//   final Rx<AttendanceSummary?> attendanceSummary = Rx<AttendanceSummary?>(null);
+//   final RxBool isSummaryLoading = false.obs;
+//   final RxString selectedDateRangeText = 'This Month'.obs;
+//   bool _hasFetchedOfficeLocations = false;
+//   double? savedScrollPosition;
+//   final ScrollController scrollController = ScrollController();
 
 //   @override
 //   void onInit() async {
 //     super.onInit();
-//     WidgetsBinding.instance.addObserver(this);
-//     await Future.wait([fetchUserName(), fetchHomeData()]);
+//     savedScrollPosition = 0;
+//     await Future.wait([
+//       fetchUserName(),
+//       fetchProfileImage(),
+//       fetchHomeData(),
+//       fetchAttendanceSummary(),
+//     ]);
 //     updateGreeting();
 //     startTimeUpdates();
 //     updateButtonState();
-//     startAutoRefresh();
-//     developer.log('HomeScreenController initialized');
-//   }
 
-//   void startAutoRefresh() {
-//     refreshTimer?.cancel();
-//     refreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-//       if (!isLoading.value && !isLocationMatched.value) {
-//         // Only refresh if not loading AND not in office location
-//         fetchHomeData();
+//     Geolocator.getServiceStatusStream().listen((status) {
+//       bool newStatus = status == ServiceStatus.enabled;
+//       if (isLocationEnabled.value != newStatus) {
+//         isLocationEnabled.value = newStatus;
+//         // If location was just turned off, show message
+//         if (!newStatus) {
+//           customSnackBar(
+//             'Location Disabled',
+//             'Location services have been turned off',
+//             snackBarType: SnackBarType.info,
+//           );
+//         }
 //       }
 //     });
 //   }
@@ -1266,7 +706,6 @@ class HomeScreenController extends NetworkManager {
 //     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
 //       updateTimeAndDate();
 //     });
-//     developer.log('Started time update timer');
 //   }
 
 //   void updateTimeAndDate() {
@@ -1276,9 +715,30 @@ class HomeScreenController extends NetworkManager {
 //     ).format(DateTime.now());
 //   }
 
+//   Future<void> fetchProfileImage() async {
+//     final imageName = await authService.getProfileImage();
+//     if (imageName != null && imageName.isNotEmpty) {
+//       profileImageUrl.value =
+//           'http://98.81.213.32:3001/uploads/users/$imageName';
+//     } else {
+//       profileImageUrl.value = '';
+//     }
+//   }
+
 //   Future<void> fetchUserName() async {
-//     final username = await authService.getUsername();
-//     userName.value = username ?? 'User';
+//     final username = await authService.getFullName();
+//     if (username != null) {
+//       final firstWord = username.contains(' ')
+//           ? username.split(' ').first
+//           : username;
+//       userName.value = firstWord.length > 8
+//           ? '${firstWord.substring(0, 8)}...'
+//           : username.contains(' ')
+//           ? '$firstWord...'
+//           : firstWord;
+//     } else {
+//       userName.value = 'User';
+//     }
 //   }
 
 //   void updateGreeting() {
@@ -1294,7 +754,7 @@ class HomeScreenController extends NetworkManager {
 
 //   void updateButtonState() {
 //     if (homeScreenData.value.singleAttendance?.isNotEmpty == true) {
-//       final attendance = homeScreenData.value.singleAttendance![0];
+//       final attendance = homeScreenData.value.singleAttendance[0];
 //       if (attendance.checkInTime != null) {
 //         currentButtonState.value = 'check_out';
 //       } else {
@@ -1321,44 +781,98 @@ class HomeScreenController extends NetworkManager {
 //     return DateFormat('HH:mm:ss').format(DateTime.now());
 //   }
 
+//   Future<void> checkLocationServiceStatus() async {
+//     try {
+//       bool wasEnabled = isLocationEnabled.value;
+//       isLocationEnabled.value = await Geolocator.isLocationServiceEnabled();
+
+//       // If location was just turned off, show a message
+//       if (wasEnabled && !isLocationEnabled.value) {
+//         customSnackBar(
+//           'Location Disabled',
+//           'Location services have been turned off',
+//           snackBarType: SnackBarType.info,
+//         );
+//       }
+//       if (!isLocationEnabled.value) {
+//         bool serviceEnabled = await Geolocator.openLocationSettings();
+//         isLocationEnabled.value = serviceEnabled;
+
+//         if (!serviceEnabled) {
+//           customSnackBar(
+//             'Location Required',
+//             'Please enable location services to continue',
+//             snackBarType: SnackBarType.error,
+//           );
+//         }
+//       }
+//     } catch (e) {
+//       isLocationEnabled.value = false;
+//       customSnackBar(
+//         'Location Error',
+//         'Failed to check location services: ${e.toString()}',
+//         snackBarType: SnackBarType.error,
+//       );
+//     }
+//   }
+
 //   Future<int?> _getMatchedOfficeId(List<OfficeLocation> officeLocations) async {
 //     try {
-//       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//       if (!serviceEnabled) {
-//         customSnackBar(
-//           'Error',
-//           'Location services are disabled. Please enable them.',
-//           snackBarType: SnackBarType.error,
-//         );
+//       // First check if location services are enabled
+//       await checkLocationServiceStatus();
+//       if (!isLocationEnabled.value) {
 //         return null;
 //       }
 
+//       // Then check permissions
 //       LocationPermission permission = await Geolocator.checkPermission();
+
 //       if (permission == LocationPermission.denied) {
+//         // Show our custom explanation first
+//         bool shouldRequest = await _showPermissionExplanationDialog();
+//         if (!shouldRequest) return null;
+
 //         permission = await Geolocator.requestPermission();
 //         if (permission == LocationPermission.denied) {
 //           customSnackBar(
-//             'Error',
-//             'Location permissions are denied.',
-//             snackBarType: SnackBarType.error,
+//             'Permission Required',
+//             'Location permission is needed for check-in/out',
+//             snackBarType: SnackBarType.info,
 //           );
 //           return null;
 //         }
 //       }
 
 //       if (permission == LocationPermission.deniedForever) {
+//         // Direct to app settings
+//         bool opened = await _openAppSettings();
+//         if (!opened) {
+//           customSnackBar(
+//             'Permission Required',
+//             'Please enable location permissions in app settings',
+//             snackBarType: SnackBarType.error,
+//           );
+//         }
+//         return null;
+//       }
+
+//       // Now try to get location
+//       Position position;
+//       try {
+//         position = await Geolocator.getCurrentPosition(
+//           desiredAccuracy: LocationAccuracy.high,
+//           timeLimit: const Duration(seconds: 5),
+//         );
+//       } catch (e) {
 //         customSnackBar(
-//           'Error',
-//           'Location permissions are permanently denied. Please enable them in settings.',
+//           'Location Error',
+//           'Could not get current location',
 //           snackBarType: SnackBarType.error,
 //         );
 //         return null;
 //       }
 
-//       Position position = await Geolocator.getCurrentPosition(
-//         desiredAccuracy: LocationAccuracy.high,
-//       );
-
+//       // Check against office locations
 //       for (var office in officeLocations) {
 //         double distance = Geolocator.distanceBetween(
 //           double.parse(office.latitude),
@@ -1371,20 +885,38 @@ class HomeScreenController extends NetworkManager {
 //         }
 //       }
 
-//       customSnackBar(
-//         'Error',
-//         'You are not within any office location range.',
-//         snackBarType: SnackBarType.error,
-//       );
 //       return null;
 //     } catch (e) {
-//       developer.log('Location Error: $e');
 //       customSnackBar(
-//         'Error',
-//         'Failed to fetch location. Please try again.',
+//         'Location Error',
+//         'Error checking office location: ${e.toString()}',
 //         snackBarType: SnackBarType.error,
 //       );
 //       return null;
+//     }
+//   }
+
+//   Future<bool> _quickLocationCheck() async {
+//     try {
+//       final position = await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.low,
+//         timeLimit: const Duration(seconds: 3),
+//       );
+
+//       for (var office in homeScreenData.value.officeLocations ?? []) {
+//         double distance = Geolocator.distanceBetween(
+//           double.parse(office.latitude),
+//           double.parse(office.longitude),
+//           position.latitude,
+//           position.longitude,
+//         );
+//         if (distance <= office.radiusMeters) {
+//           return true;
+//         }
+//       }
+//       return false;
+//     } catch (e) {
+//       return false;
 //     }
 //   }
 
@@ -1403,11 +935,6 @@ class HomeScreenController extends NetworkManager {
 //       final token = await _getToken();
 //       if (token == null) {
 //         errorMessage.value = 'No token found. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'No token found. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
 //         await authService.clearAuthData();
 //         isLoading.value = false;
 //         return;
@@ -1418,48 +945,43 @@ class HomeScreenController extends NetworkManager {
 //         'Authorization': 'Bearer $token',
 //       };
 
-//       final officeResponse = await Network.getApi(
-//         getOfficeLocations,
-//         headers: headers,
-//       ).timeout(const Duration(seconds: 15));
+//       if (!_hasFetchedOfficeLocations) {
+//         final officeResponse = await Network.getApi(
+//           getOfficeLocations,
+//           headers: headers,
+//         ).timeout(const Duration(seconds: 15));
 
-//       if (officeResponse['status'] != 1) {
-//         errorMessage.value =
-//             officeResponse['message'] ?? 'Failed to fetch office locations';
-//         isLoading.value = false;
-//         return;
+//         if (officeResponse['status'] != 1) {
+//           errorMessage.value =
+//               officeResponse['message'] ?? 'Failed to fetch office locations';
+//           isLoading.value = false;
+//           return;
+//         }
+
+//         final officeLocations = (officeResponse['payload'] as List)
+//             .map((e) => OfficeLocation.fromJson(e))
+//             .toList();
+
+//         homeScreenData.value = HomeScreenResponse(
+//           officeLocations: officeLocations,
+//         );
+//         _hasFetchedOfficeLocations = true;
 //       }
 
-//       final officeLocations = (officeResponse['payload'] as List)
-//           .map((e) => OfficeLocation.fromJson(e))
-//           .toList();
-
-//       homeScreenData.value = HomeScreenResponse(
-//         officeLocations: officeLocations,
+//       final officeId = await _getMatchedOfficeId(
+//         homeScreenData.value.officeLocations,
 //       );
-
-//       final officeId = await _getMatchedOfficeId(officeLocations);
 //       if (officeId == null) {
 //         isLoading.value = false;
-//         if (!isLocationMatched.value) {
-//           startAutoRefresh();
-//         }
 //         return;
 //       }
 
 //       matchedOfficeId.value = officeId;
 //       isLocationMatched.value = true;
 
-//       refreshTimer?.cancel();
-
 //       final employeeId = await _getEmployeeId();
 //       if (employeeId == null) {
 //         errorMessage.value = 'Employee ID not found.';
-//         customSnackBar(
-//           'Error',
-//           'Employee ID not found.',
-//           snackBarType: SnackBarType.error,
-//         );
 //         isLoading.value = false;
 //         return;
 //       }
@@ -1496,24 +1018,38 @@ class HomeScreenController extends NetworkManager {
 //     } finally {
 //       updateButtonState();
 //       isLoading.value = false;
-
-//       if (!isLocationMatched.value &&
-//           (refreshTimer == null || !refreshTimer!.isActive)) {
-//         startAutoRefresh();
-//       }
 //     }
 //   }
 
 //   Future<void> checkIn() async {
-//     if (connectionType.value == 0 || !isLocationMatched.value) {
+//     if (connectionType.value == 0) {
 //       customSnackBar(
 //         'Error',
-//         connectionType.value == 0
-//             ? 'No internet connection available.'
-//             : 'You are not within any office location range.',
+//         'No internet connection available.',
 //         snackBarType: SnackBarType.error,
 //       );
 //       return;
+//     }
+//     await checkLocationServiceStatus();
+//     if (!isLocationEnabled.value) {
+//       return;
+//     }
+
+//     bool hasPermission = await _checkAndRequestLocationPermission();
+//     if (!hasPermission) {
+//       return;
+//     }
+
+//     if (!isLocationMatched.value) {
+//       final quickCheck = await _quickLocationCheck();
+//       if (!quickCheck) {
+//         customSnackBar(
+//           'Location Mismatch',
+//           'You are not within any office location range',
+//           snackBarType: SnackBarType.error,
+//         );
+//         return;
+//       }
 //     }
 
 //     if (currentButtonState.value != 'check_in') {
@@ -1531,11 +1067,6 @@ class HomeScreenController extends NetworkManager {
 //       final employeeId = await _getEmployeeId();
 //       if (token == null || employeeId == null) {
 //         errorMessage.value = 'Authentication error. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'Authentication error. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
 //         await authService.clearAuthData();
 //         return;
 //       }
@@ -1560,11 +1091,11 @@ class HomeScreenController extends NetworkManager {
 //       );
 
 //       if (checkInResponse['status'] == 1) {
-//         customSnackBar(
-//           'Success',
-//           checkInResponse['message'],
-//           snackBarType: SnackBarType.success,
-//         );
+//         // customSnackBar(
+//         //   'Success',
+//         //   checkInResponse['message'],
+//         //   snackBarType: SnackBarType.success,
+//         // );
 //         await fetchHomeData();
 //       } else {
 //         errorMessage.value = checkInResponse['message'];
@@ -1576,40 +1107,34 @@ class HomeScreenController extends NetworkManager {
 //       }
 //     } catch (e) {
 //       errorMessage.value = 'Failed to check in. Please try again.';
-//       customSnackBar(
-//         'Error',
-//         'Failed to check in. Please try again.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       developer.log('Check In Error: $e');
 //     } finally {
 //       isProcessingCheckIn.value = false;
 //     }
 //   }
 
 //   Future<void> checkOut() async {
-//     if (connectionType.value == 0 || !isLocationMatched.value) {
+//     if (connectionType.value == 0) {
 //       customSnackBar(
 //         'Error',
-//         connectionType.value == 0
-//             ? 'No internet connection available.'
-//             : 'You are not within any office location range.',
+//         'No internet connection available.',
 //         snackBarType: SnackBarType.error,
 //       );
 //       return;
 //     }
-
+//     await checkLocationServiceStatus();
+//     if (!isLocationEnabled.value) {
+//       return;
+//     }
+//     bool hasPermission = await _checkAndRequestLocationPermission();
+//     if (!hasPermission) {
+//       return;
+//     }
 //     isProcessingCheckOut.value = true;
 //     try {
 //       final token = await _getToken();
 //       final employeeId = await _getEmployeeId();
 //       if (token == null || employeeId == null) {
 //         errorMessage.value = 'Authentication error. Please log in again.';
-//         customSnackBar(
-//           'Error',
-//           'Authentication error. Please log in again.',
-//           snackBarType: SnackBarType.error,
-//         );
 //         await authService.clearAuthData();
 //         return;
 //       }
@@ -1634,11 +1159,11 @@ class HomeScreenController extends NetworkManager {
 //       );
 
 //       if (checkOutResponse['status'] == 1) {
-//         customSnackBar(
-//           'Success',
-//           checkOutResponse['message'],
-//           snackBarType: SnackBarType.success,
-//         );
+//         // customSnackBar(
+//         //   'Success',
+//         //   checkOutResponse['message'],
+//         //   snackBarType: SnackBarType.success,
+//         // );
 //         await fetchHomeData();
 //       } else {
 //         errorMessage.value = checkOutResponse['message'];
@@ -1650,32 +1175,25 @@ class HomeScreenController extends NetworkManager {
 //       }
 //     } catch (e) {
 //       errorMessage.value = 'Failed to check out. Please try again.';
-//       customSnackBar(
-//         'Error',
-//         'Failed to check out. Please try again.',
-//         snackBarType: SnackBarType.error,
-//       );
-//       developer.log('Check Out Error: $e');
 //     } finally {
 //       isProcessingCheckOut.value = false;
 //     }
 //   }
 
-//   // Button state methods
 //   Color getButtonColor() {
+//     if (!isLocationEnabled.value) return Colors.grey;
 //     if (!isLocationMatched.value) return Colors.grey;
-
 //     return currentButtonState.value == 'check_in'
 //         ? ColorResources.appMainColor
-//         : Colors.orange.shade700;
+//         : Color.fromARGB(255, 245, 80, 69);
 //   }
 
 //   Color getGlowColor() {
+//     if (!isLocationEnabled.value) return Colors.grey.withOpacity(0.5);
 //     if (!isLocationMatched.value) return Colors.grey.withOpacity(0.5);
-
 //     return currentButtonState.value == 'check_in'
 //         ? ColorResources.appMainColor.withOpacity(0.5)
-//         : Colors.orange.shade700.withOpacity(0.5);
+//         : Color.fromARGB(255, 245, 80, 69).withOpacity(0.5);
 //   }
 
 //   IconData getButtonIcon() {
@@ -1685,35 +1203,198 @@ class HomeScreenController extends NetworkManager {
 //   }
 
 //   String getButtonText() {
+//     if (!isLocationEnabled.value) return 'Enable Location';
 //     if (!isLocationMatched.value) return 'Not in Office';
-
 //     return currentButtonState.value == 'check_in' ? 'Check In' : 'Check Out';
+//   }
+
+//   Future<void> fetchAttendanceSummary() async {
+//     isSummaryLoading.value = true;
+//     try {
+//       final token = await _getToken();
+//       final employeeId = await _getEmployeeId();
+//       if (token == null || employeeId == null) {
+//         errorMessage.value = 'Authentication error. Please log in again.';
+//         return;
+//       }
+
+//       final now = DateTime.now();
+//       final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+//       final endDateToUse = endDate ?? now;
+
+//       final body = {
+//         'employee_id': employeeId,
+//         'start_date':
+//             startDate?.toIso8601String().split('T')[0] ??
+//             DateFormat('yyyy-MM-dd').format(firstDayOfMonth),
+//         'end_date': endDateToUse.toIso8601String().split(
+//           'T',
+//         )[0], // Use current date
+//       };
+
+//       final headers = {
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Bearer $token',
+//       };
+
+//       final response = await Network.postApi(
+//         null,
+//         fetchAttendanceSummaryApiV2,
+//         body,
+//         headers,
+//       );
+
+//       developer.log("This is Response: ${response.toString()}");
+//       developer.log("This is Body: ${body.toString()}");
+
+//       if (response['status'] == 1) {
+//         final payload = response['payload'] as List;
+//         if (payload.isNotEmpty) {
+//           attendanceSummary.value = AttendanceSummary.fromJson(payload[0]);
+//         }
+//       } else {
+//         errorMessage.value =
+//             response['message'] ?? 'Failed to fetch attendance summary';
+//       }
+//     } catch (e) {
+//       errorMessage.value = 'Failed to load attendance summary: ${e.toString()}';
+//     } finally {
+//       isSummaryLoading.value = false;
+//     }
+//   }
+
+//   void setDateRange(DateTime? start, DateTime? end) {
+//     startDate = start;
+//     endDate = end;
+//     if (start != null && end != null) {
+//       final diff = end.difference(start).inDays + 1;
+//       selectedDateRangeText.value =
+//           '${DateFormat('MMM d').format(start)} - ${DateFormat('MMM d, y').format(end)} ($diff days)';
+//     } else {
+//       final now = DateTime.now();
+//       final firstDayOfMonth = DateTime(now.year, now.month, 1);
+//       selectedDateRangeText.value =
+//           '${DateFormat('MMM d').format(firstDayOfMonth)} - ${DateFormat('MMM d, y').format(now)}';
+//     }
+//     fetchAttendanceSummary();
+//   }
+
+//   Future<bool> _checkAndRequestLocationPermission() async {
+//     LocationPermission permission = await Geolocator.checkPermission();
+
+//     if (permission == LocationPermission.denied) {
+//       // Show a custom dialog explaining why we need location
+//       bool shouldRequest = await _showPermissionExplanationDialog();
+//       if (!shouldRequest) return false;
+
+//       permission = await Geolocator.requestPermission();
+//       if (permission == LocationPermission.denied) {
+//         customSnackBar(
+//           'Permission Required',
+//           'Location permission is needed for check-in/out functionality',
+//           snackBarType: SnackBarType.info,
+//         );
+//         return false;
+//       }
+//     }
+
+//     if (permission == LocationPermission.deniedForever) {
+//       // Direct user to app settings
+//       bool opened = await _openAppSettings();
+//       if (!opened) {
+//         customSnackBar(
+//           'Permission Required',
+//           'Please enable location permissions in app settings',
+//           snackBarType: SnackBarType.error,
+//         );
+//       }
+//       return false;
+//     }
+
+//     return permission == LocationPermission.always ||
+//         permission == LocationPermission.whileInUse;
+//   }
+
+//   // Helper to show explanation dialog
+//   Future<bool> _showPermissionExplanationDialog() async {
+//     return await Get.dialog(
+//           AlertDialog(
+//             title: Text('Location Permission Needed'),
+//             content: Text(
+//               'This app needs location permissions to verify you are in office range '
+//               'for attendance tracking. Please grant location access.',
+//             ),
+//             actions: [
+//               TextButton(
+//                 onPressed: () => Get.back(result: false),
+//                 child: Text('Cancel'),
+//               ),
+//               TextButton(
+//                 onPressed: () => Get.back(result: true),
+//                 child: Text('Continue'),
+//               ),
+//             ],
+//           ),
+//         ) ??
+//         false;
+//   }
+
+//   // Helper to open app settings
+//   Future<bool> _openAppSettings() async {
+//     try {
+//       await Geolocator.openAppSettings();
+//       return true;
+//     } catch (e) {
+//       return false;
+//     }
+//   }
+
+//   void openDateRangePicker(BuildContext context) {
+//     final now = DateTime.now();
+//     final firstDayOfMonth = DateTime(now.year, now.month, 1);
+
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled: true,
+//       backgroundColor: const Color.fromARGB(0, 5, 5, 5),
+//       builder: (_) => Container(
+//         decoration: const BoxDecoration(
+//           color: ColorResources.backgroundWhiteColor,
+//           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//         ),
+//         constraints: BoxConstraints(
+//           maxHeight: MediaQuery.of(context).size.height * 0.65,
+//           minHeight: MediaQuery.of(context).size.height * 0.5,
+//         ),
+//         child: CustomDateRangePicker(
+//           firstDate: DateTime(
+//             now.year - 1,
+//             now.month,
+//             1,
+//           ), // Allow going back 1 year
+//           lastDate: now,
+//           initialStartDate:
+//               startDate ?? firstDayOfMonth, // Use current startDate if exists
+//           initialEndDate: endDate ?? now, // Use current endDate if exists
+//           onDateRangeSelected: (start, end) {
+//             setDateRange(start, end);
+//           },
+//         ),
+//       ),
+//     );
 //   }
 
 //   @override
 //   void onClose() {
-//     WidgetsBinding.instance.removeObserver(this);
 //     timer?.cancel();
-//     refreshTimer?.cancel();
-//     isLoading.value = true;
-//     isLocationMatched.value = false;
-//     homeScreenData.value = HomeScreenResponse();
-//     matchedOfficeId.value = 0;
-//     errorMessage.value = '';
-//     isProcessingCheckIn.value = false;
-//     isProcessingCheckOut.value = false;
-//     developer.log('HomeScreenController disposed');
+//     Geolocator.getServiceStatusStream().drain();
 //     super.onClose();
 //   }
 
 //   @override
-//   void didChangeAppLifecycleState(AppLifecycleState state) {
-//     if (state == AppLifecycleState.paused) {
-//       refreshTimer?.cancel();
-//     } else if (state == AppLifecycleState.resumed) {
-//       if (!isLocationMatched.value) {
-//         startAutoRefresh();
-//       }
-//     }
+//   void dispose() {
+//     scrollController.dispose();
+//     super.dispose();
 //   }
 // }

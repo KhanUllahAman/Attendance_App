@@ -10,7 +10,10 @@ import '../Utils/Colors/color_resoursec.dart';
 
 class NotificationScreen extends StatelessWidget {
   static const String routeName = '/notificationScreen';
-  final NotificationController controller = Get.find<NotificationController>(); // Use Get.find to reuse existing controller
+  final NotificationController controller =
+      Get.find<
+        NotificationController
+      >(); // Use Get.find to reuse existing controller
 
   NotificationScreen({super.key}) {
     Future.delayed(Duration.zero, () {
@@ -191,11 +194,11 @@ class NotificationScreen extends StatelessWidget {
     MediaQueryData mq,
     NotificationModel notification,
   ) async {
-    // Show loading dialog immediately when tapping
+    // Show loading dialog immediately
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Center(child: Apploader()),
+      builder: (context) => const Center(child: Apploader()),
     );
 
     final detailedNotification = await controller.fetchNotificationDetails(
@@ -215,87 +218,105 @@ class NotificationScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: mq.size.width * 0.05,
-            right: mq.size.width * 0.05,
-            top: mq.size.height * 0.025,
-            bottom: mq.viewInsets.bottom + mq.size.height * 0.03,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: ColorResources.greyColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.3,
+          minChildSize: 0.2,
+          maxChildSize: 0.65,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: EdgeInsets.only(
+                left: mq.size.width * 0.05,
+                right: mq.size.width * 0.05,
+                top: mq.size.height * 0.025,
+                bottom: mq.viewInsets.bottom + mq.size.height * 0.03,
               ),
-              SizedBox(height: mq.size.height * 0.025),
-              Text(
-                detailedNotification.title,
-                style: GoogleFonts.sora(
-                  fontSize: mq.size.width * 0.05,
-                  fontWeight: FontWeight.bold,
-                  color: ColorResources.blackColor,
-                ),
-              ),
-              SizedBox(height: 12),
-              Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTag(
-                    detailedNotification.type.capitalize.toString(),
-                    ColorResources.appMainColor,
-                    mq,
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: ColorResources.greyColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                  SizedBox(width: 8),
-                  _buildTag(
-                    detailedNotification.priority.capitalize.toString(),
-                    detailedNotification.priorityColor,
-                    mq,
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.access_time,
-                    size: mq.size.width * 0.045,
-                    color: ColorResources.blackColor,
-                  ),
-                  SizedBox(width: 6),
+                  SizedBox(height: mq.size.height * 0.025),
+
+                  // Title
                   Text(
-                    detailedNotification.formattedSentAt,
+                    detailedNotification.title,
                     style: GoogleFonts.sora(
-                      fontSize: mq.size.width * 0.03,
+                      fontSize: mq.size.width * 0.05,
+                      fontWeight: FontWeight.bold,
                       color: ColorResources.blackColor,
                     ),
                   ),
+                  SizedBox(height: 12),
+
+                  // Tags & Date
+                  Row(
+                    children: [
+                      _buildTag(
+                        detailedNotification.type.capitalize.toString(),
+                        ColorResources.appMainColor,
+                        mq,
+                      ),
+                      SizedBox(width: 8),
+                      _buildTag(
+                        detailedNotification.priority.capitalize.toString(),
+                        detailedNotification.priorityColor,
+                        mq,
+                      ),
+                      const Spacer(),
+                      Icon(
+                        Icons.access_time,
+                        size: mq.size.width * 0.045,
+                        color: ColorResources.blackColor,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        detailedNotification.formattedSentAt,
+                        style: GoogleFonts.sora(
+                          fontSize: mq.size.width * 0.03,
+                          color: ColorResources.blackColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(
+                    height: mq.size.height * 0.035,
+                    color: Colors.white10,
+                  ),
+
+                  // Message
+                  Text(
+                    "Message",
+                    style: GoogleFonts.sora(
+                      fontSize: mq.size.width * 0.038,
+                      fontWeight: FontWeight.w600,
+                      color: ColorResources.blackColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    detailedNotification.message,
+                    style: GoogleFonts.sora(
+                      fontSize: mq.size.width * 0.035,
+                      color: ColorResources.blackColor,
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: mq.size.height * 0.035),
                 ],
               ),
-              Divider(height: mq.size.height * 0.035, color: Colors.white10),
-              Text(
-                "Message",
-                style: GoogleFonts.sora(
-                  fontSize: mq.size.width * 0.038,
-                  fontWeight: FontWeight.w600,
-                  color: ColorResources.blackColor,
-                ),
-              ),
-              SizedBox(height: 0),
-              Text(
-                detailedNotification.message,
-                style: GoogleFonts.sora(
-                  fontSize: mq.size.width * 0.035,
-                  color: ColorResources.blackColor,
-                  height: 1.5,
-                ),
-              ),
-              SizedBox(height: mq.size.height * 0.035),
-            ],
-          ),
+            );
+          },
         );
       },
     );

@@ -346,73 +346,86 @@ class LeaveHistoryPageScreen extends StatelessWidget {
   ) {
     showModalBottomSheet(
       useSafeArea: true,
+      isScrollControlled: true,
       context: context,
       backgroundColor: ColorResources.backgroundWhiteColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: mq.size.width * 0.05,
-            vertical: mq.size.height * 0.03,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: ColorResources.greyColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.5,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              padding: EdgeInsets.symmetric(
+                horizontal: mq.size.width * 0.05,
+                vertical: mq.size.height * 0.03,
               ),
-              SizedBox(height: mq.size.height * 0.025),
-              Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Iconsax.calendar_1,
-                    color: leave.statusColor,
-                    size: mq.size.width * 0.05,
-                  ),
-                  SizedBox(width: 8),
-                  Text(
-                    leave.leaveTypeName,
-                    style: GoogleFonts.sora(
-                      fontSize: mq.size.width * 0.045,
-                      fontWeight: FontWeight.bold,
-                      color: ColorResources.blackColor,
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: ColorResources.greyColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
+                  SizedBox(height: mq.size.height * 0.025),
+                  Row(
+                    children: [
+                      Icon(
+                        Iconsax.calendar_1,
+                        color: leave.statusColor,
+                        size: mq.size.width * 0.05,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        leave.leaveTypeName,
+                        style: GoogleFonts.sora(
+                          fontSize: mq.size.width * 0.045,
+                          fontWeight: FontWeight.bold,
+                          color: ColorResources.blackColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  _buildDetailItem("Dates", leave.formattedDateRange, mq),
+                  _buildDetailItem(
+                    "Total Days",
+                    leave.totalDays.toString(),
+                    mq,
+                  ),
+                  _buildDetailItem("Reason", leave.reason, mq),
+                  _buildDetailItem(
+                    "Status",
+                    leave.statusText,
+                    mq,
+                    color: leave.statusColor,
+                  ),
+                  _buildDetailItem("Applied on", leave.formattedAppliedOn, mq),
+                  _buildDetailItem("Approved By", leave.approver ?? '--', mq),
+                  leave.approvedOn != null
+                      ? _buildDetailItem(
+                          "Approved on",
+                          leave.formattedApprovedOn!,
+                          mq,
+                        )
+                      : _buildDetailItem("Approved on", "--", mq),
+                  _buildDetailItem("Remarks", leave.remarks ?? "--", mq),
+                  SizedBox(height: mq.size.height * 0.02),
                 ],
               ),
-              SizedBox(height: 12),
-              _buildDetailItem("Dates", leave.formattedDateRange, mq),
-              _buildDetailItem("Total Days", leave.totalDays.toString(), mq),
-              _buildDetailItem("Reason", leave.reason, mq),
-              _buildDetailItem(
-                "Status",
-                leave.statusText,
-                mq,
-                color: leave.statusColor,
-              ),
-              _buildDetailItem("Applied on", leave.formattedAppliedOn, mq),
-              _buildDetailItem("Approved By", leave.approver ?? '--', mq),
-              leave.approvedOn != null
-                  ? _buildDetailItem(
-                      "Approved on",
-                      leave.formattedApprovedOn!,
-                      mq,
-                    )
-                  : _buildDetailItem("Approved on", "--", mq),
-              _buildDetailItem("Remarks", leave.remarks ?? "--", mq),
-              SizedBox(height: mq.size.height * 0.02),
-            ],
-          ),
+            );
+          },
         );
       },
     );

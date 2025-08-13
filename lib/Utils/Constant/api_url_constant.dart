@@ -1,5 +1,5 @@
-const baseUrl = 'http://162.211.84.202:3001/api/v1';
-const baseUrlV2 = 'http://162.211.84.202:3001/api/v2';
+const baseUrl = 'http://98.81.213.32:3001/api/v1';
+const baseUrlV2 = 'http://98.81.213.32:3001/api/v2';
 const fetchAttendanceSummaryApiV2 = '$baseUrlV2/attendances/summary';
 
 const loginUrl = '$baseUrl/auth/login';

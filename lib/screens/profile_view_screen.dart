@@ -118,7 +118,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                                                   ),
                                                 )
                                               : NetworkImage(
-                                                      "http://162.211.84.202:3001/uploads/users/${controller.employeeProfile.value!.profilePicture ?? 'default.png'}",
+                                                      "http://98.81.213.32:3001/uploads/users/${controller.employeeProfile.value!.profilePicture ?? 'default.png'}",
                                                     )
                                                     as ImageProvider,
                                           fit: BoxFit.fill,
