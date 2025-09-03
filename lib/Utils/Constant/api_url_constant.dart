@@ -27,3 +27,4 @@ const profileUpdateApi = '$baseUrl/employees/update-profile';
 const notificationListApiUrl = '$baseUrl/notifications/all';
 const notificationDetailApiUrl = '$baseUrl/notifications/single';
 const fcmTokenApiUrl = '$baseUrl/auth/fcm';
+const meetingUrl = '$baseUrl/meetings/all';

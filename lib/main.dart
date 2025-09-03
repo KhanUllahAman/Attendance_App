@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
 import 'package:orioattendanceapp/firebase_options.dart';
 import 'Controllers/backgroundNotification_controller.dart';
@@ -118,6 +119,12 @@ class MyApp extends StatelessWidget {
         initialBinding: AppBindings(),
         initialRoute: SplashScreen.routeName,
         getPages: routes,
+        localizationsDelegates: const [
+          quill.FlutterQuillLocalizations.delegate, 
+        ],
+        supportedLocales: const [
+          Locale('en', ''), // English
+        ],
       ),
     );
   }

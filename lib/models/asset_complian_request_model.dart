@@ -46,7 +46,7 @@ class AssetComplaint {
       category: json['category'] as String? ?? 'hardware',
       assetType: json['asset_type'] as String? ?? 'other',
       reason: json['reason'] as String? ?? '',
-      status: json['status'] as String? ?? 'pending',
+      status: json['status'] as String? ?? '',
       requestedAt: DateTime.parse(json['requested_at'] as String? ?? DateTime.now().toIso8601String()),
       reviewedAt: json['reviewed_at'] != null ? DateTime.parse(json['reviewed_at'] as String) : null,
       resolutionRemarks: json['resolution_remarks'] as String?,
@@ -70,7 +70,7 @@ class AssetComplaint {
       case 'rejected':
         return 'Rejected';
       default:
-        return 'Pending';
+        return '';
     }
   }
   Color get statusColor {

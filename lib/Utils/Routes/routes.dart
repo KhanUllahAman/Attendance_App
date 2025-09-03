@@ -4,6 +4,7 @@ import 'package:orioattendanceapp/Screens/login_screen.dart';
 import 'package:orioattendanceapp/screens/apply_leave_screen.dart';
 import 'package:orioattendanceapp/screens/forgot_password_screen.dart';
 import 'package:orioattendanceapp/screens/home_screen.dart';
+import 'package:orioattendanceapp/screens/meeting_screen.dart';
 import 'package:orioattendanceapp/screens/otp_screen.dart';
 import 'package:orioattendanceapp/screens/profile_view_screen.dart';
 
@@ -34,16 +35,10 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: LeaveHistoryPageScreen.routeName,
-    page: () =>  LeaveHistoryPageScreen(),
+    page: () => LeaveHistoryPageScreen(),
   ),
-  GetPage(
-    name: NotificationScreen.routeName,
-    page: () =>  NotificationScreen(),
-  ),
-  GetPage(
-    name: ProfileViewScreen.routeName,
-    page: () =>  ProfileViewScreen(),
-  ),
+  GetPage(name: NotificationScreen.routeName, page: () => NotificationScreen()),
+  GetPage(name: ProfileViewScreen.routeName, page: () => ProfileViewScreen()),
   GetPage(name: MenuScreen.routeName, page: () => const MenuScreen()),
   GetPage(
     name: ChangePasswordScreen.routeName,
@@ -51,28 +46,26 @@ final List<GetPage<dynamic>> routes = [
   ),
   GetPage(
     name: AttendanceCorrectionRequest.routeName,
-    page: () =>  AttendanceCorrectionRequest(),
+    page: () => AttendanceCorrectionRequest(),
   ),
   GetPage(
     name: MyCorrectionRequestList.routeName,
-    page: () =>  MyCorrectionRequestList(),
+    page: () => MyCorrectionRequestList(),
   ),
   GetPage(
     name: AssetComplainRequestScreenList.routeName,
-    page: () =>  AssetComplainRequestScreenList(),
+    page: () => AssetComplainRequestScreenList(),
   ),
   GetPage(
     name: AssetComplainRequestScreen.routeName,
-    page: () =>  AssetComplainRequestScreen(),
+    page: () => AssetComplainRequestScreen(),
   ),
-  GetPage(
-    name: OfficeWifiScreen.routeName,
-    page: () =>  OfficeWifiScreen(),
-  ),
+  GetPage(name: OfficeWifiScreen.routeName, page: () => OfficeWifiScreen()),
   GetPage(
     name: DailyAttendanceRecordScreen.routeName,
-    page: () =>  DailyAttendanceRecordScreen(),
+    page: () => DailyAttendanceRecordScreen(),
   ),
+  GetPage(name: MeetingScreen.routeName, page: () => MeetingScreen()),
 ];
 
 class Routes {
@@ -83,23 +76,21 @@ class Routes {
     OtpScreen.routeName: (context) => const OtpScreen(),
     HomeScreen.routeName: (context) => const HomeScreen(),
     ApplyLeaveScreen.routeName: (context) => const ApplyLeaveScreen(),
-    LeaveHistoryPageScreen.routeName: (context) =>
-         LeaveHistoryPageScreen(),
-    NotificationScreen.routeName: (context) =>  NotificationScreen(),
-    ProfileViewScreen.routeName: (context) =>  ProfileViewScreen(),
+    LeaveHistoryPageScreen.routeName: (context) => LeaveHistoryPageScreen(),
+    NotificationScreen.routeName: (context) => NotificationScreen(),
+    ProfileViewScreen.routeName: (context) => ProfileViewScreen(),
     MenuScreen.routeName: (context) => const MenuScreen(),
     ChangePasswordScreen.routeName: (context) => const ChangePasswordScreen(),
     AttendanceCorrectionRequest.routeName: (context) =>
-         AttendanceCorrectionRequest(),
-    MyCorrectionRequestList.routeName: (context) =>
-         MyCorrectionRequestList(),
+        AttendanceCorrectionRequest(),
+    MyCorrectionRequestList.routeName: (context) => MyCorrectionRequestList(),
     AssetComplainRequestScreenList.routeName: (context) =>
-         AssetComplainRequestScreenList(),
+        AssetComplainRequestScreenList(),
     AssetComplainRequestScreen.routeName: (context) =>
-         AssetComplainRequestScreen(),
-      OfficeWifiScreen.routeName: (context) =>
-         OfficeWifiScreen(),
-          DailyAttendanceRecordScreen.routeName: (context) =>
-         DailyAttendanceRecordScreen(),
+        AssetComplainRequestScreen(),
+    OfficeWifiScreen.routeName: (context) => OfficeWifiScreen(),
+    DailyAttendanceRecordScreen.routeName: (context) =>
+        DailyAttendanceRecordScreen(),
+    MeetingScreen.routeName: (context) => MeetingScreen(),
   };
 }

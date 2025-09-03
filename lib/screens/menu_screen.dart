@@ -12,6 +12,7 @@ import '../AuthServices/auth_service.dart';
 import '../Utils/Colors/color_resoursec.dart';
 import 'asset_complain_request_screen_list.dart';
 import 'change_password_screen.dart';
+import 'meeting_screen.dart';
 
 class MenuScreen extends StatelessWidget {
   static const String routeName = '/menuScreen';
@@ -76,6 +77,14 @@ class MenuScreen extends StatelessWidget {
                       title: "Office WiFi Details",
                       onTap: () {
                         Get.toNamed(OfficeWifiScreen.routeName);
+                      },
+                    ),
+                    _buildMenuItem(
+                      context,
+                      icon: Icons.meeting_room_sharp,
+                      title: "Meeting",
+                      onTap: () {
+                        Get.toNamed(MeetingScreen.routeName);
                       },
                     ),
                     _buildMenuItem(
